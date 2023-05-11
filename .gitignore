@@ -1,0 +1,7 @@
+*.egg-info/
+__pycache__/
+.ipynb_checkpoints
+gitignore*.ipynb
+example_data/
+.DS_Store
+*.tif
