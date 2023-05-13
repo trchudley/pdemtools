@@ -1,0 +1,15 @@
+name: _pdemtools
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=>3.9
+  - rioxarray 
+  - geopandas 
+  - opencv 
+  - scipy 
+  - numba 
+  - gdal
+  - pandas
+  - numpy
+  - shapely
