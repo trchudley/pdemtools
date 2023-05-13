@@ -59,7 +59,7 @@ or by using `bibtex`:
 
 When using ArcticDEM and REMA products, please [cite](#refererences) the datasets appropriately and [acknowledge](#acknowledgements) the PGC.
 
-Several algorithsm implemented in the library were developed by others. These will be highlighted in the documentation, and the original authors should be properly cited when used. For example:
+Several algorithms implemented in the library were developed by others. These will be highlighted in the documentation, and the original authors should be properly cited when used. For example:
 
 > We masked sea ice and melange following the method of Shiggins _et al._ (2023) as implemented in pDEMtools (Chudley, 2023).
 
@@ -68,7 +68,7 @@ Several algorithsm implemented in the library were developed by others. These wi
 
 ## Install pDEMtools
 
-After downloading, `crevdem` can be installed from the top-level directory via `pip install .`:
+After downloading, `pdemtools` can be installed from the top-level directory via `pip install .`:
 
 ```bash
 clone https://github.com/trchudley/pdemtools
@@ -76,16 +76,37 @@ cd pdemtools
 pip install .
 ```
 
-pDEMtools is dependent on the following Python packages. When installing into a pre-existing conda environment, it may be beneficial to install these before the `pip` install of pDEMtools.
+pDEMtools is dependent on the following Python packages:
 
  - rioxarray (and xarray)
  - geopandas (and pandas)
+ - shapely
  - openCV
  - numba
  - numpy
  - scipy
  - GDAL
- - shapely
+
+ If are managing your environment using `conda` (or `mamba`), it may be beneficial to install these packages before the `pip` install of pDEMtools. An included `environment.yml` file helps with this:
+
+```bash
+# Clone as previously
+clone https://github.com/trchudley/pdemtools
+cd pdemtools
+
+# Option 1: create a fresh environment
+conda env create --name new_env -f environment.yml
+conda activate new_env
+
+# -- OR --
+
+# Option 2 : update existing environment
+conda activate existing_env
+conda env update -f environment.yml
+
+# Install after environment
+pip install .
+```
 
 ## Supplementary datasets
 
@@ -114,7 +135,7 @@ It is **highly recommended** that you store the strip index files as a `*.feathe
 ```python
 import geopandas as gpd
 gdf.read_file('.../ArcticDEM_Strip_Index_s2s041_gpkg.gpkg')
-gdf.to_parquet("ArcticDEM_Strip_Index_s2s041.parquet")
+gdf.to_parquet(".../ArcticDEM_Strip_Index_s2s041.parquet")
 ```
 Both of these formats are column-based storage formats designed for 'big data': they are both more compressed and more efficient to read/filter than shapefiles, geopackages, or the like. There are advantages and disadvantages to both (I use parquet) but it's worth at least using one. My own testing for the strip index files showed that the parquet and feather formats are a quarter of the size of the default PGC shapefile and, on my personal laptop, using either increased the speed of loading using geopandas from nearly two minutes with a shapefile to only a few seconds:
 
@@ -406,6 +427,7 @@ If you have requested multiple variables, the output of the `.pdt.terrain()` is 
 
 The tool is presented _as-is_, but requests/contributions to functionality are welcome (thomas.r.chudley@durham.ac.uk). Avenues for future work include the following:
 
+ - Quicker preview downloads of hillshades and DEMs through use of the GeoTIFF overviews and the `rxr.open_rasterio()` `overview_level` function. This can result in uneven x/y resolutions though, so perhaps another option for upsampling may be useful as an accessor utility.
  - Implement Ian Howat's blunder filter algorithm.
 
 
