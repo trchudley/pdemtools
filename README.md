@@ -86,6 +86,7 @@ pDEMtools is dependent on the following Python packages:
  - numpy
  - scipy
  - GDAL
+ pyarrow
 
  If are managing your environment using `conda` (or `mamba`), it may be beneficial to install these packages before the `pip` install of pDEMtools. An included `environment.yml` file helps with this:
 

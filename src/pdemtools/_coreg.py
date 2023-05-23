@@ -278,7 +278,7 @@ def interp2_gdal(X, Y, Z, Xi, Yi, interp_str, extrapolate=False, oob_val=np.nan)
 def dtype_np2gdal(dtype_np):
     # TODO: Write docstring.
 
-    if dtype_np == np.bool:
+    if dtype_np == bool: #np.bool:
         promote_dtype = np.uint8
     elif dtype_np == np.int8:
         promote_dtype = np.int16

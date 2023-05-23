@@ -180,17 +180,17 @@ class DemAccessor:
             raise ValueError(f"`hillshade_multidirectional` must be boolean")
 
         # calculate p and q
-        p_arr = p(self._obj.values, resolution, method)
-        q_arr = q(self._obj.values, resolution, method)
+        p_arr = p(self._obj.values, resolution, method).astype(np.float32)
+        q_arr = q(self._obj.values, resolution, method).astype(np.float32)
 
         # if requested variables require second order variables, calculate them
         attrs_requiring_second_order = [
             attr for attr in attribute if attr in LIST_REQUIRING_SECOND_ORDER
         ]
         if len(attrs_requiring_second_order) >= 1:
-            r_arr = r(self._obj.values, resolution, method)
-            s_arr = s(self._obj.values, resolution, method)
-            t_arr = t(self._obj.values, resolution, method)
+            r_arr = r(self._obj.values, resolution, method).astype(np.float32)
+            s_arr = s(self._obj.values, resolution, method).astype(np.float32)
+            t_arr = t(self._obj.values, resolution, method).astype(np.float32)
 
         # Calculate attributes
         if ("slope" in attribute) or (
