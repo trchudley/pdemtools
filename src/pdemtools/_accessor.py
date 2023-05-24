@@ -122,13 +122,13 @@ class DemAccessor:
 
         if return_stats == True:
             return (
-                self._obj.fillna(0).values * 0 + shift_dem(self._obj.values, trans),
+                self._obj.fillna(0) * 0 + shift_dem(self._obj.values, trans),
                 trans,
                 trans_err,
                 rms,
             )
         else:
-            return self._obj.fillna(0).values * 0 + shift_dem(self._obj.values, trans)
+            return self._obj.fillna(0) * 0 + shift_dem(self._obj.values, trans)
 
     def terrain(
         self,

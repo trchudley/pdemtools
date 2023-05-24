@@ -10,10 +10,10 @@ The primary aim of pDEMtools is to enable access to ArcticDEM and REMA mosaics a
  - **`search()`**: This function aims to replicate the kind of convenient catalogue searching available when querying a dynamic STAC catalogue (e.g. `pystac_client`), allowing users to easily find relevant ArcticDEM and REMA strips for their areas of interest. 
  - **`load`**: This module provides simple one-line functions to preview and download strips and mosaics from the relevant AWS bucket to an `xarray` Dataset.
 
-pDEMtool does not aim to provide a comprehensive DEM analysis environment (there are other excellent tools for that, such as [`xdem`](https://github.com/GlacioHack/xdem) for advanced coregistration or [`richdem`](https://github.com/r-barnes/richdem) for flow analysis), but some simple (pre)processing functions are provided with functionality specific to the nature of ArcticDEM/REMA strips and the sort of purposes users are likely to use them for. This includes:
- - Tools for identifying/masking sea level and icebergs.
- - Terrain attribute derivation (hillshade, slope, aspect, various curvature) using a 5x5 polynomial fit suited for high-resolution data.
- - Rapid geoid correction using BedMachine source data.
+pDEMtool does not aim to provide a comprehensive DEM analysis environment (there are other excellent tools for that, such as [`xdem`](https://github.com/GlacioHack/xdem) for advanced coregistration or [`richdem`](https://github.com/r-barnes/richdem) for flow analysis), but some simple (pre)processing functions are provided. It is hoped that they are _specific_ to the sort of uses that ArcticDEM and REMA users might want (e.g. a focus on ice sheet and cryosphere work), as well as the particular _strengths_ of ArcticDEM and REMA datasets (high-resolution and multitemporal). Tools include:
+ - Identifying/masking sea level and icebergs.
+ - Terrain attribute derivation (hillshade, slope, aspect, various curvatures) using a 5x5 polynomial fit suited for high-resolution data.
+ - Quick geoid correction using BedMachine source data.
  - Simple coregistration for quick elevation change analysis.
 
 Rather than introducing custom classes, pDEMtools will always try and return DEM data as an [xarray](https://docs.xarray.dev/en/stable/) DataArray with geospatial metadata via the [rioxarray](https://corteva.github.io/rioxarray/stable/) extension. The aim is to allow the user to quickly move beyond pDEMtools into their own analysis in whatever format they desire, be that `xarray` datasets, `numpy` or `dask` arrays, or exporting to geospatial file formats for analysis beyond Python.
