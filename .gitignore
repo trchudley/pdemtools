@@ -1,7 +1,8 @@
 *.egg-info/
 __pycache__/
 .ipynb_checkpoints
-gitignore*.ipynb
+gitignore*
+.vscode
 example_data/
 .DS_Store
 *.tif
