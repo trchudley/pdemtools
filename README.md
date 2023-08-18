@@ -4,7 +4,7 @@
 
 ![An ArcticDEM hillshade of the calving front of Helheim Glacier, Greenland](./images/arcticdem_header.jpg "An ArcticDEM hillshade of the calving front of Helheim Glacier, Greenland")
 
-pDEMtool aims to provide a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter _et al._  2018; 2022) and Reference Elevation Model of Antarctica (REMA; Howat _et al._ 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
+pDEMtool aims to provide a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter _et al._  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat _et al._ 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
 
 The primary aim of pDEMtools is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the `search()` function and `load` module:
  - **`search()`**: This function aims to replicate the kind of convenient catalogue searching available when querying a dynamic STAC catalogue (e.g. `pystac_client`), allowing users to easily find relevant ArcticDEM and REMA strips for their areas of interest. 
@@ -23,19 +23,25 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
 Quickly download and filter the ArcticDEM/REMA mosaic, and generate various terrain attributes such as hillshade and curvatures ([see notebook](./notebooks/mosaic_and_terrain.ipynb)):
 
 <p align="center">
+   <a href='./notebooks/mosaic_and_terrain.ipynb'>
    <img src="./images/example_mosaic_terrain.jpg" width=90% height=90% title="An example of various terrain attributes derived from a filtered ArcticDEM mosaic" alt="An example of various terrain attributes derived from a filtered ArcticDEM mosaic">
+   </a>
 </p>
 
 Search and download ArcticDEM/REMA strips, with easy coregistration to assess elevation change ([see notebook](./notebooks/strip_search_and_dem_difference.ipynb)):
 
 <p align="center">
+   <a href='./notebooks/strip_search_and_dem_difference.ipynb'>
    <img src="./images/example_dem_difference.jpg" width=65% height=65% title="Vertical elevation change between multitemporal ArcticDEM strips" alt="Vertical elevation change between multitemporal ArcticDEM strips">
+   </a>
 </p>
 
 Easy filtering of ocean/mélange, allowing for assessment of calving fronts and icebergs ([see notebook](./notebooks/get_icebergs.ipynb)):
 
 <p align="center">
+   <a href='./notebooks/get_icebergs.ipynb'>
    <img src="./images/example_iceberg_height.jpg" width=80% height=80% title="Iceberg height above the ocean extracted from an ArcticDEM strip" alt="Iceberg height above the ocean extracted from an ArcticDEM strip">
+   </a>
 </p>
 
 
@@ -53,7 +59,7 @@ or by using `bibtex`:
 
 ```
 @software{pDEMtools
-   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {0.1}, url = {https://github.com/trchudley/pDEMtools} 
+   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {0.2}, url = {https://github.com/trchudley/pDEMtools} 
 }
 ```
 
@@ -62,7 +68,6 @@ When using ArcticDEM and REMA products, please [cite](#refererences) the dataset
 Several algorithms implemented in the library were developed by others. These will be highlighted in the documentation, and the original authors should be properly cited when used. For example:
 
 > We masked sea ice and melange following the method of Shiggins _et al._ (2023) as implemented in pDEMtools (Chudley, 2023).
-
 
 # Install
 
@@ -111,6 +116,8 @@ pip install .
 
 ## Supplementary datasets
 
+<details> <summary>Expand</summary>
+
 To make the most of pDEMtools, two supplementary datasets must available locally. The first is the ArcticDEM or REMA strip index made available by the PGC, used by the `search` function. The second is the Greenland BedMachine (v5; Morlighem _et al._ 2022a) or Antarctica BedMachine (v3; Morlighem _et al._ 2022b), which is the default geoid/bedrock mask used by the geoid correction and coregistration functions (NB: for applications outside of the ice sheets, functions exist for using your own geoid/bedrock mask).
 
 Users have two options:
@@ -129,7 +136,12 @@ python download_index_ArcticDEM.py
 
 The BedMachine download scripts are provided by the NSIDC, and require an Earthdata user account and password to be provided. The index download scripts are sometimes blocked by the PGC to prevent scraping, so you may have to revert to downloading them manually.
 
+</details>
+<br></br>
+
 ## Storing strip index files
+
+<details> <summary>Expand</summary>
 
 It is **highly recommended** that you store the strip index files as a `*.feather` or `*.parquet` format. You can export a geopandas GeoDataFrame as these formats using the `to_feather()` or `to_parquet()` options - e.g:
 
@@ -161,6 +173,8 @@ gdf_parquet = gdf_parquet[gdf_parquet.intersects(geometry)]
 # CPU times: user 2.1 s, sys: 1.54 s, total: 3.63 s
 # Wall time: 3.89 s
 ```
+</details>
+<br></br>
 
 # Features
 
@@ -195,6 +209,8 @@ An introduction the range of functions provided by pDEMtools is provided in the 
 
 Search and filter ArcticDEM and REMA 2 m strips. To see in action, consult the notebooks.
 
+<details> <summary>Expand</summary>
+
 Note: using this function requires a local copy of the ArcticDEM or REMA strip indexes available from the PGC (see ['supplementary datasets' section](#supplementary-datasets)), preferably in a `.parquet` format for speed. The location of the index must be provided via the `index_fpath` variable.
 
 The function has a number of optional inputs allowing for filtering and selection of strips, including:
@@ -224,9 +240,14 @@ search_output = pdemtools.search(
 )
 ```
 
+</details>
+<br></br>
+
 ## `load` module
 
 A range of functions for loading ArcticDEM and REMA mosaics and strips.
+
+<details> <summary>Expand</summary>
 
 ### `load.mosaic()`
 
@@ -281,9 +302,14 @@ aoi = (458000, -2536000, 469000, -2528000)
 dem = pdemtools.load.from_fpath(dem_fpath='.../demstrip.tif', bounds=aoi, bitmask_fpath='.../dembitmask.tif')
 ```
 
+</details>
+<br></br>
+
 ## `data` module
 
-Load some helpful supplementary data from BedMachine or other sources.
+Load helpful supplementary data from BedMachine or other sources.
+
+<details> <summary>Expand</summary>
 
 ### `data.geoid_from_bedmachine()`
 
@@ -326,9 +352,14 @@ mask_fpath = '.../mask.shp'
 geoid = pdemtools.load.mask_from_geometry(geoid_fpath, dem)
 ``` -->
 
+</details>
+<br></br>
+
 ## `.pdt` xarray accessor
 
 A number of useful filtering and processing functions that can be accessed as an xarray accessor. For instance. to use the `.pdt.mask_ocean()` function on your loaded DEM with the variable name `dem`, the correct instruction is `dem_masked = dem.pdt.mask_ocean()`. 
+
+<details> <summary>Expand</summary>
 
 ### `.pdt.geoid_correct()`
 
@@ -423,6 +454,16 @@ terrain = dem_masked.pdt.terrain(
 
 If you have requested multiple variables, the output of the `.pdt.terrain()` is a (rio)xarray DataSet containing all the selected variables, as well as the original DEM. If you have requested a single variable, the output is a (rio)xarray DataArray of that variable.
 
+</details>
+<br></br>
+
+
+# Version updates
+
+| Version | Date | Notes |
+| ------- | ---- | ----- |
+| 0.2 | August 2023 | Update `load.mosaic()` function to include the new ArcticDEM mosaic v4.1 |
+| 0.1 | May 2023 | Initial release |
 
 # To do
 
@@ -433,6 +474,8 @@ The tool is presented _as-is_, but requests/contributions to functionality are w
 
 
 # Refererences
+
+<details> <summary>Expand</summary>
 
 Florinsky, I. V. (2009). Computation of the third‐order partial derivatives from a digital elevation model. _International journal of geographical information science_, 23(2), 213-231. https://doi.org/10.1080/13658810802527499
 
@@ -448,13 +491,16 @@ Morlighem, M. _et al._ (2022b). MEaSUREs BedMachine Antarctica, Version 3 [Data 
 
 Nuth, C. and Kääb, A. (2011) Co-registration and bias corrections of satellite elevation data sets for quantifying glacier thickness change, _The Cryosphere_, 5, 271–290, https://doi.org/10.5194/tc-5-271-2011
 
-Porter, C., _et al._ (2018), ArcticDEM, Version 3, _Harvard Dataverse_. https://doi.org/10.7910/DVN/OHHUKH
-
 Porter, C., _et al._ (2022). ArcticDEM - Strips, Version 4.1. _Harvard Dataverse_. https://doi.org/10.7910/DVN/OHHUKH
+
+Porter, C., _et al._ (2023), ArcticDEM, Version 4.1, _Harvard Dataverse_. https://doi.org/10.7910/DVN/3VDC4W
 
 Shiggins, C. J., _et al._ (2023). Automated ArcticDEM iceberg detection tool: insights into area and volume distributions, and their potential application to satellite imagery and modelling of glacier–iceberg–ocean systems, _The Cryosphere_, 17, 15–32, https://doi.org/10.5194/tc-17-15-2023
 
 Zevenbergen, L. W. and Thorne, C. R. (1987). Quantitative analysis of land surface topography. Earth surface processes and landforms, 12(1), 47-56.
+
+</details>
+<br></br>
 
 # Acknowledgements
 

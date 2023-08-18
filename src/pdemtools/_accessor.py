@@ -82,6 +82,10 @@ class DemAccessor:
         reference: DataArray,
         stable_mask: Optional[DataArray] = None,
         return_stats: Optional[bool] = False,
+        max_horiz_offset: float = 15,
+        rmse_step_thresh: float = -0.001,
+        max_iterations: int = 5,
+
     ) -> DataArray:
         """
         Coregisters the scene against a reference DEM based on the Nuth and Kääb (2011)
@@ -93,6 +97,12 @@ class DemAccessor:
         :param return_stats: If true, returns the transformation parameter, the
             translation error, and the RMS error alongside the coregistered DEM
             dataarray, defaults to False
+        :param max_horiz_offset: maximum horizontal offset, beyond which XY
+            coregistration is ignored and only Z values are corrected. Defaults
+            to 15.
+        :param rmse_step_thresh: break coregistration loop if rmse step is above
+            threshold, defaults to -0.001.
+        :param max_iterations: max iterations to attempt, defaults to 5.
 
         :returns coreg:
         :returns trans: the [dz,dx,dy] transformation parameter
@@ -116,6 +126,9 @@ class DemAccessor:
             self._obj.values,
             stable_mask.values,
             resolution,
+            max_horiz_offset=max_horiz_offset,
+            rmse_step_thresh=rmse_step_thresh,
+            max_iterations=max_iterations,
         )
 
         print(f"Translating: {trans[0]:.2f} X, {trans[1]:.2f} Y, {trans[2]:.2f} Z")

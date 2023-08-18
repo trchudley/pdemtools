@@ -73,7 +73,7 @@ def coregisterdems(
 
         # Break loop if conditions reached
         if np.any(np.abs(pn[1:]) > max_horiz_offset):
-            print("Maximum horizontal offset reached")
+            print(f"Maximum horizontal offset ({max_horiz_offset}) exceeded")
             return_meddz = True
             break
 

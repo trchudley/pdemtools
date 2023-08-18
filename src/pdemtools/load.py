@@ -4,7 +4,7 @@ xarray DataArray, from either local or AWS sources.
 """
 
 import os
-from typing import Optional, Literal
+from typing import Optional, Literal, Union
 from importlib import resources
 
 import rioxarray as rxr
@@ -17,11 +17,15 @@ from geopandas.geodataframe import GeoDataFrame
 
 from ._utils import clip
 
+# arctic and rema valid versions for STAC retrival
+VERSIONS = {'arcticdem': ['v3.0', 'v4.1'], 'rema': ['v2.0']}
 
-# filenames of indexes in ./src/pdemtools/mosaic_index directory
+# filenames of mosaic indexes in ./src/pdemtools/mosaic_index directory
 ARCTICDEM_V3_INDEX_FNAME = "ArcticDEM_Mosaic_Index_v3_gpkg.gpkg"
 ARCTICDEM_V3_INDEX_2M_LAYER_NAME = "ArcticDEM_Mosaic_Index_v3_2m"
-REMA_V2_INDEX = "REMA_Mosaic_Index_v2_gpkg.gpkg"
+ARCTICDEM_V4_INDEX_FNAME = "ArcticDEM_Mosaic_Index_v4_1_gpkg.gpkg"
+ARCTICDEM_V4_INDEX_2M_LAYER_NAME = "ArcticDEM_Mosaic_Index_v4_1_2m"
+REMA_V2_INDEX_FNAME = "REMA_Mosaic_Index_v2_gpkg.gpkg"
 REMA_V2_INDEX_2M_LAYER_NAME = "REMA_Mosaic_Index_v2_2m"
 
 # aws location
@@ -33,7 +37,7 @@ VALID_MOSAIC_RES = ["2m", "10m", "32m"]
 
 def from_fpath(
     dem_fpath: str,
-    bounds: Optional[tuple | Polygon] = None,
+    bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask_fpath: Optional[str] = None,
 ) -> DataArray:
     """Given a filepath (local or an AWS link) the desired ArcticDEM/REMA DEM strip as
@@ -84,7 +88,7 @@ def from_fpath(
 
 def preview(
     row: GeoDataFrame,
-    bounds: Optional[tuple | Polygon] = None,
+    bounds: Optional[Union[tuple, Polygon]] = None,
 ):
     """Loads a 10 m hillshade preview of the desired ArcticDEM/REMA DEM strip as an xarray
     DataArray, for preliminary plotting and assessment. Option to filter to bounds.
@@ -116,7 +120,7 @@ def preview(
 
 def from_search(
     row: GeoDataFrame,
-    bounds: Optional[tuple | Polygon] = None,
+    bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask: bool = True,
 ):
     """Loads the 2 m DEM strip of the  desired ArcticDEM/REMA DEM strip as an xarray
@@ -164,7 +168,7 @@ def from_id(
     dataset: Literal["arcticdem", "rema"],
     geocell: str,
     dem_id: str,
-    bounds: Optional[tuple | Polygon] = None,
+    bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask: Optional[bool] = True,
     bucket: Optional[str] = "https://pgc-opendata-dems.s3.us-west-2.amazonaws.com",
     version: Optional[str] = "s2s041",
@@ -236,7 +240,8 @@ def from_id(
 def mosaic(
     dataset: Literal["arcticdem", "rema"],
     resolution: Literal["2m", "10m", "32m"],
-    bounds: Optional[tuple | Polygon] = None,
+    bounds: Union[tuple, Polygon] = None,
+    version: Optional[Literal["v2.0", "v3.0", "v4.1"]] = None,
 ):
     """Given a dataset, resolution, and bounding box, download the ArcticDEM or REMA
     mosiac.
@@ -247,10 +252,23 @@ def mosaic(
     :param resolution: The desired mosaic resolution to download - must be either '2m',
         '10m', or '32m' (will also accept 2, 10, and 32 as `int` types)
     :type resolutions: str | int
+    :param version: Desired ArcticDEM or REMA version. Must be a valid version available
+        from the PGC STAC API (e.g. `v3.0` or `v4.1` for ArcticDEM, or `v2.0` for REMA).
+    :type version: str
     :param bounds: Clip to bounds [xmin, ymin, xmax, ymax], in EPSG:3413 (ArcticDEM) or
         EPSG:3031 (REMA). Will accept a shapely geometry to extract bounds from.
     :type bounds: tuple | Polygon, optional
     """
+
+    # sanity check that datset and versioning is correct versioning is valid for selected dataset
+    dataset = dataset.lower()
+    if dataset not in VERSIONS.keys():
+        raise ValueError(f'Dataset must be one of {VERSIONS.keys}. Currently `{dataset}`.')
+    if version == None:  # pick the most recent dataset
+        version = VERSIONS[dataset][-1]
+    else: 
+        if version not in VERSIONS[dataset]:
+            raise ValueError(f'Version of {dataset} must be one of {VERSIONS[dataset]}. Currently `{version}`')
 
     # get resolution as str
     if type(resolution) == int:
@@ -258,25 +276,24 @@ def mosaic(
 
     # check if valid resolution
     if resolution not in VALID_MOSAIC_RES:
-        raise ValueError(f"Resolution must be one of {VALID_MOSAIC_RES}")
+        raise ValueError(f"Resolution must be one of {VALID_MOSAIC_RES}. Currently `{resolution}`")
 
     # Sanitise shapely geometry to bounds tuple
     if type(bounds) == Polygon:
         bounds = bounds.bounds
 
     # get dataset version
-    dataset = dataset.lower()
-    if dataset == "arcticdem":
-        version = "v3.0"
+    if dataset == "arcticdem" and version == 'v3.0':
         layer = ARCTICDEM_V3_INDEX_2M_LAYER_NAME
-    elif dataset == "rema":
-        version = "v2.0"
+    elif dataset == 'arcticdem' and version =='v4.1':
+        layer = ARCTICDEM_V4_INDEX_2M_LAYER_NAME
+    elif dataset == "rema" and version == 'v2.0':
         layer = REMA_V2_INDEX_2M_LAYER_NAME
     else:
-        raise ValueError("`dataset` variable must be `arcticdem` or `rema`.")
+        raise ValueError("Cannot retrive internal index filepath for specified dataset and version.")
 
     # Load tiles that intersect with AOI
-    tiles = gpd.read_file(_get_index_fpath(dataset), layer=layer, bbox=bounds)
+    tiles = gpd.read_file(_get_index_fpath(dataset, version=version), layer=layer, bbox=bounds)
 
     if len(tiles) < 1:
         raise ValueError(
@@ -301,6 +318,7 @@ def mosaic(
     if len(fpaths) == 1:
         dem = rxr.open_rasterio(fpaths[0]).rio.clip_box(*bounds)
 
+    # If multiple dems, merge them
     if len(dems) > 1:
         dem = merge_arrays(dems)
     else:
@@ -312,24 +330,30 @@ def mosaic(
     return dem
 
 
-def _get_index_fpath(dataset: Literal["arcticdem", "rema"]):
+def _get_index_fpath(
+    dataset: Literal["arcticdem", "rema"],
+    version: Literal["v2.0", "v3.0", "v4.0"],
+):
     """Given `arcticdem` or `rema`, gets the filepath of the package dataset using the
     `importlib` library. ARCTICDEM and REMA global variables necessary.
     """
 
-    if dataset == "arcticdem":
+    # get dataset version
+    if dataset == "arcticdem" and version == 'v3.0':
         fname = ARCTICDEM_V3_INDEX_FNAME
-    elif dataset == "rema":
+    elif dataset == 'arcticdem' and version =='v4.1':
+        fname = ARCTICDEM_V4_INDEX_FNAME
+    elif dataset == "rema" and version == 'v2.0':
         fname = REMA_V2_INDEX_FNAME
     else:
-        raise ValueError("`dataset` variable must be `arcticdem` or `rema`")
+        raise ValueError("Cannot retrive internal index filepath for specified dataset and version.")
 
     return resources.files("pdemtools.mosaic_index").joinpath(fname)
 
 
 def _aws_link(
     row,
-    dataset: Literal["arcicdem", "rema"],
+    dataset: Literal["arcticdem", "rema"],
     version: str,
     resolution: Literal["2m", "10m", "32m"],
     prefix: Optional[str] = PREFIX,
@@ -337,13 +361,11 @@ def _aws_link(
     """Using inputs from mosaic() function and the AWS location from the global variable
     `PREFIX`, construct the filepath of the relevant ArcticDEM or REMA mosaic tile.
     """
-    # Construct appropriate suffix for ArcticDEM and REMA respectively
-    if dataset == "arcticdem":
+    # Construct appropriate suffix, considering ArcticDEM v3.0's alternate naming scheme
+    if dataset == "arcticdem" and version=="v3.0":
         suffix = f"_{resolution}_{version}_reg_dem.tif"
-    elif dataset == "rema":
-        suffix = f"_{resolution}_{version}_dem.tif"
     else:
-        raise ValueError(f"Input `dataset` must be `arcticdem` or `rema`")
+        suffix = f"_{resolution}_{version}_dem.tif"
 
     # Construct appropriate filename given resolution
     if resolution == "2m":
