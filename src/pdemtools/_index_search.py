@@ -22,7 +22,7 @@ def search(
     dates: Optional[str | tuple] = None,
     months: Optional[int | tuple] = None,
     years: Optional[int] = None,
-    baseline_max_days: Optional[int] = None,
+    baseline_max_hours: Optional[int] = None,
     sensors: Optional[str | tuple] = None,
     is_xtrack: Optional[bool] = None,
     accuracy: Optional[float | tuple] = None,
@@ -31,11 +31,11 @@ def search(
     A function to efficiently search the ArcticDEM and REMA strip index files provided
     by the Polar Geospatial Center. This must be downloaded seperately and a filepath
     provided. The function will accept a shapefile, but it is highly recommended that
-    the index is converted to a `.feather` or `.parquet` format.
+    the index is a `.parquet` format.
 
     :param index_fpath: Filepath to a local copy of the ArcticDEM or REMA strip index
         file, available from the Polar Geospatial Center. For speed, it is tecommended
-        that the index is converted to a `.feather` or `.parquet` format.
+        that the index is `.parquet` format.
     :type index_fpath: str
     :param bounds: Filter to strips that intersect with bounds [xmin, ymin, xmax, ymax],
         in EPSG:3413 (ArcticDEM) or EPSG:3031 (REMA). Accepts a tuple or a shapely
@@ -55,9 +55,9 @@ def search(
     :param years: Filter strips to only certain yeara. Provide as a tuple of integers
         (e.g. for 2011 and 2021  only, set `years = [2011,2021]`).
     :type years: tuple, optional
-    :param baseline_max_days: Filter strips to only those constructed from stereopairs
-        acquired less than the provided number of days apart.
-    :type baseline_max_days: int, optional
+    :param baseline_max_hours: Filter strips to only those constructed from stereopairs
+        acquired less than the provided number of hours apart.
+    :type baseline_max_hours: int, optional
     :param sensors: Filter scenes to only those consrtructed from the provided
         satellite sensors. Full list is ["WV03", "WV02", "WV01", "GE01"]
     :type sensors: tuple, optional
@@ -65,8 +65,8 @@ def search(
         True = return only cross-track. False = return only non-cross-track.
     :type is_xtrack: bool, optional
     :param accuracy: Filter to strip accuracies based on the provided average height
-        accuracy in metres (`avg_expect` in the strip index). NB that this column
-        included NaN values (-9999.0) so the option is provided to include only a single
+        accuracy in metres (`rmse` in the strip index). NB that this column
+        included NaN values (-1.0) so the option is provided to include only a single
         value as an upper range (e.g. 2), or a tuple of two values in order to include
         a lower bound and filter NaN values (e.g [0, 2]).
     :type accuracy: float | tuple, optional
@@ -74,6 +74,18 @@ def search(
     :returns: Strip index filtered to desired variables.
     :retype: GeoDataFrame
     """
+
+    # Determine whether index is for ArcticDEM or REMA (strangely, quite hard to do -
+    # current approach is simply to check whether 'arcticdem' or 'rema' strings occur
+    # in the filename of the index file)
+    if "arcticdem" in os.path.basename(index_fpath).lower():
+        epsg = 3413
+    elif "rema" in os.path.basename(index_fpath).lower():
+        epsg = 3031
+    else:
+        raise ValueError(
+            "Cannot determine whether index file is ArcticDEM or REMA (please include 'arcticdem' or 'rema' in filename)"
+        )
 
     # Sanitise inputs first (prior to loading, to catch mistakes before time is wasted
     # loading index files)
@@ -84,6 +96,8 @@ def search(
             geom = box(*bounds)
         else:
             geom = bounds
+        # convert geom to EPSG:4326
+        geom_4326 = gpd.GeoDataFrame(geometry=[geom], crs=epsg).to_crs(4326).geometry[0]
 
     # Sanitise input: min_aoi_frac
     if min_aoi_frac != None:
@@ -130,16 +144,11 @@ def search(
     # Open the index geometry file, according to file type
     _, extension = os.path.splitext(index_fpath)
 
-    if extension == ".feather":
-        gdf = gpd.read_feather(index_fpath)
-        if bounds != None:
-            gdf = gdf[gdf.intersects(geom)]
-
-    elif extension == ".parquet":
+    if extension == ".parquet":
         # print("reading")
         gdf = gpd.read_parquet(index_fpath)
         if bounds != None:
-            gdf = gdf[gdf.intersects(geom)]
+            gdf = gdf[gdf.intersects(geom_4326)]
 
     else:
         print(
@@ -148,18 +157,20 @@ def search(
         if bounds == None:
             gdf = gpd.read_file(index_fpath)
         else:
-            gdf = gpd.read_file(index_fpath, intersects=geom)
+            gdf = gpd.read_file(index_fpath, intersects=geom_4326)
 
     # Construct necessary datetime columns if necessary
-    if any([dates, months, baseline_max_days]):
+    if any([dates, months, baseline_max_hours]):
         gdf["time1"] = pd.to_datetime(gdf.acqdate1)
         gdf["time2"] = pd.to_datetime(gdf.acqdate2)
-        if baseline_max_days != None:
-            gdf["dem_baseline_days"] = (
-                (gdf.time2 - gdf.time1).values.astype("timedelta64[D]").astype("int")
+        if baseline_max_hours != None:
+            gdf["dem_baseline_hours"] = (
+                (gdf.time2 - gdf.time1)
+                .values.astype("timedelta64[h]")
+                .astype("float32")
             )
-            gdf["dem_baseline_days"] = abs(
-                gdf["dem_baseline_days"].values
+            gdf["dem_baseline_hours"] = abs(
+                gdf["dem_baseline_hours"].values
             )  # Absolute d_t, in hours
         if (months != None) or (years != None):
             gdf["time_mean"] = gdf.time1 + (gdf.time2 - gdf.time1) / 2
@@ -185,8 +196,8 @@ def search(
         gdf = gdf[(gdf["year"].isin(years))]
 
     # Filter to time seperations
-    if baseline_max_days != None:
-        gdf = gdf[(gdf["dem_baseline_days"] <= baseline_max_days)]
+    if baseline_max_hours != None:
+        gdf = gdf[(gdf["dem_baseline_hours"] <= baseline_max_hours)]
 
     # Filter to only selected sensors
     if sensors != None:
@@ -200,12 +211,13 @@ def search(
     if accuracy != None:
         # print(accuracy, len(accuracy))
         if len(accuracy) == 1:
-            print(f"accuracy == 1: {len(accuracy)==1}")
-            gdf = gdf[(gdf["avg_expect"] <= accuracy[0])]
+            # print(f"accuracy == 1: {len(accuracy)==1}")
+            gdf = gdf[(gdf["rmse"] <= accuracy[0])]
         else:
-            gdf = gdf[
-                (gdf["avg_expect"] >= accuracy[0]) & (gdf["avg_expect"] <= accuracy[1])
-            ]
+            gdf = gdf[(gdf["rmse"] >= accuracy[0]) & (gdf["rmse"] <= accuracy[1])]
+
+    # Convert from EPSG:4326 to appropriate ArcticDEM/REMA crs:
+    gdf = gdf.to_crs(epsg)
 
     # Clip geometries to bounds of AOI
     if bounds != None:
