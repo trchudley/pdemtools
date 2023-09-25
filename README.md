@@ -53,13 +53,13 @@ Update when v.1.0 uploaded to Zendoo.
 
  The use of the pDEMtools package can be cited as follows:
 
-> Chudley, T. R. (2023) pDEMtools (v0.2). GitHub. https://github.com/trchudley/pDEMtools
+> Chudley, T. R. (2023) pDEMtools (v0.3). GitHub. https://github.com/trchudley/pDEMtools
 
 or by using `bibtex`:
 
 ```
 @software{pDEMtools
-   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {0.2}, url = {https://github.com/trchudley/pDEMtools} 
+   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {0.3}, url = {https://github.com/trchudley/pDEMtools} 
 }
 ```
 
