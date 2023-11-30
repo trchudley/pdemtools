@@ -25,7 +25,7 @@ def coregisterdems(
     dem2,
     mask,
     res,
-    max_horiz_offset=15,
+    max_horiz_offset=50,
     rmse_step_thresh=-0.001,
     max_iterations=5,
 ):
@@ -73,7 +73,10 @@ def coregisterdems(
 
         # Break loop if conditions reached
         if np.any(np.abs(pn[1:]) > max_horiz_offset):
-            print(f"Maximum horizontal offset ({max_horiz_offset}) exceeded")
+            print(
+                f"Maximum horizontal offset ({max_horiz_offset}) exceeded."
+                "Consider raising the threshold if offsets are large."
+            )
             return_meddz = True
             break
 
@@ -122,7 +125,7 @@ def coregisterdems(
         if rmse_step > rmse_step_thresh or np.isnan(d0):
             print(
                 "RMSE step in this iteration ({:.5f}) is above threshold ({}), "
-                "stopping and returning values of prior iteration".format(
+                "stopping and returning values of prior iteration. ".format(
                     rmse_step, rmse_step_thresh
                 )
             )
@@ -278,7 +281,7 @@ def interp2_gdal(X, Y, Z, Xi, Yi, interp_str, extrapolate=False, oob_val=np.nan)
 def dtype_np2gdal(dtype_np):
     # TODO: Write docstring.
 
-    if dtype_np == bool: #np.bool:
+    if dtype_np == bool:  # np.bool:
         promote_dtype = np.uint8
     elif dtype_np == np.int8:
         promote_dtype = np.int16

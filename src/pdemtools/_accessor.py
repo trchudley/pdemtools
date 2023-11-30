@@ -82,10 +82,9 @@ class DemAccessor:
         reference: DataArray,
         stable_mask: Optional[DataArray] = None,
         return_stats: Optional[bool] = False,
-        max_horiz_offset: float = 15,
+        max_horiz_offset: float = 50,
         rmse_step_thresh: float = -0.001,
         max_iterations: int = 5,
-
     ) -> DataArray:
         """
         Coregisters the scene against a reference DEM based on the Nuth and Kääb (2011)
@@ -111,9 +110,10 @@ class DemAccessor:
             residuals
         """
 
-        if geospatial_match(self._obj, reference) == False:
+        check_match = geospatial_match(self._obj, reference, return_info=True)
+        if not check_match == True:
             raise ValueError(
-                "Input DEM and reference DEM do not share geospatial information"
+                f"Input DEM and reference DEM do not share geospatial information: {check_match}. Consider padding (`.rio.pad_box`) or reprojecting (`.rio.repoject_match`) DEMs."
             )
 
         if stable_mask is None:

@@ -18,7 +18,7 @@ from geopandas.geodataframe import GeoDataFrame
 from ._utils import clip
 
 # arctic and rema valid versions for STAC retrival
-VERSIONS = {'arcticdem': ['v3.0', 'v4.1'], 'rema': ['v2.0']}
+VERSIONS = {"arcticdem": ["v3.0", "v4.1"], "rema": ["v2.0"]}
 
 # filenames of mosaic indexes in ./src/pdemtools/mosaic_index directory
 ARCTICDEM_V3_INDEX_FNAME = "ArcticDEM_Mosaic_Index_v3_gpkg.gpkg"
@@ -263,12 +263,16 @@ def mosaic(
     # sanity check that datset and versioning is correct versioning is valid for selected dataset
     dataset = dataset.lower()
     if dataset not in VERSIONS.keys():
-        raise ValueError(f'Dataset must be one of {VERSIONS.keys}. Currently `{dataset}`.')
+        raise ValueError(
+            f"Dataset must be one of {VERSIONS.keys}. Currently `{dataset}`."
+        )
     if version == None:  # pick the most recent dataset
         version = VERSIONS[dataset][-1]
-    else: 
+    else:
         if version not in VERSIONS[dataset]:
-            raise ValueError(f'Version of {dataset} must be one of {VERSIONS[dataset]}. Currently `{version}`')
+            raise ValueError(
+                f"Version of {dataset} must be one of {VERSIONS[dataset]}. Currently `{version}`"
+            )
 
     # get resolution as str
     if type(resolution) == int:
@@ -276,24 +280,30 @@ def mosaic(
 
     # check if valid resolution
     if resolution not in VALID_MOSAIC_RES:
-        raise ValueError(f"Resolution must be one of {VALID_MOSAIC_RES}. Currently `{resolution}`")
+        raise ValueError(
+            f"Resolution must be one of {VALID_MOSAIC_RES}. Currently `{resolution}`"
+        )
 
     # Sanitise shapely geometry to bounds tuple
     if type(bounds) == Polygon:
         bounds = bounds.bounds
 
     # get dataset version
-    if dataset == "arcticdem" and version == 'v3.0':
+    if dataset == "arcticdem" and version == "v3.0":
         layer = ARCTICDEM_V3_INDEX_2M_LAYER_NAME
-    elif dataset == 'arcticdem' and version =='v4.1':
+    elif dataset == "arcticdem" and version == "v4.1":
         layer = ARCTICDEM_V4_INDEX_2M_LAYER_NAME
-    elif dataset == "rema" and version == 'v2.0':
+    elif dataset == "rema" and version == "v2.0":
         layer = REMA_V2_INDEX_2M_LAYER_NAME
     else:
-        raise ValueError("Cannot retrive internal index filepath for specified dataset and version.")
+        raise ValueError(
+            "Cannot retrive internal index filepath for specified dataset and version."
+        )
 
     # Load tiles that intersect with AOI
-    tiles = gpd.read_file(_get_index_fpath(dataset, version=version), layer=layer, bbox=bounds)
+    tiles = gpd.read_file(
+        _get_index_fpath(dataset, version=version), layer=layer, bbox=bounds
+    )
 
     if len(tiles) < 1:
         raise ValueError(
@@ -339,14 +349,16 @@ def _get_index_fpath(
     """
 
     # get dataset version
-    if dataset == "arcticdem" and version == 'v3.0':
+    if dataset == "arcticdem" and version == "v3.0":
         fname = ARCTICDEM_V3_INDEX_FNAME
-    elif dataset == 'arcticdem' and version =='v4.1':
+    elif dataset == "arcticdem" and version == "v4.1":
         fname = ARCTICDEM_V4_INDEX_FNAME
-    elif dataset == "rema" and version == 'v2.0':
+    elif dataset == "rema" and version == "v2.0":
         fname = REMA_V2_INDEX_FNAME
     else:
-        raise ValueError("Cannot retrive internal index filepath for specified dataset and version.")
+        raise ValueError(
+            "Cannot retrive internal index filepath for specified dataset and version."
+        )
 
     return resources.files("pdemtools.mosaic_index").joinpath(fname)
 
@@ -362,7 +374,7 @@ def _aws_link(
     `PREFIX`, construct the filepath of the relevant ArcticDEM or REMA mosaic tile.
     """
     # Construct appropriate suffix, considering ArcticDEM v3.0's alternate naming scheme
-    if dataset == "arcticdem" and version=="v3.0":
+    if dataset == "arcticdem" and version == "v3.0":
         suffix = f"_{resolution}_{version}_reg_dem.tif"
     else:
         suffix = f"_{resolution}_{version}_dem.tif"
