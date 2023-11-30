@@ -25,7 +25,9 @@ def get_resolution(xds: DataArray) -> float:
         return abs(resolutions[0])
 
 
-def geospatial_match(rxd_1: DataArray, rxd_2: DataArray) -> bool:
+def geospatial_match(
+    rxd_1: DataArray, rxd_2: DataArray, return_info: bool = False
+) -> bool:
     """Check whether two (rio)xarray DataArrays or Datasets have the same geospatial
     information.
 
@@ -38,17 +40,24 @@ def geospatial_match(rxd_1: DataArray, rxd_2: DataArray) -> bool:
     :rtype: bool
     """
 
-    matches = [
-        rxd_1.rio.shape == rxd_2.rio.shape,
-        rxd_1.rio.resolution() == rxd_2.rio.resolution(),
-        rxd_1.rio.bounds() == rxd_2.rio.bounds(),
-        rxd_1.rio.crs == rxd_2.rio.crs,
-    ]
+    failed = []
 
-    if all(matches):
+    if not rxd_1.rio.shape == rxd_2.rio.shape:
+        failed.append("shape")
+    if not rxd_1.rio.resolution() == rxd_2.rio.resolution():
+        failed.append("resolution")
+    if not rxd_1.rio.bounds() == rxd_2.rio.bounds():
+        failed.append("bounds")
+    if not rxd_1.rio.crs == rxd_2.rio.crs:
+        failed.append("crs")
+
+    if len(failed) == 0:
         return True
     else:
-        return False
+        if return_info = True:
+            return failed
+        else:
+            return False
 
 
 def clip(

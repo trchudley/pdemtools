@@ -44,6 +44,7 @@ Easy filtering of ocean/mélange, allowing for assessment of calving fronts and 
    </a>
 </p>
 
+An example batch download and coregistration script is also included in the `batch` directory as a jumping-off point for large-scale projects.
 
 # Cite
 
@@ -409,6 +410,7 @@ If you have requested multiple variables, the output of the `.pdt.terrain()` is 
 
 | Version | Date | Notes |
 | ------- | ---- | ----- |
+| 0.4 | November 2023 | Made batch processing script available as an example. |
 | 0.3 | September 2023 | Aligned search function with the new PGC-provided GeoParquet files |
 | 0.2 | August 2023 | Update `load.mosaic()` function to include the new ArcticDEM mosaic v4.1 |
 | 0.1 | May 2023 | Initial release |
