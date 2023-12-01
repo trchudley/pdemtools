@@ -54,7 +54,7 @@ def geospatial_match(
     if len(failed) == 0:
         return True
     else:
-        if return_info = True:
+        if return_info == True:
             return failed
         else:
             return False
