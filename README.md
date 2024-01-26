@@ -61,7 +61,7 @@ or by using `bibtex`:
 
 ```
 @software{pDEMtools
-   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {0.3}, url = {https://github.com/trchudley/pDEMtools} 
+   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {0.5}, url = {https://github.com/trchudley/pDEMtools} 
 }
 ```
 
@@ -411,6 +411,7 @@ If you have requested multiple variables, the output of the `.pdt.terrain()` is 
 
 | Version | Date | Notes |
 | ------- | ---- | ----- |
+| 0.5 | November 2024 | Fixed bug in `_coreg.py` to improve Nuth and Kääb (2011)-style coregistration. |
 | 0.4 | November 2023 | Made batch processing script available as an example. |
 | 0.3 | September 2023 | Aligned search function with the new PGC-provided GeoParquet files |
 | 0.2 | August 2023 | Update `load.mosaic()` function to include the new ArcticDEM mosaic v4.1 |
