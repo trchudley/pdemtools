@@ -117,13 +117,16 @@ class DemAccessor:
             )
 
         if stable_mask is None:
+            print("No `stable_mask` provided: assuming entire scene is stable.")
             stable_mask = self._obj * 0 + 1
 
         resolution = get_resolution(self._obj)
 
-        trans, trans_err, rms = coregisterdems(
+        new_dem_array, trans, trans_err, rms = coregisterdems(
             reference.values,
             self._obj.values,
+            reference.x.values,
+            reference.y.values,
             stable_mask.values,
             resolution,
             max_horiz_offset=max_horiz_offset,
@@ -131,17 +134,19 @@ class DemAccessor:
             max_iterations=max_iterations,
         )
 
-        print(f"Translating: {trans[0]:.2f} X, {trans[1]:.2f} Y, {trans[2]:.2f} Z")
+        # print(f"Translating: {trans[0]:.2f} X, {trans[1]:.2f} Y, {trans[2]:.2f} Z")
+        # new_dem_array = shift_dem(self._obj.values, trans)
 
         if return_stats == True:
             return (
-                self._obj.fillna(0) * 0 + shift_dem(self._obj.values, trans),
+                self._obj.fillna(0) * 0 + new_dem_array,
                 trans,
                 trans_err,
                 rms,
             )
+
         else:
-            return self._obj.fillna(0) * 0 + shift_dem(self._obj.values, trans)
+            return self._obj.fillna(0) * 0 + new_dem_array
 
     def terrain(
         self,
