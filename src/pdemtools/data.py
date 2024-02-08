@@ -58,6 +58,25 @@ def geoid_from_raster(fpath: str, target_rxd: DataArray = None) -> DataArray:
     return geoid.squeeze()
 
 
+def bedrock_mask_from_vector(vector_fpath: str, target_rxd: DataArray) -> DataArray:
+    """Construct boolean bedrock mask from a Geopandas-readable vector file (e.g.
+    shapefile, geopackage, etc.) of bedrock areas and a given target rioxarray dataset.
+    Returns mask where bedrock values are 1 and outside are 0.
+
+    Args:
+        vector_fpath (str): file path to a Geopandas-readable vector file (e.g.
+            shapefile, geopackage, etc.) of bedrock areas.
+        target_rxd (DataArray): _description_
+
+    Returns:
+        DataArray: (rio)xarray dataset that BedMachine will be resampled to match
+    """
+
+    gdf_clip = gpd.read_file(vector_fpath)
+    target_clip = target_rxd.rio.clip(gdf_clip.geometry.values, drop=False)
+    return (target_clip.where(target_clip >= 0) * 0 + 1).fillna(0).squeeze()
+
+
 def bedrock_mask_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataArray:
     """Construct boolean bedrock mask from bedmachine and a given target rioxarray
     dataset. Returns mask where bedrock values are 1 and outside are 0.

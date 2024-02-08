@@ -55,13 +55,13 @@ Update when v.1.0 uploaded to Zendoo.
  The use of the pDEMtools package can be cited as follows:
 
 
-> Chudley, T. R. (2023) pDEMtools (v0.5). GitHub. https://github.com/trchudley/pDEMtools
+> Chudley, T. R. (2023) pDEMtools (v0.6). GitHub. https://github.com/trchudley/pDEMtools
 
 or by using `bibtex`:
 
 ```
 @software{pDEMtools
-   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {0.5}, url = {https://github.com/trchudley/pDEMtools} 
+   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {0.6}, url = {https://github.com/trchudley/pDEMtools} 
 }
 ```
 
@@ -143,6 +143,7 @@ An introduction the range of functions provided by pDEMtools is provided in the 
       - [`geoid_from_bedmachine()`](#datageoid_from_bedmachine)
       - [`geoid_from_raster()`](#datageoid_from_raster)
       - [`bedrock_mask_from_bedmachine()`](#databedrock_mask_from_bedmachine)
+      - [`bedrock_mask_from_vector()`](#databedrock_mask_from_vector)
       - [`mask_from_geometry()`](#datamask_from_geometry)
  - [`pdt` xarray accessor](#pdt-xarray-accessor)
    - [`geoid_correct()`](#pdtgeoid_correct)
@@ -291,15 +292,15 @@ bedrock_mask = pdemtools.data.bedrock_mask_from_bedmachine(bm_fpath, dem)
 
 ```
 
-<!-- ### `data.mask_from_geometry()`
+### `bedrock_mask_from_vector()`
 
-Constructs boolean raster mask from a vector geometry file (e.g. shapefile, geopackage) and a given target rioxarray dataset.
+Construct boolean bedrock mask from a Geopandas-readable vector file (e.g. shapefile, geopackage, etc.) of bedrock areas and a given target rioxarray dataset. Returns mask where bedrock values are 1 and outside are 0.
 
 Example:
 ```python
-mask_fpath = '.../mask.shp'
-geoid = pdemtools.load.mask_from_geometry(geoid_fpath, dem)
-``` -->
+vector_fpath: '.../bedrock.shp'
+bedrock_mask = pdemtools.data.bedrock_mask_from_vector(vector_fpath, dem)
+```
 
 </details>
 <br></br>
@@ -411,7 +412,8 @@ If you have requested multiple variables, the output of the `.pdt.terrain()` is 
 
 | Version | Date | Notes |
 | ------- | ---- | ----- |
-| 0.5 | November 2024 | Fixed bug in `_coreg.py` to improve Nuth and Kääb (2011)-style coregistration. |
+| 0.6 | February 2024 | Added `data.bedrock_mask_from_vector()` function. |
+| 0.5 | January 2024 | Fixed bug in `_coreg.py` to improve Nuth and Kääb (2011)-style coregistration. |
 | 0.4 | November 2023 | Made batch processing script available as an example. |
 | 0.3 | September 2023 | Aligned search function with the new PGC-provided GeoParquet files |
 | 0.2 | August 2023 | Update `load.mosaic()` function to include the new ArcticDEM mosaic v4.1 |
