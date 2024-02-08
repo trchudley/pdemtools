@@ -63,13 +63,14 @@ def bedrock_mask_from_vector(vector_fpath: str, target_rxd: DataArray) -> DataAr
     shapefile, geopackage, etc.) of bedrock areas and a given target rioxarray dataset.
     Returns mask where bedrock values are 1 and outside are 0.
 
-    Args:
-        vector_fpath (str): file path to a Geopandas-readable vector file (e.g.
-            shapefile, geopackage, etc.) of bedrock areas.
-        target_rxd (DataArray): _description_
+    :param vector_fpath: file path to a Geopandas-readable vector file (e.g.
+        shapefile, geopackage, etc.) of bedrock areas.
+    :type vector_fpath: str
+    :param target_rxd: (rio)xarray dataset that BedMachine will be resampled to match
+    :type target_rxd: DataArray
 
-    Returns:
-        DataArray: (rio)xarray dataset that BedMachine will be resampled to match
+    :returns: bedrock mask for the target_rxd region as a (rio)xarray DataArray
+    :rtype: DataArray
     """
 
     gdf_clip = gpd.read_file(vector_fpath)
@@ -86,7 +87,7 @@ def bedrock_mask_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataAr
     :param target_rxd: (rio)xarray dataset that BedMachine will be resampled to match
     :type target_rxd: DataArray
 
-    :returns: bedrock mask for the target_rxd region as an xarray DataArray
+    :returns: bedrock mask for the target_rxd region as a (rio)xarray DataArray
     :rtype: DataArray
     """
 
@@ -120,26 +121,3 @@ def bedrock_mask_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataAr
     mask = mask.round()
 
     return mask.squeeze()
-
-
-def mask_from_geometry(
-    target_xds: DataArray,
-    geometry: str | Polygon | gpd.GeoDataFrame,
-) -> DataArray:
-    """Construct boolean mask from a given geometry and target rioxarray dataset.
-    Returns mask where values within geometry are 1 and outside are 0.
-
-    :param dataarray: dataarray to construct a mask for.
-    :param geometry: geometry (or filepath to geometry).
-
-    :returns mask_dataarray: xarray DataArray of mask.
-    """
-
-    # if geometry is a filepath string, (os.path.exists to check), then load a geometry
-
-    # fillna() da object, multiply by one, and then clip to geometry. fillna() again
-    # to zero
-
-    # return object
-
-    raise NotImplementedError()

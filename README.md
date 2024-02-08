@@ -75,15 +75,32 @@ Several algorithms implemented in the library were developed by others. These wi
 
 ## Install pDEMtools
 
-After downloading, `pdemtools` can be installed from the top-level directory via `pip install .`:
+`pdemtools` can be installed from the top-level directory via [Github](https://github.com/),[`conda`](https://docs.conda.io/en/latest/), and [`pip`](https://pip.pypa.io/en/stable/). If you use `mamba` instead of `conda`, simple use `mamba` instead of `conda` as a drag-and-drop replacement in the instructions below:
 
 ```bash
-clone https://github.com/trchudley/pdemtools
+# Clone the pdemtools github repository
+git clone git@github.com:trchudley/pdemtools.git
+
+# Move to pdemtools directory
 cd pdemtools
-pip install .
+
+# Conda option 1: create a fresh conda environment
+conda env create -f environment.yml
+conda activate pdemtools_env
+
+# -- OR --
+
+# Conda option 2 : update existing conda environment
+conda activate existing_env
+conda env update -f environment.yml
+
+# Install pdemtools
+pip install -e .
 ```
 
-pDEMtools is dependent on the following Python packages:
+It is not normally advisable to mix `pip` and `conda`, but in this use case `conda` will install all the dependencies (listed below) and `pip` sets up the appropriate paths to `pdemtools`.
+
+`pdemtools` dependencies are as follows:
 
  - rioxarray (and xarray)
  - geopandas (and pandas)
@@ -95,34 +112,13 @@ pDEMtools is dependent on the following Python packages:
  - GDAL
  - pyarrow
 
- If are managing your environment using `conda` (or `mamba`), it may be beneficial to install these packages before the `pip` install of pDEMtools. An included `environment.yml` file helps with this:
-
-```bash
-# Clone as previously
-clone https://github.com/trchudley/pdemtools
-cd pdemtools
-
-# Option 1: create a fresh environment
-conda env create --name new_env -f environment.yml
-conda activate new_env
-
-# -- OR --
-
-# Option 2 : update existing environment
-conda activate existing_env
-conda env update -f environment.yml
-
-# Install after environment
-pip install .
-```
-
 ## Supplementary datasets
 
 To make the most of pDEMtools, two supplementary datasets must available locally:
 
 The first is the ArcticDEM or REMA strip index made available by the PGC  (in GeoParquet format), used by the `search` function. Strip index GeoParquet files can be downloaded from the PGC ([Greenland](https://data.pgc.umn.edu/elev/dem/setsm/ArcticDEM/indexes/), [Antarctica](https://data.pgc.umn.edu/elev/dem/setsm/REMA/indexes/)). To enable rapid searching, *please download the GeoParquet file format*: these files end in `_gpqt.zip`. Unzip them before use.
 
-The second is the Greenland BedMachine (v5; Morlighem _et al._ 2022a) or Antarctica BedMachine (v3; Morlighem _et al._ 2022b), which is the default geoid/bedrock mask used by the geoid correction and coregistration functions (NB: for applications outside of the ice sheets, functions exist for using your own geoid/bedrock mask). BedMachine can be downloaded from the NSIDC ([Greenland](https://nsidc.org/data/idbmg4/versions/5), [Antarctica](https://nsidc.org/data/nsidc-0756/versions/3)).
+The second is the Greenland BedMachine (v5; Morlighem _et al._ 2022a) or Antarctica BedMachine (v3; Morlighem _et al._ 2022b), which is the default geoid/bedrock mask used by the geoid correction and coregistration functions (NB: for applications outside of the ice sheets, it is possible to use your own geoid/bedrock mask). BedMachine can be downloaded from the NSIDC ([Greenland](https://nsidc.org/data/idbmg4/versions/5), [Antarctica](https://nsidc.org/data/nsidc-0756/versions/3)).
 
 
 # Features
