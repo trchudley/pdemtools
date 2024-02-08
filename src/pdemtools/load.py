@@ -111,7 +111,7 @@ def preview(
     except:
         s3url = row.s3url
 
-    json_url = "http://" + s3url.split("/external/")[1]
+    json_url = "https://" + s3url.split("/external/")[1]
     hillshade_10m_url = json_url.replace(".json", "_dem_10m_shade_masked.tif")
 
     preview = from_fpath(hillshade_10m_url, bounds)
@@ -147,7 +147,7 @@ def from_search(
     except:
         s3url = row.s3url
 
-    json_url = "http://" + s3url.split("/external/")[1]
+    json_url = "https://" + s3url.split("/external/")[1]
     dem_url = json_url.replace(".json", "_dem.tif")
 
     # Construct bitmask fpath, if required
