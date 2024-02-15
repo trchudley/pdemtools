@@ -74,8 +74,9 @@ def bedrock_mask_from_vector(vector_fpath: str, target_rxd: DataArray) -> DataAr
     """
 
     gdf_clip = gpd.read_file(vector_fpath)
+    target_rxd = target_rxd.rio.write_nodata(-9999)  # Enforce -9999 as nodata value
     target_clip = target_rxd.rio.clip(gdf_clip.geometry.values, drop=False)
-    return (target_clip.where(target_clip >= 0) * 0 + 1).fillna(0).squeeze()
+    return (target_clip.where(target_clip != -9999) * 0 + 1).fillna(0).squeeze()
 
 
 def bedrock_mask_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataArray:
