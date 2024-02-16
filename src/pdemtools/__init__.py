@@ -7,3 +7,5 @@ from ._index_search import search
 from ._accessor import DemAccessor
 
 __version__ = version("pdemtools")
+
+__all__ = ["search", "DemAccessor"]

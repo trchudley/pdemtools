@@ -1,5 +1,4 @@
-"""
-This module contains the functions necessary to open the ArcticDEM/REMA strip as an 
+"""This module contains functions necessary to open an ArcticDEM/REMA strip as an 
 xarray DataArray, from either local or AWS sources. 
 """
 
@@ -40,8 +39,12 @@ def from_fpath(
     bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask_fpath: Optional[str] = None,
 ) -> DataArray:
-    """Given a filepath (local or an AWS link) the desired ArcticDEM/REMA DEM strip as
-    an xarray DataArray. Option to filter to bounds and bitmask, if provided.
+    """Given a filepath (local or an AWS link), loads the desired ArcticDEM/REMA DEM
+    strip as an ``xarray`` ``DataArray``. Option to filter to bounds and bitmask, if
+    provided.
+
+    If AWS link is provided, strip will be downloaded from the relevant AWS bucket. 2 m
+    DEM strips are large in size and loading remotely from AWS may take some time.
 
     :param dem_fpath: Filepath of DEM strip
     :type dem_fpath: str
@@ -90,8 +93,9 @@ def preview(
     row: GeoDataFrame,
     bounds: Optional[Union[tuple, Polygon]] = None,
 ):
-    """Loads a 10 m hillshade preview of the desired ArcticDEM/REMA DEM strip as an xarray
-    DataArray, for preliminary plotting and assessment. Option to filter to bounds.
+    """Loads a 10 m hillshade preview of the desired ArcticDEM/REMA DEM strip as an
+    ``xarray`` ``DataArray``, for preliminary plotting and assessment. Option to filter
+    to bounds.
 
     :param row: A selected row from the GeoDataFrame output of pdemtools.search. Can
         either select a row manually using gdf.isel[[i]] where `i` is the desired row,
@@ -123,19 +127,22 @@ def from_search(
     bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask: bool = True,
 ):
-    """Loads the 2 m DEM strip of the  desired ArcticDEM/REMA DEM strip as an xarray
-    DataArray. Option to filter to bounds, if provided, and bitmask, if set to True
-    (default True).
+    """Given a row from the GeoDataFrame output of ``pdemtools.search()``, loads the 2
+    m DEM strip of the desired ArcticDEM/REMA DEM strip as an xarray DataArray.
 
-    :param row: A selected row from the GeoDataFrame output of pdemtools.search. Can
-        either select a row manually using gdf.isel[[i]] where `i` is the desired row,
-        or provide the entire GeoDataFrame,
+    Downloads from the relevant AWS bucket, as an xarray ``DataArray``. 2 m DEM strips
+    are large in size and loading remotely from AWS may take some time. Option to
+    filter to bounds and bitmask.
+
+    :param row: A selected row from the GeoDataFrame output of pdemtools.search. Select
+        the row manually using ``row = gdf.isel[[i]]``, or loop through the rows using
+        ``for _, row in gdf.iterrows():``.
     :type row: GeoDataFrame
     :param bounds: Clip to bounds [xmin, ymin, xmax, ymax], in EPSG:3413 (ArcticDEM) or
-        EPSG:3031 (REMA). Will accept a shapely geometry to extract bounds from.
-        Defaults to None
+        EPSG:3031 (REMA). Will accept a ``shapely.Polygon`` geometry to extract bounds
+        from. Defaults to None
     :type bounds: tuple | Polygon, optional
-    :param bitmask: Choose whether apply the associated bitmask, defaults to True
+    :param bitmask: Choose whether apply the associated bitmask. Defaults to True
     :type bitmask: bool, optional
 
     :returns: xarray DataArray of DEM strip
@@ -175,11 +182,12 @@ def from_id(
     preview: Optional[bool] = False,
 ) -> DataArray:
     """An alternative method of loading the selected ArcticDEM/REMA strip, which
-    requires only the geocell and the dem_id (e.g. geocell = 'n70w051', dem_id =
-    'SETSM_s2s041_WV01_20200709_102001009A689B00_102001009B63B200_2m_lsf_seg2').
-    Downloads from the relevant AWS bucket, as an xarray DataArray. Option to filter to
-    bounds and bitmask. 2 m DEM strips are large in size and loading remotely from AWS
-    may take some time.
+    requires only the geocell and the dem_id (e.g. ``geocell = 'n70w051'``, ``dem_id =
+    'SETSM_s2s041_WV01_20200709_102001009A689B00_102001009B63B200_2m_lsf_seg2'``).
+
+    Downloads from the relevant AWS bucket, as an xarray ``DataArray``. Option to
+    filter to bounds and bitmask. 2 m DEM strips are large in size and loading
+    remotely from AWS may take some time.
 
     :param dataset: Either 'arcticdem' or 'rema'. Case-insensitive.
     :type dataset: str
@@ -202,7 +210,7 @@ def from_id(
     :type preview: bool, optional
 
     :return: xarray DataArray of DEM strip
-    :retype: DataArray
+    :rtype: DataArray
     """
 
     # Sanitise data
@@ -243,17 +251,17 @@ def mosaic(
     bounds: Union[tuple, Polygon] = None,
     version: Optional[Literal["v2.0", "v3.0", "v4.1"]] = None,
 ):
-    """Given a dataset, resolution, and bounding box, download the ArcticDEM or REMA
-    mosiac.
+    """Given a dataset, resolution, and bounding box, downloads the ArcticDEM or REMA
+    mosiac from AWS.
 
     :param dataset: The desired dataset, either 'arcticdem' or 'rema'.
         Case-instensitive.
     :type datasat: str
-    :param resolution: The desired mosaic resolution to download - must be either '2m',
-        '10m', or '32m' (will also accept 2, 10, and 32 as `int` types)
+    :param resolution: The desired mosaic resolution to download - must be either ``2m``,
+        ``10m``, or ``32m`` (will also accept ``2``, ``10``, and ``32`` as ``int`` types)
     :type resolutions: str | int
     :param version: Desired ArcticDEM or REMA version. Must be a valid version available
-        from the PGC STAC API (e.g. `v3.0` or `v4.1` for ArcticDEM, or `v2.0` for REMA).
+        from the PGC STAC API (e.g. ``v3.0`` or ``v4.1`` for ArcticDEM, or ``v2.0`` for REMA).
     :type version: str
     :param bounds: Clip to bounds [xmin, ymin, xmax, ymax], in EPSG:3413 (ArcticDEM) or
         EPSG:3031 (REMA). Will accept a shapely geometry to extract bounds from.
@@ -344,8 +352,8 @@ def _get_index_fpath(
     dataset: Literal["arcticdem", "rema"],
     version: Literal["v2.0", "v3.0", "v4.0"],
 ):
-    """Given `arcticdem` or `rema`, gets the filepath of the package dataset using the
-    `importlib` library. ARCTICDEM and REMA global variables necessary.
+    """Given ``arcticdem`` or ``rema``, gets the filepath of the package dataset using the
+    ``importlib`` library. ARCTICDEM and REMA global variables necessary.
     """
 
     # get dataset version

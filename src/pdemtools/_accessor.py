@@ -59,6 +59,14 @@ LIST_REQUIRING_SECOND_ORDER = [
 
 @xr.register_dataarray_accessor("pdt")
 class DemAccessor:
+    """This class provides ``rioaxarray``-compatible ``DataArray`` objects with access
+    to custom functions and methods.
+
+    Functions are accessible via the ``pdt`` accessor: for instance, if you have a DEM
+    loaded as the variable ``dem``, you are able to access the ``terrain`` function via
+    ``dem.pdt.terrain()``.
+    """
+
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
         self._center = None
@@ -69,7 +77,7 @@ class DemAccessor:
 
         :param geoid: A suitable geoid, as a (rio)xarray dataarray
 
-        :returns: geoid-correct (rio)xarray dataarray
+        :returns: geoid-corrected (rio)xarray dataarray
         :rtype: DataArray"""
 
         if not geospatial_match(self._obj, geoid):
@@ -90,6 +98,8 @@ class DemAccessor:
         Coregisters the scene against a reference DEM based on the Nuth and Kääb (2011)
         method, as implemented by the PGC.
 
+        Original code available here: https://github.com/PolarGeospatialCenter/setsm_postprocessing_python/blob/master/lib/scenes2strips.py
+
         :param reference: reference DEM DataArray of same extent and resolution.
         :param stable_mask: Mask dataarray where 1 = stable region to be used for
             coregistration. If none, coregisters based on the entire scene.
@@ -103,11 +113,8 @@ class DemAccessor:
             threshold, defaults to -0.001.
         :param max_iterations: max iterations to attempt, defaults to 5.
 
-        :returns coreg:
-        :returns trans: the [dz,dx,dy] transformation parameter
-        :returns trans_err: 1-sigma errors of translation
-        :returns rms: root mean square of the transformation in the vertical from the
-            residuals
+        :returns: coregistered (rio)xarray dataarray
+        :rtype: DataArray
         """
 
         check_match = geospatial_match(self._obj, reference, return_info=True)
@@ -160,7 +167,7 @@ class DemAccessor:
         hillshade_z_factor: Optional[float] = 2.0,
     ) -> DataArray | Dataset:
         """
-        Returns terrain attributes as an xarray DataSet
+        Returns terrain attributes as an xarray DataSet.
 
         :param attribute: The attribute(s) to calculate, as a string or list.
         :param method: Method to calculate geomorphometric parameters: "Florisnky" or
@@ -174,6 +181,9 @@ class DemAccessor:
         :param hillshade_azimuth: Hillshade azimuth in degrees (0-360°) clockwise from
             North, defaults to 315
         :param hillshade_z_factor: Vertical exaggeration factor, defaults to 1
+
+        :returns: selected terrain attributes as a (rio)xarray DataSet
+        :rtype: DataSet
         """
 
         # Validate attribute(s), resolution, and method
@@ -451,8 +461,8 @@ class DemAccessor:
             to be considered for sea level assessment, in km^2, defaults to 1
         :type candidate_area_thresh_km2: float
 
-        :returns: Mask as xarray DataArray. Land/ice is True and ocean is False
-        :rtype: DataArray
+        :returns: Estimated sea level
+        :rtype: float
         """
 
         resolution = get_resolution(self._obj)

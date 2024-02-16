@@ -1,5 +1,6 @@
-"""Functions for extracting relevant datasets (geoids, masks, etc) resampled to match
-a rioxarray object."""
+"""This module contains functions necessary extracting relevant datasets for DEM
+processing (geoids, masks, etc), resampled to match the DEM xarray object.
+"""
 
 import os
 

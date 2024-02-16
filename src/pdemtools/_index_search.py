@@ -1,4 +1,4 @@
-"""
+""".. module:: pdemtools
 Function to search ArcticDEM and REMA index files.
 """
 
@@ -21,36 +21,33 @@ def search(
     min_aoi_frac: Optional[float] = None,
     dates: Optional[str | tuple] = None,
     months: Optional[int | tuple] = None,
-    years: Optional[int] = None,
+    years: Optional[int | tuple] = None,
     baseline_max_hours: Optional[int] = None,
     sensors: Optional[str | tuple] = None,
     is_xtrack: Optional[bool] = None,
     accuracy: Optional[float | tuple] = None,
 ):
-    """
-    A function to efficiently search the ArcticDEM and REMA strip index files provided
-    by the Polar Geospatial Center. This must be downloaded seperately and a filepath
-    provided. The function will accept a shapefile, but it is highly recommended that
-    the index is a `.parquet` format.
+    """Efficiently search the ArcticDEM and REMA strip index files provided by the
+    Polar Geospatial Center.
 
     :param index_fpath: Filepath to a local copy of the ArcticDEM or REMA strip index
         file, available from the Polar Geospatial Center. For speed, it is tecommended
         that the index is `.parquet` format.
     :type index_fpath: str
     :param bounds: Filter to strips that intersect with bounds [xmin, ymin, xmax, ymax],
-        in EPSG:3413 (ArcticDEM) or EPSG:3031 (REMA). Accepts a tuple or a shapely
-        geometry to extract bounds from.
+        in EPSG:3413 (ArcticDEM) or EPSG:3031 (REMA). Accepts a tuple or a
+        ``shapely.Polygon`` geometry to extract bounds from.
     :type bounds: tuple | Polygon, optional
     :param min_aoi_frac: Filter to strips than cover more the defined fraction of the
         area of interest (defined by the `bounds` variable). Must be between 0 and 1,
-        and `bounds` must be defined.
+        and ``bounds`` must be defined.
     :type min_aoi_frac: float, optional
     :param dates: Filter strips to a date range. Dates can be provided as a tuple of two
         strings, or a single string with a `/` seperator. Date strings must be
         interpetable by the pandas.to_datetime() tool.
     :type dates: str | tuple, optional
     :param months: Filter strips to only certain months. Provide as a tuple of integers
-        (e.g. for June, July, August strips only, set `months = [6,7,8]`).
+        (e.g. for June, July, August strips only, set ``months = [6,7,8]``).
     :type months: tuple, optional
     :param years: Filter strips to only certain yeara. Provide as a tuple of integers
         (e.g. for 2011 and 2021  only, set `years = [2011,2021]`).
@@ -72,7 +69,7 @@ def search(
     :type accuracy: float | tuple, optional
 
     :returns: Strip index filtered to desired variables.
-    :retype: GeoDataFrame
+    :rtype: GeoDataFrame
     """
 
     # Determine whether index is for ArcticDEM or REMA (strangely, quite hard to do -
@@ -84,7 +81,7 @@ def search(
         epsg = 3031
     else:
         raise ValueError(
-            "Cannot determine whether index file is ArcticDEM or REMA (please include 'arcticdem' or 'rema' in filename)"
+            "Cannot determine whether index file is ArcticDEM or REMA (please ensure 'arcticdem' or 'rema' is in filename)"
         )
 
     # Sanitise inputs first (prior to loading, to catch mistakes before time is wasted
