@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pDEMtools &mdash; pdemtools 0.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ec806d2c"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Install" href="getting_started/install.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            pdemtools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/supplementary_datasets.html">Supplementary datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/cite.html">Cite</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/mosaic_and_terrain.html">Download mosaic and calculate terrain parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/strip_search_and_dem_difference.html">Strip search and coregistraion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/get_icebergs.html">Iceberg detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/search.html"><cite>pdemtools.search</cite> function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/load.html"><cite>pdemtools.load</cite> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/data.html"><cite>pdemtools.data</cite></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/pdt_accessor.html">xarray <cite>.pdt</cite> accessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="appendix/version_updates.html">Version updates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/references.html">Refererences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">pdemtools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pDEMtools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pdemtools">
+<h1>pDEMtools<a class="headerlink" href="#pdemtools" title="Link to this heading"></a></h1>
+<p><strong>Conveniently search, download, and preprocess ArcticDEM and REMA products.</strong></p>
+<a class="reference internal image-reference" href="_images/arcticdem_header.jpg"><img alt="A hillshaded DEM of Helheim Glacier" src="_images/arcticdem_header.jpg" style="width: 800px;" /></a>
+<p>pDEMtool aims to provide a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter _et al._  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat _et al._ 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).</p>
+<p>The primary aim of pDEMtools is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the <code class="docutils literal notranslate"><span class="pre">search()</span></code> function and <code class="docutils literal notranslate"><span class="pre">load</span></code> module:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">search()</span></code>: This function aims to replicate the kind of convenient catalogue searching available when querying a dynamic STAC catalogue (e.g. <code class="docutils literal notranslate"><span class="pre">pystac_client</span></code>), allowing users to easily find relevant ArcticDEM and REMA strips for their areas of interest.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load</span></code>: This module provides simple one-line functions to preview and download strips and mosaics from the relevant AWS bucket to an <code class="docutils literal notranslate"><span class="pre">xarray</span></code> Dataset.</p></li>
+</ul>
+</div></blockquote>
+<p>pDEMtools does not aim to provide a comprehensive DEM analysis environment (there are other excellent tools for that, such as <a class="reference external" href="https://github.com/GlacioHack/xdem">xdem</a> for advanced coregistration or <a class="reference external" href="https://github.com/r-barnes/richdem">richdem</a> for flow analysis), but some simple (pre)processing functions are provided. It is hoped that they are <em>specific</em> to the sort of uses that ArcticDEM and REMA users might want (e.g. a focus on ice sheet and cryosphere work), as well as the particular <em>strengths</em> of ArcticDEM and REMA datasets (high-resolution and multitemporal). Tools include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Identifying/masking sea level and icebergs.</p></li>
+<li><p>Terrain attribute derivation (hillshade, slope, aspect, various curvatures) using a 5x5 polynomial fit suited for high-resolution data.</p></li>
+<li><p>Quick geoid correction using BedMachine source data.</p></li>
+<li><p>Simple coregistration for quick elevation change analysis.</p></li>
+</ul>
+</div></blockquote>
+<p>Rather than introducing custom classes, pDEMtools will always try and return DEM data as an <a class="reference external" href="https://docs.xarray.dev/en/stable/">xarray</a> DataArray with geospatial metadata via the <a class="reference external" href="https://corteva.github.io/rioxarray/stable/">rioxarray</a> extension. The aim is to allow the user to quickly move beyond pDEMtools into their own analysis in whatever format they desire, be that <cite>xarray</cite> datasets, <cite>numpy</cite> or <cite>dask</cite> arrays, or exporting to geospatial file formats for analysis beyond Python.</p>
+<p><strong>Contact me:</strong> Tom Chudley, <a class="reference external" href="mailto:thomas&#46;r&#46;chudley&#37;&#52;&#48;durham&#46;ac&#46;uk">thomas<span>&#46;</span>r<span>&#46;</span>chudley<span>&#64;</span>durham<span>&#46;</span>ac<span>&#46;</span>uk</a></p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/install.html">Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/install.html#installation-instructions">Installation Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/install.html#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/supplementary_datasets.html">Supplementary datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/supplementary_datasets.html#arcticdem-rema-strip-index">ArcticDEM/REMA strip index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/supplementary_datasets.html#bedmachine-v5">BedMachine v5</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/cite.html">Cite</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/mosaic_and_terrain.html">Download mosaic and calculate terrain parameters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/mosaic_and_terrain.html#Load-mosiac">Load mosiac</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/mosaic_and_terrain.html#Postprocessing">Postprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/strip_search_and_dem_difference.html">Strip search and coregistraion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/strip_search_and_dem_difference.html#Searching-for-strips">Searching for strips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/strip_search_and_dem_difference.html#Downloading-the-strips">Downloading the strips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/strip_search_and_dem_difference.html#Coregistration-and-DEM-differencing">Coregistration and DEM differencing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/get_icebergs.html">Iceberg detection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/get_icebergs.html#Finding-a-strip">Finding a strip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/get_icebergs.html#Geoid-correction">Geoid correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/get_icebergs.html#Sea-level-filtering">Sea level filtering</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/search.html"><cite>pdemtools.search</cite> function</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/search.html#pdemtools.search"><code class="docutils literal notranslate"><span class="pre">search()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/load.html"><cite>pdemtools.load</cite> module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/load.html#pdemtools.load.from_fpath"><code class="docutils literal notranslate"><span class="pre">from_fpath()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/load.html#pdemtools.load.from_id"><code class="docutils literal notranslate"><span class="pre">from_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/load.html#pdemtools.load.from_search"><code class="docutils literal notranslate"><span class="pre">from_search()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/load.html#pdemtools.load.mosaic"><code class="docutils literal notranslate"><span class="pre">mosaic()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/load.html#pdemtools.load.preview"><code class="docutils literal notranslate"><span class="pre">preview()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/data.html"><cite>pdemtools.data</cite></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#pdemtools.data.bedrock_mask_from_bedmachine"><code class="docutils literal notranslate"><span class="pre">bedrock_mask_from_bedmachine()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#pdemtools.data.bedrock_mask_from_vector"><code class="docutils literal notranslate"><span class="pre">bedrock_mask_from_vector()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#pdemtools.data.geoid_from_bedmachine"><code class="docutils literal notranslate"><span class="pre">geoid_from_bedmachine()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#pdemtools.data.geoid_from_raster"><code class="docutils literal notranslate"><span class="pre">geoid_from_raster()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/pdt_accessor.html">xarray <cite>.pdt</cite> accessor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/pdt_accessor.html#pdemtools.DemAccessor"><code class="docutils literal notranslate"><span class="pre">DemAccessor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/pdt_accessor.html#pdemtools.DemAccessor.coregister"><code class="docutils literal notranslate"><span class="pre">DemAccessor.coregister()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pdt_accessor.html#pdemtools.DemAccessor.geoid_correct"><code class="docutils literal notranslate"><span class="pre">DemAccessor.geoid_correct()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pdt_accessor.html#pdemtools.DemAccessor.get_sea_level"><code class="docutils literal notranslate"><span class="pre">DemAccessor.get_sea_level()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pdt_accessor.html#pdemtools.DemAccessor.mask_icebergs"><code class="docutils literal notranslate"><span class="pre">DemAccessor.mask_icebergs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pdt_accessor.html#pdemtools.DemAccessor.mask_ocean"><code class="docutils literal notranslate"><span class="pre">DemAccessor.mask_ocean()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pdt_accessor.html#pdemtools.DemAccessor.terrain"><code class="docutils literal notranslate"><span class="pre">DemAccessor.terrain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="appendix/version_updates.html">Version updates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/references.html">Refererences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started/install.html" class="btn btn-neutral float-right" title="Install" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tom Chudley.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

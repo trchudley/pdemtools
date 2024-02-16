@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pdemtools.data &mdash; pdemtools 0.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ec806d2c"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xarray .pdt accessor" href="pdt_accessor.html" />
+    <link rel="prev" title="pdemtools.load module" href="load.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pdemtools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/supplementary_datasets.html">Supplementary datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/cite.html">Cite</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/mosaic_and_terrain.html">Download mosaic and calculate terrain parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/strip_search_and_dem_difference.html">Strip search and coregistraion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/get_icebergs.html">Iceberg detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="search.html"><cite>pdemtools.search</cite> function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="load.html"><cite>pdemtools.load</cite> module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><cite>pdemtools.data</cite></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pdemtools.data.bedrock_mask_from_bedmachine"><code class="docutils literal notranslate"><span class="pre">bedrock_mask_from_bedmachine()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pdemtools.data.bedrock_mask_from_vector"><code class="docutils literal notranslate"><span class="pre">bedrock_mask_from_vector()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pdemtools.data.geoid_from_bedmachine"><code class="docutils literal notranslate"><span class="pre">geoid_from_bedmachine()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pdemtools.data.geoid_from_raster"><code class="docutils literal notranslate"><span class="pre">geoid_from_raster()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pdt_accessor.html">xarray <cite>.pdt</cite> accessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/version_updates.html">Version updates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/references.html">Refererences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pdemtools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><cite>pdemtools.data</cite></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pdemtools.data">
+<span id="pdemtools-data"></span><h1><cite>pdemtools.data</cite><a class="headerlink" href="#module-pdemtools.data" title="Link to this heading"></a></h1>
+<p>This module contains functions necessary extracting relevant datasets for DEM
+processing (geoids, masks, etc), resampled to match the DEM xarray object.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pdemtools.data.bedrock_mask_from_bedmachine">
+<span class="sig-prename descclassname"><span class="pre">pdemtools.data.</span></span><span class="sig-name descname"><span class="pre">bedrock_mask_from_bedmachine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bm_fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_rxd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataArray</span></span></span><a class="headerlink" href="#pdemtools.data.bedrock_mask_from_bedmachine" title="Link to this definition"></a></dt>
+<dd><p>Construct boolean bedrock mask from bedmachine and a given target rioxarray
+dataset. Returns mask where bedrock values are 1 and outside are 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bm_fpath</strong> (<em>str</em>) – Filepath to BedMachine dataset, defaults to None</p></li>
+<li><p><strong>target_rxd</strong> (<em>DataArray</em>) – (rio)xarray dataset that BedMachine will be resampled to match</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bedrock mask for the target_rxd region as a (rio)xarray DataArray</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pdemtools.data.bedrock_mask_from_vector">
+<span class="sig-prename descclassname"><span class="pre">pdemtools.data.</span></span><span class="sig-name descname"><span class="pre">bedrock_mask_from_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector_fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_rxd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataArray</span></span></span><a class="headerlink" href="#pdemtools.data.bedrock_mask_from_vector" title="Link to this definition"></a></dt>
+<dd><p>Construct boolean bedrock mask from a Geopandas-readable vector file (e.g.
+shapefile, geopackage, etc.) of bedrock areas and a given target rioxarray dataset.
+Returns mask where bedrock values are 1 and outside are 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vector_fpath</strong> (<em>str</em>) – file path to a Geopandas-readable vector file (e.g.
+shapefile, geopackage, etc.) of bedrock areas.</p></li>
+<li><p><strong>target_rxd</strong> (<em>DataArray</em>) – (rio)xarray dataset that BedMachine will be resampled to match</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bedrock mask for the target_rxd region as a (rio)xarray DataArray</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pdemtools.data.geoid_from_bedmachine">
+<span class="sig-prename descclassname"><span class="pre">pdemtools.data.</span></span><span class="sig-name descname"><span class="pre">geoid_from_bedmachine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bm_fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_rxd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataArray</span></span></span><a class="headerlink" href="#pdemtools.data.geoid_from_bedmachine" title="Link to this definition"></a></dt>
+<dd><p>Extracts the BedMachine geoid (EIGEN-6C4), bilinearly resampled to match the
+target dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bm_fpath</strong> (<em>str</em>) – Filepath to BedMachine dataset, defaults to None</p></li>
+<li><p><strong>target_rxd</strong> (<em>DataArray</em>) – (rio)xarray dataset that BedMachine will be resampled to match</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>geoid for the target_rxd region as an xarray DataArray</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pdemtools.data.geoid_from_raster">
+<span class="sig-prename descclassname"><span class="pre">pdemtools.data.</span></span><span class="sig-name descname"><span class="pre">geoid_from_raster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_rxd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataArray</span></span></span><a class="headerlink" href="#pdemtools.data.geoid_from_raster" title="Link to this definition"></a></dt>
+<dd><p>Extracts an arbritary geoid stored as a raster dataset, bilinearly resampled to
+match the target dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – Filepath to geoid raster</p></li>
+<li><p><strong>target_rxd</strong> (<em>DataArray</em>) – (rio)xarray dataset/array that the raster will be resampled to
+match. Optional, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>geoid for the target_rxd region as an xarray DataArray</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="load.html" class="btn btn-neutral float-left" title="pdemtools.load module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pdt_accessor.html" class="btn btn-neutral float-right" title="xarray .pdt accessor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tom Chudley.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
