@@ -52,15 +52,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/mosaic_and_terrain.html">Download mosaic and calculate terrain parameters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/strip_search_and_dem_difference.html">Strip search and coregistraion</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/get_icebergs.html">Iceberg detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/mosaic_and_terrain.html">Download mosaic and calculate terrain parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/strip_search_and_dem_difference.html">Strip search and coregistraion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/get_icebergs.html">Iceberg detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/batch_processing.html">Batch processing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api/search.html"><cite>pdemtools.search</cite> function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/load.html"><cite>pdemtools.load</cite> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/data.html"><cite>pdemtools.data</cite></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/data.html"><cite>pdemtools.data</cite> module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/pdt_accessor.html">xarray <cite>.pdt</cite> accessor</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix:</span></p>
@@ -98,7 +99,7 @@
 <h1>pDEMtools<a class="headerlink" href="#pdemtools" title="Link to this heading"></a></h1>
 <p><strong>Conveniently search, download, and preprocess ArcticDEM and REMA products.</strong></p>
 <a class="reference internal image-reference" href="_images/arcticdem_header.jpg"><img alt="A hillshaded DEM of Helheim Glacier" src="_images/arcticdem_header.jpg" style="width: 800px;" /></a>
-<p>pDEMtool aims to provide a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter _et al._  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat _et al._ 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).</p>
+<p>pDEMtool aims to provide a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter <em>et al.</em>  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat <em>et al.</em> 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).</p>
 <p>The primary aim of pDEMtools is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the <code class="docutils literal notranslate"><span class="pre">search()</span></code> function and <code class="docutils literal notranslate"><span class="pre">load</span></code> module:</p>
 <blockquote>
 <div><ul class="simple">
@@ -136,23 +137,24 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/mosaic_and_terrain.html">Download mosaic and calculate terrain parameters</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/mosaic_and_terrain.html#Load-mosiac">Load mosiac</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/mosaic_and_terrain.html#Postprocessing">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/mosaic_and_terrain.html">Download mosaic and calculate terrain parameters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/mosaic_and_terrain.html#Load-mosiac">Load mosiac</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/mosaic_and_terrain.html#Postprocessing">Postprocessing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/strip_search_and_dem_difference.html">Strip search and coregistraion</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/strip_search_and_dem_difference.html#Searching-for-strips">Searching for strips</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/strip_search_and_dem_difference.html#Downloading-the-strips">Downloading the strips</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/strip_search_and_dem_difference.html#Coregistration-and-DEM-differencing">Coregistration and DEM differencing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/strip_search_and_dem_difference.html">Strip search and coregistraion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/strip_search_and_dem_difference.html#Searching-for-strips">Searching for strips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/strip_search_and_dem_difference.html#Downloading-the-strips">Downloading the strips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/strip_search_and_dem_difference.html#Coregistration-and-DEM-differencing">Coregistration and DEM differencing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/get_icebergs.html">Iceberg detection</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/get_icebergs.html#Finding-a-strip">Finding a strip</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/get_icebergs.html#Geoid-correction">Geoid correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/get_icebergs.html#Sea-level-filtering">Sea level filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/get_icebergs.html">Iceberg detection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/get_icebergs.html#Finding-a-strip">Finding a strip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/get_icebergs.html#Geoid-correction">Geoid correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/get_icebergs.html#Sea-level-filtering">Sea level filtering</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="examples/batch_processing.html">Batch processing</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -170,7 +172,7 @@
 <li class="toctree-l2"><a class="reference internal" href="api/load.html#pdemtools.load.preview"><code class="docutils literal notranslate"><span class="pre">preview()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="api/data.html"><cite>pdemtools.data</cite></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="api/data.html"><cite>pdemtools.data</cite> module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/data.html#pdemtools.data.bedrock_mask_from_bedmachine"><code class="docutils literal notranslate"><span class="pre">bedrock_mask_from_bedmachine()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/data.html#pdemtools.data.bedrock_mask_from_vector"><code class="docutils literal notranslate"><span class="pre">bedrock_mask_from_vector()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/data.html#pdemtools.data.geoid_from_bedmachine"><code class="docutils literal notranslate"><span class="pre">geoid_from_bedmachine()</span></code></a></li>

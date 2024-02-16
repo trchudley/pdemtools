@@ -12,7 +12,7 @@ pDEMtools
   :width: 800
   :alt: A hillshaded DEM of Helheim Glacier
 
-pDEMtool aims to provide a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter _et al._  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat _et al._ 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
+pDEMtool aims to provide a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter *et al.*  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat *et al.* 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
 
 The primary aim of pDEMtools is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the ``search()`` function and ``load`` module:
 
@@ -34,7 +34,6 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
    :maxdepth: 2
    :caption: Getting Started:
 
-   index
    getting_started/install.md
    getting_started/supplementary_datasets.md
    getting_started/cite.md
@@ -43,17 +42,16 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
    :maxdepth: 2
    :caption: Examples:
 
-   index
-   notebooks/mosaic_and_terrain
-   notebooks/strip_search_and_dem_difference
-   notebooks/get_icebergs
+   examples/mosaic_and_terrain
+   examples/strip_search_and_dem_difference
+   examples/get_icebergs
+   examples/batch_processing.md
 
 .. toctree::
    :maxdepth: 3
    :glob:
    :caption: API reference:
 
-   index
    api/search.rst
    api/load.rst
    api/data.rst
@@ -64,7 +62,6 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
    :glob:
    :caption: Appendix:
 
-   index
    appendix/version_updates.md
    appendix/references.md
    appendix/acknowledgements.md

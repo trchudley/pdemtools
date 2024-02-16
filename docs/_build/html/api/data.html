@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pdemtools.data &mdash; pdemtools 0.6 documentation</title>
+  <title>pdemtools.data module &mdash; pdemtools 0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -53,15 +53,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/mosaic_and_terrain.html">Download mosaic and calculate terrain parameters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/strip_search_and_dem_difference.html">Strip search and coregistraion</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/get_icebergs.html">Iceberg detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/mosaic_and_terrain.html">Download mosaic and calculate terrain parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/strip_search_and_dem_difference.html">Strip search and coregistraion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/get_icebergs.html">Iceberg detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/batch_processing.html">Batch processing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="search.html"><cite>pdemtools.search</cite> function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="load.html"><cite>pdemtools.load</cite> module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#"><cite>pdemtools.data</cite></a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><cite>pdemtools.data</cite> module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#pdemtools.data.bedrock_mask_from_bedmachine"><code class="docutils literal notranslate"><span class="pre">bedrock_mask_from_bedmachine()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pdemtools.data.bedrock_mask_from_vector"><code class="docutils literal notranslate"><span class="pre">bedrock_mask_from_vector()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pdemtools.data.geoid_from_bedmachine"><code class="docutils literal notranslate"><span class="pre">geoid_from_bedmachine()</span></code></a></li>
@@ -91,7 +92,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active"><cite>pdemtools.data</cite></li>
+      <li class="breadcrumb-item active"><cite>pdemtools.data</cite> module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/data.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -102,7 +103,7 @@
            <div itemprop="articleBody">
              
   <section id="module-pdemtools.data">
-<span id="pdemtools-data"></span><h1><cite>pdemtools.data</cite><a class="headerlink" href="#module-pdemtools.data" title="Link to this heading"></a></h1>
+<span id="pdemtools-data-module"></span><h1><cite>pdemtools.data</cite> module<a class="headerlink" href="#module-pdemtools.data" title="Link to this heading"></a></h1>
 <p>This module contains functions necessary extracting relevant datasets for DEM
 processing (geoids, masks, etc), resampled to match the DEM xarray object.</p>
 <dl class="py function">

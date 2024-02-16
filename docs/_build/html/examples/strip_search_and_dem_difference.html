@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strip search and coregistraion &mdash; pdemtools 0.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ec806d2c"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Iceberg detection" href="get_icebergs.html" />
+    <link rel="prev" title="Download mosaic and calculate terrain parameters" href="mosaic_and_terrain.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pdemtools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/supplementary_datasets.html">Supplementary datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/cite.html">Cite</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="mosaic_and_terrain.html">Download mosaic and calculate terrain parameters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Strip search and coregistraion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Searching-for-strips">Searching for strips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Downloading-the-strips">Downloading the strips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Coregistration-and-DEM-differencing">Coregistration and DEM differencing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="get_icebergs.html">Iceberg detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batch_processing.html">Batch processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/search.html"><cite>pdemtools.search</cite> function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/load.html"><cite>pdemtools.load</cite> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/data.html"><cite>pdemtools.data</cite> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/pdt_accessor.html">xarray <cite>.pdt</cite> accessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/version_updates.html">Version updates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/references.html">Refererences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pdemtools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Strip search and coregistraion</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/strip_search_and_dem_difference.nblink.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Strip-search-and-coregistraion">
+<h1>Strip search and coregistraion<a class="headerlink" href="#Strip-search-and-coregistraion" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pdemtools</span> <span class="k">as</span> <span class="nn">pdt</span>
+<br/></pre></div>
+</div>
+</div>
+<p>As well as <code class="docutils literal notranslate"><span class="pre">pdemtools</span></code>, we will also make use of <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> to plot our results in this notebook.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.constrained_layout.use&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.sans-serif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Arial&quot;</span>
+
+<span class="c1"># %matplotlib widget</span>
+<br/></pre></div>
+</div>
+</div>
+<p>We will also need to provide the local location of the ArcticDEM strip index and ArcticDEM bedmachine product:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">index_fpath</span> <span class="o">=</span> <span class="s1">&#39;.../ArcticDEM_Strip_Index_s2s041_gpqt.parquet&#39;</span>
+<span class="n">bm_fpath</span> <span class="o">=</span> <span class="s1">&#39;.../BedMachineGreenland-v5.nc&#39;</span>
+<br/></pre></div>
+</div>
+</div>
+<section id="Searching-for-strips">
+<h2>Searching for strips<a class="headerlink" href="#Searching-for-strips" title="Link to this heading"></a></h2>
+<p>For the example here, let’s example recent surface elevation change across KIV Steenstrups Nordre Bræ (where we know <a class="reference external" href="https://doi.org/10.1038/s41467-023-37764-7">significant change occurred between 2016 and 2021</a>).</p>
+<p>Let’s set an appropriate bounding box (in EPSG:3413 / Polar Stereographic North), and set further filtering choices to limit our options to high-quality, summer scenes that cover at least 70% of the bounding box:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="mi">459000</span><span class="p">,</span> <span class="o">-</span><span class="mi">2539000</span><span class="p">,</span> <span class="mi">473000</span><span class="p">,</span> <span class="o">-</span><span class="mi">2528000</span><span class="p">)</span>
+
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">pdt</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+    <span class="n">index_fpath</span><span class="p">,</span>
+    <span class="n">bounds</span><span class="p">,</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="s1">&#39;20170101/20221231&#39;</span><span class="p">,</span>
+    <span class="n">months</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span>
+    <span class="n">years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2017</span><span class="p">,</span><span class="mi">2021</span><span class="p">],</span>
+    <span class="n">baseline_max_hours</span> <span class="o">=</span> <span class="mi">24</span><span class="p">,</span>
+    <span class="n">sensors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;WV03&#39;</span><span class="p">,</span> <span class="s1">&#39;WV02&#39;</span><span class="p">,</span> <span class="s1">&#39;WV01&#39;</span><span class="p">],</span>
+    <span class="n">accuracy</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">min_aoi_frac</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;acqdate1&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span><span class="si">}</span><span class="s1"> strips found&#39;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+6 strips found
+</pre></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">pdt.search()</span></code> function returns a geopandas geodataframe, which we can visualise as with any other dataframe:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gdf</span><span class="p">[[</span><span class="s1">&#39;dem_id&#39;</span><span class="p">,</span> <span class="s1">&#39;acqdate1&#39;</span><span class="p">,</span> <span class="s1">&#39;acqdate2&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>dem_id</th>
+      <th>acqdate1</th>
+      <th>acqdate2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>175143</th>
+      <td>SETSM_s2s041_WV01_20170607_1020010063D4CE00_10...</td>
+      <td>2017-06-07 16:36:42</td>
+      <td>2017-06-07 16:37:31</td>
+    </tr>
+    <tr>
+      <th>175148</th>
+      <td>SETSM_s2s041_WV01_20170624_1020010060B7D000_10...</td>
+      <td>2017-06-24 16:35:53</td>
+      <td>2017-06-24 16:36:43</td>
+    </tr>
+    <tr>
+      <th>175138</th>
+      <td>SETSM_s2s041_WV03_20170728_104001002E870C00_10...</td>
+      <td>2017-07-28 14:06:24</td>
+      <td>2017-07-28 14:05:24</td>
+    </tr>
+    <tr>
+      <th>175116</th>
+      <td>SETSM_s2s041_WV02_20170829_103001006F1D6400_10...</td>
+      <td>2017-08-29 14:23:03</td>
+      <td>2017-08-29 14:21:43</td>
+    </tr>
+    <tr>
+      <th>175106</th>
+      <td>SETSM_s2s041_WV03_20210715_104001006A09A000_10...</td>
+      <td>2021-07-15 13:56:37</td>
+      <td>2021-07-15 13:55:42</td>
+    </tr>
+    <tr>
+      <th>175144</th>
+      <td>SETSM_s2s041_WV02_20210731_10300100C359CF00_10...</td>
+      <td>2021-07-31 14:10:48</td>
+      <td>2021-07-31 14:09:25</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>There’s still no guarantee that these scenes will be of high quality - so we can make use of the <code class="docutils literal notranslate"><span class="pre">load.preview()</span></code> function to download a 10 m hillshade that will help us quickly asses strip quality:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1"># =================</span>
+<span class="c1"># SCENE TO PREVIEW</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1"># =================</span>
+
+<span class="n">preview</span> <span class="o">=</span> <span class="n">pdt</span><span class="o">.</span><span class="n">load</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span> <span class="n">bounds</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s1">&#39;constrained&#39;</span><span class="p">)</span>
+<span class="n">preview</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys_r&#39;</span><span class="p">,</span> <span class="n">add_colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">gdf</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;tab:red&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">acqdate1</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;2021-07-31&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_strip_search_and_dem_difference_12_1.png" src="../_images/examples_strip_search_and_dem_difference_12_1.png" />
+</div>
+</div>
+<p>By examining the individual strips one-by-one, we can manually identify the optimal scenes for our purpose. Here, I have selected the second and sixth strips (index positions 1 and 5)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selected_scenes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>Let’s save the selected scenes as a geopackage, so we can return to this later:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;example_data&#39;</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;example_data&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gdf_sel</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">selected_scenes</span><span class="p">]</span>
+
+<span class="n">gdf_sel</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="s1">&#39;example_data/scenes.gpkg&#39;</span><span class="p">)</span>
+
+<span class="n">gdf_sel</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>dem_id</th>
+      <th>pairname</th>
+      <th>stripdemid</th>
+      <th>sensor1</th>
+      <th>sensor2</th>
+      <th>catalogid1</th>
+      <th>catalogid2</th>
+      <th>acqdate1</th>
+      <th>acqdate2</th>
+      <th>gsd</th>
+      <th>...</th>
+      <th>avg_expect</th>
+      <th>avg_sunel1</th>
+      <th>avg_sunel2</th>
+      <th>rmse</th>
+      <th>fileurl</th>
+      <th>s3url</th>
+      <th>Shape_Leng</th>
+      <th>Shape_Area</th>
+      <th>geometry</th>
+      <th>dem_baseline_days</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>83476</th>
+      <td>SETSM_s2s041_WV01_20170624_1020010060B7D000_10...</td>
+      <td>WV01_20170624_1020010060B7D000_1020010063B5E200</td>
+      <td>WV01_20170624_1020010060B7D000_1020010063B5E20...</td>
+      <td>WV01</td>
+      <td>WV01</td>
+      <td>1020010060B7D000</td>
+      <td>1020010063B5E200</td>
+      <td>2017-06-24</td>
+      <td>2017-06-24</td>
+      <td>2.0</td>
+      <td>...</td>
+      <td>1.020010</td>
+      <td>42.000000</td>
+      <td>0.0</td>
+      <td>-9999.0</td>
+      <td>https://data.pgc.umn.edu/elev/dem/setsm/Arctic...</td>
+      <td>https://polargeospatialcenter.github.io/stac-b...</td>
+      <td>81506.304404</td>
+      <td>4.458097e+08</td>
+      <td>POLYGON ((459000.000 -2539000.000, 459000.000 ...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>277660</th>
+      <td>SETSM_s2s041_WV02_20210731_10300100C359CF00_10...</td>
+      <td>WV02_20210731_10300100C359CF00_10300100C37C8000</td>
+      <td>WV02_20210731_10300100C359CF00_10300100C37C800...</td>
+      <td>WV02</td>
+      <td>WV02</td>
+      <td>10300100C359CF00</td>
+      <td>10300100C37C8000</td>
+      <td>2021-07-31</td>
+      <td>2021-07-31</td>
+      <td>2.0</td>
+      <td>...</td>
+      <td>0.858702</td>
+      <td>41.629412</td>
+      <td>0.0</td>
+      <td>-9999.0</td>
+      <td>https://data.pgc.umn.edu/elev/dem/setsm/Arctic...</td>
+      <td>https://polargeospatialcenter.github.io/stac-b...</td>
+      <td>224106.736327</td>
+      <td>1.690805e+09</td>
+      <td>POLYGON ((471450.480 -2539000.000, 459000.000 ...</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>2 rows × 35 columns</p>
+</div></div>
+</div>
+</section>
+<section id="Downloading-the-strips">
+<h2>Downloading the strips<a class="headerlink" href="#Downloading-the-strips" title="Link to this heading"></a></h2>
+<p>From the geopandas dataframe, we can extract key information such as the DEM ID and dates:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">date_1</span> <span class="o">=</span> <span class="n">gdf_sel</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">acqdate1</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">dem_id_1</span> <span class="o">=</span> <span class="n">gdf_sel</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">dem_id</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">date_2</span> <span class="o">=</span> <span class="n">gdf_sel</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">acqdate1</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">dem_id_2</span> <span class="o">=</span> <span class="n">gdf_sel</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">dem_id</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<br/></pre></div>
+</div>
+</div>
+<p>But we needn’t do all this just to downlad a strip, as the <code class="docutils literal notranslate"><span class="pre">load.from_search()</span></code> function will accept a dataframe row directly. Let’s make a little function to download and save the data - we can save the dem using the rioxarray accessor function <code class="docutils literal notranslate"><span class="pre">.rio.to_raster()</span></code>:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">download_scene</span><span class="p">(</span><span class="n">gdf_row</span><span class="p">,</span> <span class="n">dem_id</span><span class="p">,</span> <span class="n">output_directory</span><span class="o">=</span><span class="s1">&#39;example_data&#39;</span><span class="p">):</span>
+
+    <span class="n">dem</span> <span class="o">=</span> <span class="n">pdt</span><span class="o">.</span><span class="n">load</span><span class="o">.</span><span class="n">from_search</span><span class="p">(</span><span class="n">gdf_row</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">bitmask</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">dem</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>  <span class="c1"># rioxarray uses lazy evaluation, so we can force the download using the `.compute()` function.</span>
+
+    <span class="n">dem</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">to_raster</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dem_id</span><span class="si">}</span><span class="s1">.tif&#39;</span><span class="p">),</span> <span class="n">compress</span><span class="o">=</span><span class="s1">&#39;ZSTD&#39;</span><span class="p">,</span> <span class="n">predictor</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">zlevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dem</span>
+</pre></div>
+</div>
+</div>
+<p>And now, we can select relevant rows from our geodataframe using the standard Pandax indexing method (<code class="docutils literal notranslate"><span class="pre">DataFrame.iloc[[i]]</span></code>, where <code class="docutils literal notranslate"><span class="pre">i</span></code> is the desired row index)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">dem_1</span> <span class="o">=</span> <span class="n">download_scene</span><span class="p">(</span><span class="n">gdf_sel</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dem_id_1</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">dem_2</span> <span class="o">=</span> <span class="n">download_scene</span><span class="p">(</span><span class="n">gdf_sel</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">dem_id_2</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<p>These are 2 m strips that will take a while to download! However, if you have saved them locally, as we have above, getting them back into the script without downloading is as simple as using the <code class="docutils literal notranslate"><span class="pre">load.from_fpath()</span></code> function:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">dem_1</span> <span class="o">=</span> <span class="n">pdt</span><span class="o">.</span><span class="n">load</span><span class="o">.</span><span class="n">from_fpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;example_data&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dem_id_1</span><span class="si">}</span><span class="s1">.tif&#39;</span><span class="p">),</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">dem_2</span> <span class="o">=</span> <span class="n">pdt</span><span class="o">.</span><span class="n">load</span><span class="o">.</span><span class="n">from_fpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;example_data&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dem_id_2</span><span class="si">}</span><span class="s1">.tif&#39;</span><span class="p">),</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<p>Let’s plot up one of the DEMs, taking advantage of the in-built hillshade generation function:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hillshade_1</span> <span class="o">=</span> <span class="n">dem_1</span><span class="o">.</span><span class="n">pdt</span><span class="o">.</span><span class="n">terrain</span><span class="p">(</span><span class="s1">&#39;hillshade&#39;</span><span class="p">,</span> <span class="n">hillshade_multidirectional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hillshade_z_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s1">&#39;constrained&#39;</span><span class="p">)</span>
+
+<span class="n">dem_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gist_earth&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">cbar_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Elevation [metres above ellipsoid]&#39;</span><span class="p">})</span>
+
+<span class="n">hillshade_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys_r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">add_colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">acqdate1</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;2021-07-31&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_strip_search_and_dem_difference_31_1.png" src="../_images/examples_strip_search_and_dem_difference_31_1.png" />
+</div>
+</div>
+</section>
+<section id="Coregistration-and-DEM-differencing">
+<h2>Coregistration and DEM differencing<a class="headerlink" href="#Coregistration-and-DEM-differencing" title="Link to this heading"></a></h2>
+<p>Rigorous DEM differencing necessitates coregistering scenes. pDEMtools includes a couple functions to make this quick and easy. Only provides one method of coregistration is provided, that of Nuth and Kääb (2011), which accounts for translation errors only. For further options (e.g. rotation correction), it is worth consulting the <a class="reference external" href="https://xdem.readthedocs.io/en/latest/coregistration.html">xdem</a> package.</p>
+<p>First, we must set a region of stable ground to coregister too. Around Antarctica and Greenland, we can base this on the mask included within BedMachine. The <code class="docutils literal notranslate"><span class="pre">data.bedrock_mask_from_bedmachine()</span></code> function makes this easy:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bedrock_mask</span> <span class="o">=</span> <span class="n">pdt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">bedrock_mask_from_bedmachine</span><span class="p">(</span><span class="n">bm_fpath</span><span class="p">,</span> <span class="n">dem_1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Then we can coregister <code class="docutils literal notranslate"><span class="pre">dem_2</span></code> against <code class="docutils literal notranslate"><span class="pre">dem_1</span></code> using the <code class="docutils literal notranslate"><span class="pre">.pdt.coregister()</span></code> function. This is based on code used in the <a class="reference external" href="https://github.com/PolarGeospatialCenter/setsm_postprocessing_python/blob/fd36fd54933ec43f587902a4fdcd1acbd90951c2/lib/scenes2strips.py">PGC postprocessing pipeline</a>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dem_2_coreg</span> <span class="o">=</span> <span class="n">dem_2</span><span class="o">.</span><span class="n">pdt</span><span class="o">.</span><span class="n">coregister</span><span class="p">(</span><span class="n">dem_1</span><span class="p">,</span> <span class="n">bedrock_mask</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Planimetric Correction Iteration 1
+Offset (z,x,y): 0.000, 0.000, 0.000
+RMSE = 5.008943557739258
+Planimetric Correction Iteration 2
+Offset (z,x,y): -0.506, -5.149, -5.180
+RMSE = 4.918196201324463
+Planimetric Correction Iteration 3
+Offset (z,x,y): -0.506, -10.298, -10.359
+RMSE = 4.918196201324463
+RMSE step in this iteration (0.00000) is above threshold (-0.001), stopping and returning values of prior iteration
+Final offset (z,x,y): -0.506, -5.149, -5.180
+Final RMSE = 4.918196201324463
+Translating: -0.51 X, -5.15 Y, -5.18 Z
+Translating in Z direction
+Translating in XY direction.
+</pre></div></div>
+</div>
+<p>Sometimes, if one of the DEMs is smaller than the clip region, this can fail. If this is the case, try padding the DEMs with NaN values to the full AOI, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dem</span> <span class="o">=</span> <span class="n">dem</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">pad_box</span><span class="p">(</span><span class="o">*</span><span class="n">bounds</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s compare and plot:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dz_coreg</span> <span class="o">=</span> <span class="p">(</span><span class="n">dem_2_coreg</span> <span class="o">-</span> <span class="n">dem_1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s1">&#39;constrained&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mf">4.7</span><span class="p">))</span>
+
+<span class="n">vrange</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">dz_coreg</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;coolwarm&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="n">vrange</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vrange</span><span class="p">,</span> <span class="n">cbar_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;ΔZ [m]&#39;</span><span class="p">})</span>
+<span class="n">hillshade_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys_r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">add_colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">gdf_sel</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">acqdate1</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> - </span><span class="si">{</span><span class="n">gdf_sel</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">acqdate1</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;../images/example_dem_difference.jpg&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_strip_search_and_dem_difference_39_0.png" src="../_images/examples_strip_search_and_dem_difference_39_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mosaic_and_terrain.html" class="btn btn-neutral float-left" title="Download mosaic and calculate terrain parameters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="get_icebergs.html" class="btn btn-neutral float-right" title="Iceberg detection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tom Chudley.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,5 +1,5 @@
-`pdemtools.data`
-================
+`pdemtools.data` module
+=======================
 
 
 .. automodule:: pdemtools.data

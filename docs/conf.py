@@ -39,6 +39,7 @@ source_suffix = {
 import os, sys
 
 sys.path.insert(0, os.path.abspath("../src"))
+sys.path.insert(0, os.path.abspath("../src/pdemtools"))
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

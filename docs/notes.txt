@@ -5,6 +5,12 @@ make html
 
 In a pinch, 'make clean' might fix things.
 
+When you're happy, push to git (incl git add . if you've got new files!)
+
+Go to readthedocs and create a new build
+
+To think about:
+ - Automatic versioning?
 
 
 Pages:
