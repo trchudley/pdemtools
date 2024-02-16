@@ -6,10 +6,17 @@
 pDEMtools
 =========
 
+.. .. image:: _static/pdemtools_logo_1600px.png
+..    :align: center
+..    :alt: pDEMtools logo
+..    :width: 1600
+..    :height: 349
+
 **Conveniently search, download, and preprocess ArcticDEM and REMA products.**
 
 .. image:: _static/arcticdem_header.jpg
   :width: 800
+  :align: center
   :alt: A hillshaded DEM of Helheim Glacier
 
 pDEMtool aims to provide a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter *et al.*  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat *et al.* 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
