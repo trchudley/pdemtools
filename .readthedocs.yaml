@@ -32,7 +32,7 @@ formats:
 python:
   install:
     - method: pip
-      path: ./..
+      path: .
   #  setup_py_install: true
 
 conda:
