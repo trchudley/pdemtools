@@ -4,8 +4,10 @@ channels:
   - defaults
 dependencies:
   - python=>3.10
-  - rioxarray 
+  - rioxarray
+  - rasterio
   - geopandas 
+  - pandas
   - opencv 
   - scipy 
   - numba 
