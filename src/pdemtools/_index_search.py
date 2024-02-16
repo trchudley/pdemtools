@@ -1,5 +1,4 @@
-""".. module:: pdemtools
-Function to search ArcticDEM and REMA index files.
+"""Function to search ArcticDEM and REMA index files.
 """
 
 import os

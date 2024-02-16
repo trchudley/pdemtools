@@ -25,7 +25,7 @@ extensions = [
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 
 source_suffix = {
     ".rst": "restructuredtext",
@@ -38,6 +38,7 @@ source_suffix = {
 # Add path to pdemtools
 import os, sys
 
+sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("../src"))
 sys.path.insert(0, os.path.abspath("../src/pdemtools"))
 

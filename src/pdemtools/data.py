@@ -2,17 +2,19 @@
 processing (geoids, masks, etc), resampled to match the DEM xarray object.
 """
 
-import os
-
 import rioxarray as rxr
 import geopandas as gpd
 
 from shapely.geometry import box
-from shapely.geometry.polygon import Polygon
+
 from rasterio.enums import Resampling
 from xarray import DataArray
+from geopandas.geodataframe import GeoDataFrame
 
 from ._utils import clip
+
+# import os
+# from shapely.geometry.polygon import Polygon
 
 
 def geoid_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataArray:
@@ -59,14 +61,16 @@ def geoid_from_raster(fpath: str, target_rxd: DataArray = None) -> DataArray:
     return geoid.squeeze()
 
 
-def bedrock_mask_from_vector(vector_fpath: str, target_rxd: DataArray) -> DataArray:
-    """Construct boolean bedrock mask from a Geopandas-readable vector file (e.g.
-    shapefile, geopackage, etc.) of bedrock areas and a given target rioxarray dataset.
-    Returns mask where bedrock values are 1 and outside are 0.
+def bedrock_mask_from_vector(
+    vector: str | GeoDataFrame, target_rxd: DataArray
+) -> DataArray:
+    """Construct boolean bedrock mask from a Geopandas vector file of bedrock areas and
+    a given target rioxarray dataset. Returns mask where bedrock values are 1 and
+    outside are 0.
 
-    :param vector_fpath: file path to a Geopandas-readable vector file (e.g.
-        shapefile, geopackage, etc.) of bedrock areas.
-    :type vector_fpath: str
+    :param vector: either a GeoPandas GeoDataFrame of bedrock areas, or a filepath to
+        a Geopandas-readable vector file (e.g. shapefile, geopackage, etc.).
+    :type vector_fpath: str | GeoDataFrame
     :param target_rxd: (rio)xarray dataset that BedMachine will be resampled to match
     :type target_rxd: DataArray
 
@@ -74,7 +78,14 @@ def bedrock_mask_from_vector(vector_fpath: str, target_rxd: DataArray) -> DataAr
     :rtype: DataArray
     """
 
-    gdf_clip = gpd.read_file(vector_fpath)
+    if type(vector) == str:
+        gdf_clip = gpd.read_file(vector)
+    elif type(vector) == GeoDataFrame:
+        gdf_clip = vector
+    else:
+        raise ValueError(
+            "Input `vector` must be either a filepath string or GeoPandas GeoDataFrame"
+        )
     target_rxd = target_rxd.rio.write_nodata(-9999)  # Enforce -9999 as nodata value
     target_clip = target_rxd.rio.clip(gdf_clip.geometry.values, drop=False)
     return (target_clip.where(target_clip != -9999) * 0 + 1).fillna(0).squeeze()
