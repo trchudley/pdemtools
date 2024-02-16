@@ -3,3 +3,14 @@ myst-parser
 nbsphinx
 nbsphinx-link
 sphinx-rtd-theme
+rioxarray
+rasterio
+geopandas
+pandas
+shapely
+numpy
+opencv-python
+GDAL
+scipy
+numba
+pyarrow
