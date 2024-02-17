@@ -1,3 +1,38 @@
 [build-system]
-requires = ["setuptools"]
+requires = [ "setuptools>=61.2",]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdemtools"
+dynamic = ["version"]
+description = "Conveniently search, download, and preprocess ArcticDEM and REMA products."
+keywords = [ "geospatial", "elevation", "arcticdem", "rema", "dem",]
+classifiers = [ "Intended Audience :: Science/Research", "Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Topic :: Scientific/Engineering", "Topic :: Scientific/Engineering :: GIS", "Topic :: Scientific/Engineering :: Image Processing",]
+requires-python = ">=3.9"
+dependencies = ["rioxarray", "rasterio", "geopandas", "pandas", "shapely", "numpy", "GDAL", "opencv-python", "scipy", "numba", "pyarrow",]  # GDAL
+
+[[project.authors]]
+name = "Tom Chudley"
+email = "thomas.r.chudley@durham.ac.uk"
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.license]
+text = "MIT"
+
+[project.urls]
+Homepage = "https://github.com/trchudley/pdemtools"
+Documentation = "https://pdemtools.readthedocs.io/en/latest/"
+Repository = "https://github.com/trchudley/pdemtools"
+Issues = "https://github.com/trchudley/pdemtools/issues"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"pdemtools.mosaic_index" = [ "*.gpkg",]

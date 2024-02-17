@@ -47,7 +47,7 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
 
 .. toctree::
    :maxdepth: 2
-   :caption: Examples:
+   :caption: Tutorials:
 
    examples/mosaic_and_terrain
    examples/strip_search_and_dem_difference
