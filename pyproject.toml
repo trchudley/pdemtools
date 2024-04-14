@@ -36,3 +36,4 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "pdemtools.mosaic_index" = [ "*.gpkg",]
+"pdemtools.test_data" = [ "*.parquet",]
