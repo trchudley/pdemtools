@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up micromamba
+      - name: Set up mamba environment and dependencies
         uses: mamba-org/setup-micromamba@v1
         with:
           micromamba-version: latest
@@ -29,6 +29,15 @@ jobs:
           cache-environment: true
           post-cleanup: all
         
+    - name: Install EGL mesa for opencv functionality
+      shell: micromamba-shell {0}
+      run: |
+        sudo apt-get update -y -qq
+        sudo apt-get install -y -qq libegl1-mesa libegl1-mesa-dev        
+    - name: Check if EGL library exists
+      run: ldconfig -p | grep EGL
+
+        
       - name: Install pdemtools
         shell: micromamba-shell {0}
         run: |
@@ -37,13 +46,11 @@ jobs:
           cd $GITHUB_WORKSPACE
           pip install .
 
-
       - name: Test with pytest
         shell: micromamba-shell {0}
         run: |
             coverage run -m pytest  -v -s  
         
-
       - name: Generate pytest coverage report
         shell: micromamba-shell {0}
         run: |
