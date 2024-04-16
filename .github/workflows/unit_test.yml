@@ -3,39 +3,31 @@
 # https://github.com/mamba-org/setup-micromamba
 
 name: Run Unit Tests
-
-on: [push]
-
+on:
+  - push
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                python-version: ["3.10"]
-            
-    steps:
-     - uses: actions/checkout@v3  
-
-     - uses: mamba-org/setup-micromamba@v1
-       with:
-            micromamba-version: '1.5.6-0' # any version from https://github.com/mamba-org/micromamba-releases
-            environment-file: environment.yml
-            init-shell: >-
-                bash
-                powershell
-            cache-environment: true
-            post-cleanup: 'all'
-    
-     - name: Run pytest
-       run: pytest
-        
-      - name: Test with pytest  
-        run: |  
-          coverage run -m pytest  -v -s  
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.10"
+  steps:
+    - uses: actions/checkout@v3
+    - uses: mamba-org/setup-micromamba@v1
+      with:
+        micromamba-version: 1.5.6-0
+        environment-file: environment.yml
+        init-shell: bash powershell
+        cache-environment: true
+        post-cleanup: all
+    - name: Run pytest
+      run: pytest
+    - name: Test with pytest
+      run: |
+        coverage run -m pytest  -v -s  
         shell: micromamba-shell {0}
-
-      - name: Generate pytest coverage report  
-        run: |  
-          coverage report -m
+    - name: Generate pytest coverage report
+      run: |
+        coverage report -m
         shell: micromamba-shell {0}
-
