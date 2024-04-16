@@ -19,14 +19,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
         with:
-          micromamba-version: 1.5.6-0
+          micromamba-version: latest
           environment-file: environment.yml
+          create-args: pytest pytest-cov
           init-shell: bash powershell
           cache-environment: true
           post-cleanup: all
-
-      - name: Run pytest
-        run: pytest
 
       - name: Test with pytest
         run: |
