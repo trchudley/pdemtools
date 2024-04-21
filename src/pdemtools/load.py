@@ -52,7 +52,7 @@ def from_fpath(
         EPSG:3031 (REMA). Will accept a shapely geometry to extract bounds from.
         Defaults to None
     :type bounds: tuple | Polygon, optional
-    :param mask_fpath: Path to *_bitmask.tif file used to mask the DEM, defaults to None
+    :param mask_fpath: Path to _bitmask.tif file used to mask the DEM, defaults to None
     :type mask_fpath: str, optional
 
     :returns: xarray DataArray of DEM strip
