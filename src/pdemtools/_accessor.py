@@ -167,7 +167,26 @@ class DemAccessor:
         hillshade_z_factor: Optional[float] = 2.0,
     ) -> DataArray | Dataset:
         """
-        Returns terrain attributes as an xarray DataSet.
+        Returns terrain attributes as an xarray DataSet. Available attributes are as
+        follows:
+
+         - Slope
+         - Aspect
+         - Hillshade
+         - Horizontal curvature
+         - Vertical curvature
+         - Mean curvature
+         - Gaussian curvature
+         - Unsphericity curvature
+         - Minimal curvature
+         - Maximal curvature
+
+        By default, computation of partial derivatives for geomorphometric variable
+        calculation is performed following Florinsky (2009), who calculate the third-
+        order partial derivative from a 5 x 5 window, which may be more appropriate
+        for high-resolution DEMs with some amount of noise. The `method` parameter
+        allows for the selection of a more traditional method using a second-order
+        derivative from a 3 x 3 window, as outlined by Zevenbergen and Throrne (1987).
 
         :param attribute: The attribute(s) to calculate, as a string or list.
         :param method: Method to calculate geomorphometric parameters: "Florisnky" or
@@ -496,9 +515,10 @@ class DemAccessor:
         return_mask: Optional[bool] = False,
         connectivity: Literal[4, 8] = 4,
     ) -> DataArray:
-        """After masking the ocean, icebergs will remain. This function gives you the
-        opportunity to mask them as well by identifying the size of connected groups of
-        pixels and masking above/below a threshold.
+        """After masking the ocean using the `mask_ocean()` function, icebergs will
+        remain. This function gives you the opportunity to mask them as well by
+        identifying the size of connected groups of pixels and masking above/below a
+        threshold.
 
         :param area_thresh_m2: Size threshold between icebergs and terrestrial ice/land, in
             m2. Defaults to 1e6 m2 (1 km2)

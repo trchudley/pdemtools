@@ -1,22 +1,28 @@
 # pDEMtools
 
-**_Conveniently search, download, and preprocess ArcticDEM and REMA products_**
+__Conveniently search, download, and preprocess ArcticDEM and REMA products__
+
+[![Documentation Status](https://readthedocs.org/projects/pdemtools/badge/?version=latest)](https://pdemtools.readthedocs.io/en/latest/?badge=latest) [![Unit Tests](https://github.com/trchudley/pdemtools/actions/workflows/unit_test.yml/badge.svg)](https://github.com/trchudley/pdemtools/actions/workflows/unit_test.yml)
 
 ![An ArcticDEM hillshade of the calving front of Helheim Glacier, Greenland](./images/arcticdem_header.jpg "An ArcticDEM hillshade of the calving front of Helheim Glacier, Greenland")
 
-pDEMtool aims to provide a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter _et al._  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat _et al._ 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
+pDEMtool provides a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter _et al._  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat _et al._ 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
 
-The primary aim of pDEMtools is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the `search()` function and `load` module:
+The first aim of pDEMtools is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the `search()` function and `load` module:
+
  - **`search()`**: This function aims to replicate the kind of convenient catalogue searching available when querying a dynamic STAC catalogue (e.g. `pystac_client`), allowing users to easily find relevant ArcticDEM and REMA strips for their areas of interest. 
  - **`load`**: This module provides simple one-line functions to preview and download strips and mosaics from the relevant AWS bucket to an `xarray` Dataset.
 
-pDEMtool does not aim to provide a comprehensive DEM analysis environment (there are other excellent tools for that, such as [`xdem`](https://github.com/GlacioHack/xdem) for advanced coregistration or [`richdem`](https://github.com/r-barnes/richdem) for flow analysis), but some simple (pre)processing functions are provided. It is hoped that they are _specific_ to the sort of uses that ArcticDEM and REMA users might want (e.g. a focus on ice sheet and cryosphere work), as well as the particular _strengths_ of ArcticDEM and REMA datasets (high-resolution and multitemporal). Tools include:
- - Identifying/masking sea level and icebergs.
+The second aim is to provide (pre)processing functions _specific_ to the sort of uses that ArcticDEM and REMA users might want (e.g. a focus on ice sheet and cryosphere work), as well as the particular _strengths_ of ArcticDEM and REMA datasets (high-resolution and multitemporal). Tools include:
+
  - Terrain attribute derivation (hillshade, slope, aspect, various curvatures) using a 5x5 polynomial fit suited for high-resolution data.
  - Quick geoid correction using BedMachine source data.
  - Simple coregistration for quick elevation change analysis.
+ - Identifying/masking sea level and icebergs.
 
-Rather than introducing custom classes, pDEMtools will always try and return DEM data as an [xarray](https://docs.xarray.dev/en/stable/) DataArray with geospatial metadata via the [rioxarray](https://corteva.github.io/rioxarray/stable/) extension. The aim is to allow the user to quickly move beyond pDEMtools into their own analysis in whatever format they desire, be that `xarray` datasets, `numpy` or `dask` arrays, or exporting to geospatial file formats for analysis beyond Python.
+Rather than introducing custom classes, pDEMtools will always try and return DEM data as an [xarray](https://docs.xarray.dev/en/stable/) DataArray with geospatial metadata via the [rioxarray](https://corteva.github.io/rioxarray/stable/) extension. The aim is to allow the user to quickly move beyond pDEMtools into their own analysis in whatever format they desire, be that `xarray`, `numpy` or `dask` datasets, DEM-specific Python packages such as [`xdem`](https://github.com/GlacioHack/xdem) for advanced coregistration or [`richdem`](https://github.com/r-barnes/richdem) for flow analysis, or exporting to geospatial file formats for analysis beyond Python.
+
+Please visit the [pDEMtools ReadTheDocs](https://pdemtools.readthedocs.io/en/latest/index.html) for more information on installing and using pDEMtools.
 
 # Examples
 
@@ -46,6 +52,7 @@ Easy filtering of ocean/mélange, allowing for assessment of calving fronts and 
 
 An example batch download and coregistration script is also included in the `batch` directory as a jumping-off point for large-scale projects.
 
+
 # Cite
 
 <!-- 
@@ -71,56 +78,8 @@ Several algorithms implemented in the library were developed by others. These wi
 
 > We masked sea ice and melange following the method of Shiggins _et al._ (2023) as implemented in pDEMtools (Chudley, 2023).
 
-# Install
 
-## Install pDEMtools
-
-`pdemtools` can be installed from the top-level directory via [Github](https://github.com/),[`conda`](https://docs.conda.io/en/latest/), and [`pip`](https://pip.pypa.io/en/stable/). If you use `mamba` instead of `conda`, simple use `mamba` instead of `conda` as a drag-and-drop replacement in the instructions below:
-
-```bash
-# Clone the pdemtools github repository
-git clone git@github.com:trchudley/pdemtools.git
-
-# Move to pdemtools directory
-cd pdemtools
-
-# Conda option 1: create a fresh conda environment
-conda env create -f environment.yml
-conda activate pdemtools_env
-
-# -- OR --
-
-# Conda option 2 : update existing conda environment
-conda activate existing_env
-conda env update -f environment.yml
-
-# Install pdemtools
-pip install -e .
-```
-
-It is not normally advisable to mix `pip` and `conda`, but in this use case `conda` will install all the dependencies (listed below) and `pip` sets up the appropriate paths to `pdemtools`.
-
-`pdemtools` dependencies are as follows:
-
- - rioxarray (and xarray)
- - geopandas (and pandas)
- - shapely
- - openCV
- - numba
- - numpy
- - scipy
- - GDAL
- - pyarrow
-
-## Supplementary datasets
-
-To make the most of pDEMtools, two supplementary datasets must available locally:
-
-The first is the ArcticDEM or REMA strip index made available by the PGC  (in GeoParquet format), used by the `search` function. Strip index GeoParquet files can be downloaded from the PGC ([Greenland](https://data.pgc.umn.edu/elev/dem/setsm/ArcticDEM/indexes/), [Antarctica](https://data.pgc.umn.edu/elev/dem/setsm/REMA/indexes/)). To enable rapid searching, *please download the GeoParquet file format*: these files end in `_gpqt.zip`. Unzip them before use.
-
-The second is the Greenland BedMachine (v5; Morlighem _et al._ 2022a) or Antarctica BedMachine (v3; Morlighem _et al._ 2022b), which is the default geoid/bedrock mask used by the geoid correction and coregistration functions (NB: for applications outside of the ice sheets, it is possible to use your own geoid/bedrock mask). BedMachine can be downloaded from the NSIDC ([Greenland](https://nsidc.org/data/idbmg4/versions/5), [Antarctica](https://nsidc.org/data/nsidc-0756/versions/3)).
-
-
+<!-- 
 # Features
 
 > **Note**
@@ -143,7 +102,7 @@ An introduction the range of functions provided by pDEMtools is provided in the 
       - [`mask_from_geometry()`](#datamask_from_geometry)
  - [`pdt` xarray accessor](#pdt-xarray-accessor)
    - [`geoid_correct()`](#pdtgeoid_correct)
-   <!-- - [`mask_blunders`](#mask_blunders) -->
+   ### - [`mask_blunders`](#mask_blunders)
    - [`mask_ocean()`](#pdtmask_ocean)
    - [`mask_icebergs()`](#pdtcurvature)
    - [`get_sea_level()`](#pdtget_sea_level)
@@ -401,56 +360,48 @@ terrain = dem_masked.pdt.terrain(
 If you have requested multiple variables, the output of the `.pdt.terrain()` is a (rio)xarray DataSet containing all the selected variables, as well as the original DEM. If you have requested a single variable, the output is a (rio)xarray DataArray of that variable.
 
 </details>
-<br></br>
+<br></br> 
+-->
 
 
-# Version updates
-
-| Version | Date | Notes |
-| ------- | ---- | ----- |
-| 0.6 | February 2024 | Added `data.bedrock_mask_from_vector()` function. |
-| 0.5 | January 2024 | Fixed bug in `_coreg.py` to improve Nuth and Kääb (2011)-style coregistration. |
-| 0.4 | November 2023 | Made batch processing script available as an example. |
-| 0.3 | September 2023 | Aligned search function with the new PGC-provided GeoParquet files |
-| 0.2 | August 2023 | Update `load.mosaic()` function to include the new ArcticDEM mosaic v4.1 |
-| 0.1 | May 2023 | Initial release |
-
-# To do
+<!-- # To do
 
 The tool is presented _as-is_, but requests/contributions to functionality are welcome (thomas.r.chudley@durham.ac.uk). Avenues for future work include the following:
 
  - Quicker preview downloads of hillshades and DEMs through use of the GeoTIFF overviews and the `rxr.open_rasterio()` `overview_level` function. This can result in uneven x/y resolutions though, so perhaps another option for upsampling may be useful as an accessor utility.
- - Implement Ian Howat's blunder filter algorithm.
+ - Implement Ian Howat's blunder filter algorithm. -->
+
 
 
 # Refererences
 
-<details> <summary>Expand</summary>
+<!-- <details> <summary>Expand</summary> -->
 
-Florinsky, I. V. (2009). Computation of the third‐order partial derivatives from a digital elevation model. _International journal of geographical information science_, 23(2), 213-231. https://doi.org/10.1080/13658810802527499
+<!-- Florinsky, I. V. (2009). Computation of the third‐order partial derivatives from a digital elevation model. _International journal of geographical information science_, 23(2), 213-231. https://doi.org/10.1080/13658810802527499 -->
 
 Howat, I., _et al._ (2022a). The Reference Elevation Model of Antarctica – Strips, Version 4.1. _Harvard Dataverse_ https://doi.org/10.7910/DVN/X7NDNY
 
 Howat, I., _et al._ (2022b). The Reference Elevation Model of Antarctica – Mosaics, Version 2, _Harvard Dataverse_ https://doi.org/10.7910/DVN/EBW8UC
 
-Mark, R. K. (1992). Multidirectional, oblique-weighted, shaded-relief image of the Island of Hawaii. _United States Geological Survey_. Open-File Report 92-422. https://doi.org/10.3133/ofr92422
+<!-- Mark, R. K. (1992). Multidirectional, oblique-weighted, shaded-relief image of the Island of Hawaii. _United States Geological Survey_. Open-File Report 92-422. https://doi.org/10.3133/ofr92422 -->
 
-Morlighem, M. _et al._ (2022a). IceBridge BedMachine Greenland, Version 5 [Data Set]. _NASA National Snow and Ice Data Center Distributed Active Archive Center_. https://doi.org/10.5067/GMEVBWFLWA7X
+<!-- Morlighem, M. _et al._ (2022a). IceBridge BedMachine Greenland, Version 5 [Data Set]. _NASA National Snow and Ice Data Center Distributed Active Archive Center_. https://doi.org/10.5067/GMEVBWFLWA7X -->
 
-Morlighem, M. _et al._ (2022b). MEaSUREs BedMachine Antarctica, Version 3 [Data Set]. _NASA National Snow and Ice Data Center Distributed Active Archive Center_. https://doi.org/10.5067/FPSU0V1MWUB6
+<!-- Morlighem, M. _et al._ (2022b). MEaSUREs BedMachine Antarctica, Version 3 [Data Set]. _NASA National Snow and Ice Data Center Distributed Active Archive Center_. https://doi.org/10.5067/FPSU0V1MWUB6 -->
 
-Nuth, C. and Kääb, A. (2011) Co-registration and bias corrections of satellite elevation data sets for quantifying glacier thickness change, _The Cryosphere_, 5, 271–290, https://doi.org/10.5194/tc-5-271-2011
+<!-- Nuth, C. and Kääb, A. (2011) Co-registration and bias corrections of satellite elevation data sets for quantifying glacier thickness change, _The Cryosphere_, 5, 271–290, https://doi.org/10.5194/tc-5-271-2011 -->
 
 Porter, C., _et al._ (2022). ArcticDEM - Strips, Version 4.1. _Harvard Dataverse_. https://doi.org/10.7910/DVN/OHHUKH
 
 Porter, C., _et al._ (2023), ArcticDEM, Version 4.1, _Harvard Dataverse_. https://doi.org/10.7910/DVN/3VDC4W
 
-Shiggins, C. J., _et al._ (2023). Automated ArcticDEM iceberg detection tool: insights into area and volume distributions, and their potential application to satellite imagery and modelling of glacier–iceberg–ocean systems, _The Cryosphere_, 17, 15–32, https://doi.org/10.5194/tc-17-15-2023
+<!-- Shiggins, C. J., _et al._ (2023). Automated ArcticDEM iceberg detection tool: insights into area and volume distributions, and their potential application to satellite imagery and modelling of glacier–iceberg–ocean systems, _The Cryosphere_, 17, 15–32, https://doi.org/10.5194/tc-17-15-2023 -->
 
-Zevenbergen, L. W. and Thorne, C. R. (1987). Quantitative analysis of land surface topography. Earth surface processes and landforms, 12(1), 47-56.
+<!-- Zevenbergen, L. W. and Thorne, C. R. (1987). Quantitative analysis of land surface topography. Earth surface processes and landforms, 12(1), 47-56. -->
 
-</details>
-<br></br>
+<!-- </details>
+<br></br>  -->
+
 
 # Acknowledgements
 

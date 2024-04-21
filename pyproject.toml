@@ -28,6 +28,9 @@ Documentation = "https://pdemtools.readthedocs.io/en/latest/"
 Repository = "https://github.com/trchudley/pdemtools"
 Issues = "https://github.com/trchudley/pdemtools/issues"
 
+[tool.setuptools.dynamic]
+version = {attr = "pdemtools.__version__"}
+
 [tool.setuptools]
 include-package-data = true
 

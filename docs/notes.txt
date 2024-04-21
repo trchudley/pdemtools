@@ -12,6 +12,5 @@ Go to readthedocs and create a new build
 To think about:
  - Automatic versioning?
 
-
 Pages:
 https://lpn-doc-sphinx-primer-devel.readthedocs.io/

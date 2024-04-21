@@ -6,6 +6,6 @@ from ._index_search import search
 
 from ._accessor import DemAccessor
 
-__version__ = version("pdemtools")
+__version__ = "0.7.0"
 
 __all__ = ["search", "DemAccessor"]

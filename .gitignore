@@ -7,3 +7,5 @@ example_data/
 .DS_Store
 *.tif
 docs/_build/
+.coverage
+dist/
