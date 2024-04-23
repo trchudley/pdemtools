@@ -24,34 +24,7 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
 
 Please visit the [pDEMtools ReadTheDocs](https://pdemtools.readthedocs.io/en/latest/index.html) for more information on installing and using pDEMtools.
 
-# Examples
-
-Quickly download and filter the ArcticDEM/REMA mosaic, and generate various terrain attributes such as hillshade and curvatures ([see notebook](./notebooks/mosaic_and_terrain.ipynb)):
-
-<p align="center">
-   <a href='./notebooks/mosaic_and_terrain.ipynb'>
-   <img src="./images/example_mosaic_terrain.jpg" width=90% height=90% title="An example of various terrain attributes derived from a filtered ArcticDEM mosaic" alt="An example of various terrain attributes derived from a filtered ArcticDEM mosaic">
-   </a>
-</p>
-
-Search and download ArcticDEM/REMA strips, with easy coregistration to assess elevation change ([see notebook](./notebooks/strip_search_and_dem_difference.ipynb)):
-
-<p align="center">
-   <a href='./notebooks/strip_search_and_dem_difference.ipynb'>
-   <img src="./images/example_dem_difference.jpg" width=65% height=65% title="Vertical elevation change between multitemporal ArcticDEM strips" alt="Vertical elevation change between multitemporal ArcticDEM strips">
-   </a>
-</p>
-
-Easy filtering of ocean/mélange, allowing for assessment of calving fronts and icebergs ([see notebook](./notebooks/get_icebergs.ipynb)):
-
-<p align="center">
-   <a href='./notebooks/get_icebergs.ipynb'>
-   <img src="./images/example_iceberg_height.jpg" width=80% height=80% title="Iceberg height above the ocean extracted from an ArcticDEM strip" alt="Iceberg height above the ocean extracted from an ArcticDEM strip">
-   </a>
-</p>
-
-An example batch download and coregistration script is also included in the `batch` directory as a jumping-off point for large-scale projects.
-
+Contact: thomas.r.chudley@durham.ac.uk
 
 # Cite
 
@@ -62,13 +35,13 @@ Update when v.1.0 uploaded to Zendoo.
  The use of the pDEMtools package can be cited as follows:
 
 
-> Chudley, T. R. (2023) pDEMtools (v0.6). GitHub. https://github.com/trchudley/pDEMtools
+> Chudley, T. R. (2023) pDEMtools (vX.X). GitHub. https://github.com/trchudley/pDEMtools
 
 or by using `bibtex`:
 
 ```
 @software{pDEMtools
-   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {0.6}, url = {https://github.com/trchudley/pDEMtools} 
+   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {X.X}, url = {https://github.com/trchudley/pDEMtools} 
 }
 ```
 

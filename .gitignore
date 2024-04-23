@@ -1,11 +1,23 @@
-*.egg-info/
+# Python
 __pycache__/
 .ipynb_checkpoints
-gitignore*
-.vscode
+
+# Data
 example_data/
-.DS_Store
 *.tif
-docs/_build/
-.coverage
+
+# Distribution / packaging
 dist/
+build/
+*.egg-info/
+
+# Coverage reports
+.coverage
+
+# Documentation
+docs/_build/
+
+# OS / other
+.DS_Store
+.vscode
+gitignore*
