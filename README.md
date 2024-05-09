@@ -4,8 +4,6 @@ __Conveniently search, download, and preprocess ArcticDEM and REMA products__
 
 [![Documentation Status](https://readthedocs.org/projects/pdemtools/badge/?version=latest)](https://pdemtools.readthedocs.io/en/latest/?badge=latest) [![Unit Tests](https://github.com/trchudley/pdemtools/actions/workflows/unit_test.yml/badge.svg)](https://github.com/trchudley/pdemtools/actions/workflows/unit_test.yml)
 
-![An ArcticDEM hillshade of the calving front of Helheim Glacier, Greenland](./images/arcticdem_header.jpg "An ArcticDEM hillshade of the calving front of Helheim Glacier, Greenland")
-
 pDEMtool provides a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter _et al._  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat _et al._ 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
 
 The first aim of pDEMtools is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the `search()` function and `load` module:
