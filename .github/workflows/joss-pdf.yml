@@ -1,3 +1,5 @@
+name: Compile JOSS PDF
+
 on:
   push:
     paths:

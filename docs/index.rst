@@ -14,7 +14,7 @@ pDEMtools
 
 **Conveniently search, download, and preprocess ArcticDEM and REMA products.**
 
-.. image:: _static/arcticdem_header.jpg
+.. figure:: _static/arcticdem_header.jpg
   :width: 800
   :align: center
   :alt: A hillshaded DEM of Helheim Glacier

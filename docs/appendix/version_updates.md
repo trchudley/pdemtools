@@ -2,6 +2,7 @@
 
 | Version | Date | Notes |
 | ------- | ---- | ----- |
+| 0.7 | March 2024 | Minor bug fixes and more detailed docstrings to support readthedocs | 
 | 0.6 | February 2024 | Added `data.bedrock_mask_from_vector()` function. |
 | 0.5 | January 2024 | Fixed bug in `_coreg.py` to improve Nuth and Kääb (2011)-style coregistration. |
 | 0.4 | November 2023 | Made batch processing script available as an example. |

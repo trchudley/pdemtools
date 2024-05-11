@@ -1,14 +1,14 @@
 # Cite
 
- The use of the pDEMtools package can be cited as follows:
+A software paper is being prepared for the [Journal of Open Source Software](https://joss.theoj.org/). In the meantime, the use of the pDEMtools package can be cited as follows:
 
-> Chudley, T. R. (2023) pDEMtools (vX.X). GitHub. https://github.com/trchudley/pDEMtools
+> Chudley, T. R. and Howat, I. M. (2024) pDEMtools (vX.X). GitHub. https://github.com/trchudley/pDEMtools
 
 or by using `bibtex`:
 
 ```
 @software{pDEMtools
-   author = {Chudley, Thomas Russell}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {X.X}, url = {https://github.com/trchudley/pDEMtools} 
+   author = {Chudley, Thomas R. and Howat, Ian M.}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {X.X}, url = {https://github.com/trchudley/pDEMtools} 
 }
 ```
 
