@@ -8,7 +8,7 @@ or by using `bibtex`:
 
 ```
 @software{pDEMtools
-   author = {Chudley, Thomas R. and Howat, Ian M.}, title = {pDEMtools}, year = 2023, publisher = {GitHub}, version = {X.X}, url = {https://github.com/trchudley/pDEMtools} 
+   author = {Chudley, Thomas R. and Howat, Ian M.}, title = {pDEMtools}, year = 2024, publisher = {GitHub}, version = {X.X}, url = {https://github.com/trchudley/pDEMtools} 
 }
 ```
 
