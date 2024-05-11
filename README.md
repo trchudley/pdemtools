@@ -1,6 +1,6 @@
 # pDEMtools
 
-__Conveniently search, download, and preprocess ArcticDEM and REMA products__
+__Conveniently search, download, and process ArcticDEM and REMA products__
 
 
 [![conda-forge version](https://anaconda.org/conda-forge/pdemtools/badges/version.svg)](https://anaconda.org/conda-forge/pdemtools/badges) [![PyPI version](https://badge.fury.io/py/pdemtools.svg)](https://pypi.org/project/pdemtools/) [![Documentation Status](https://readthedocs.org/projects/pdemtools/badge/?version=latest)](https://pdemtools.readthedocs.io/en/latest/?badge=latest) [![Unit Tests](https://github.com/trchudley/pdemtools/actions/workflows/unit_test.yml/badge.svg)](https://github.com/trchudley/pdemtools/actions/workflows/unit_test.yml)

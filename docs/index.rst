@@ -12,7 +12,7 @@ pDEMtools
 ..    :width: 1600
 ..    :height: 349
 
-**Conveniently search, download, and preprocess ArcticDEM and REMA products.**
+**Conveniently search, download, and process ArcticDEM and REMA products.**
 
 .. figure:: _static/arcticdem_header.jpg
   :width: 800
