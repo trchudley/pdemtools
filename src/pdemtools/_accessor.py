@@ -410,6 +410,7 @@ class DemAccessor:
         candidate_height_thresh_m: Optional[float] = 10,
         candidate_area_thresh_km2: Optional[float] = 1,
         near_sealevel_thresh_m: Optional[float] = 5,
+        return_sealevel_as_zero: Optional[bool] = False,
         return_mask: Optional[bool] = False,
     ) -> DataArray:
         """Returns a DEM with mélange/ocean regions filtered out, adapting the method
@@ -422,11 +423,15 @@ class DemAccessor:
             as SL, in m, defaults to 10
         :type candidate_height_thresh_m: float
         :param candidate_area_thresh_km2: Minimum area beneath `candidate_height_thresh_m`
-            to be considered for sea level assessment, in km^2, defaults to 1
+            to be considered for sea level assessment, in km^2. Defaults to 1
         :type candidate_area_thresh_km2: float
         :param near_sealevel_thresh_m: Filter out regions below this value, in metres above
-            sea level, defaults to 5
+            sea level. Defaults to 5
         :type near_sealevel_thresh_m: float
+        :param return_sealevel_as_zero: If True, subtracts that estimated sea level from
+            the DEM, returning new height values with the estimated sea level set to 0
+            m. Necessary for calculating accurate iceberg heights. Defaults to False.
+        :type return_sealevel_as_zero: bool
         :param return_mask: Return the sea level mask rather than the masked DEM.
             Defaults to False.
         :type return_mask: bool
@@ -457,13 +462,17 @@ class DemAccessor:
             if mask == None:
                 warn("No sea level detected in image. Returning `None` as mask object.")
             return mask
-
         else:
             if mask is None:
                 warn("No sea level detected in image. Returning original DEM")
                 return self._obj
             else:
-                return self._obj.where(mask)
+                if return_sealevel_as_zero == True:
+                    return self._obj.where(mask) - est_sea_level
+                elif return_sealevel_as_zero == False:
+                    return self._obj.where(mask)
+                else:
+                    raise ValueError("return_sealevel_as_zero must be True or False")
 
     def get_sea_level(
         self,
@@ -519,6 +528,13 @@ class DemAccessor:
         remain. This function gives you the opportunity to mask them as well by
         identifying the size of connected groups of pixels and masking above/below a
         threshold.
+
+        By default, this function masks icebergs and retains terrestrial ice/land.
+        However, by setting `retain_icebergs = True`, the function will instead mask
+        ice/land and retain icebergs, allowing iceberg area and volume to be assessed.
+        For accurate volume assessment, the DEM 0 m value must be set to the estimated
+        sea level height from the `get_sea_level()` function.  This can be automated by
+        setting `return_sealevel_as_zero = True` in the mask_ocean() function.
 
         :param area_thresh_m2: Size threshold between icebergs and terrestrial ice/land, in
             m2. Defaults to 1e6 m2 (1 km2)
