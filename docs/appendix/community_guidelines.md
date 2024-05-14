@@ -36,7 +36,7 @@ pDEMtools can be installed for development by cloning the github repository. We 
 
 ```bash
 git clone git@github.com:trchudley/pdemtools.git
-cd pypromice/
+cd pdemtools/
 mamba env create --file environment.yml -n pdemtools_env
 mamba activate pdemtools_env
 pip install -e .
