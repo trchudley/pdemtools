@@ -273,23 +273,48 @@ Functions for processing curvature from derivatives
 
 
 def slope(p_arr, q_arr):
+    """outputs in radians"""
     return np.arctan(np.sqrt(p_arr**2 + q_arr**2))
 
 
 def aspect(p_arr, q_arr):
-    return np.deg2rad(
-        -90 * (1 - np.sign(q_arr)) * (1 - np.abs(np.sign(p_arr)))
-        + 180 * (1 + np.sign(p_arr))
-        - (180 / np.pi)
-        * np.sign(p_arr)
-        * np.arccos(-q_arr / np.sqrt(p_arr**2 + q_arr**2))
-    )
+    """outputs in radians"""
+    return np.arctan2(p_arr, q_arr) + np.pi
+    # return np.deg2rad(
+    #     -90 * (1 - np.sign(q_arr)) * (1 - np.abs(np.sign(p_arr)))
+    #     + 180 * (1 + np.sign(p_arr))
+    #     - (180 / np.pi)
+    #     * np.sign(p_arr)
+    #     * np.arccos(-q_arr / np.sqrt(p_arr**2 + q_arr**2))
+    # )
 
 
 def hillshade(slope, aspect, altitude=45, azimuth=315, norm=True):
-    hs = np.cos(np.pi * 0.5 - aspect - azimuth) * np.sin(slope) * np.sin(
-        np.pi * 0.5 - altitude
-    ) + np.cos(slope) * np.cos(np.pi * 0.5 - altitude)
+    """accepts degrees"""
+
+    if slope.max() < 2 * np.pi:
+        raise Warning(
+            "Maximum slope value is < 2π (slope.max()), ensure input is degrees"
+        )
+    if aspect.max() < 2 * np.pi:
+        raise Warning(
+            "Maximum slope value is < 2π (aspect.max()), ensure input is degrees"
+        )
+
+    hs = 255.0 * (
+        (np.cos(np.deg2rad(altitude)) * np.cos(np.deg2rad(slope)))
+        + (
+            np.sin(np.deg2rad(altitude))
+            * np.sin(np.deg2rad(slope))
+            * np.cos(np.deg2rad(azimuth) - np.deg2rad(aspect))
+        )
+    ).astype("float32")
+
+    # hs = np.cos(np.pi * 0.5 - np.deg2rad(aspect) - np.deg2rad(azimuth)) * np.sin(
+    #     np.deg2rad(slope)
+    # ) * np.sin(np.pi * 0.5 - np.deg2rad(altitude)) + np.cos(np.deg2rad(slope)) * np.cos(
+    #     np.pi * 0.5 - np.deg2rad(altitude)
+    # )
 
     # return normalised values
     if norm == True:

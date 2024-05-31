@@ -257,27 +257,29 @@ class DemAccessor:
                 # calculate unidirectional hillshade
                 if hillshade_z_factor == 1:
                     hillshade_arr = hillshade(
-                        slope_arr,
-                        aspect_arr,
+                        np.rad2deg(slope_arr),
+                        np.rad2deg(aspect_arr),
                         hillshade_altitude,
                         hillshade_azimuth,
                         norm=True,
                     )
                 if hillshade_z_factor != 1:
                     hillshade_arr = hillshade(
-                        slope(
-                            p(
-                                self._obj.values * hillshade_z_factor,
-                                resolution,
-                                method,
-                            ),
-                            q(
-                                self._obj.values * hillshade_z_factor,
-                                resolution,
-                                method,
-                            ),
+                        np.rad2deg(
+                            slope(
+                                p(
+                                    self._obj.values * hillshade_z_factor,
+                                    resolution,
+                                    method,
+                                ),
+                                q(
+                                    self._obj.values * hillshade_z_factor,
+                                    resolution,
+                                    method,
+                                ),
+                            )
                         ),
-                        aspect_arr,
+                        np.rad2deg(aspect_arr),
                         hillshade_altitude,
                         hillshade_azimuth,
                         norm=True,
@@ -310,18 +312,45 @@ class DemAccessor:
                     )
 
                 hs = (
-                    w_225 * hillshade(slope_input, aspect_arr, 60, 225, norm=False)
-                    + w_270 * hillshade(slope_input, aspect_arr, 60, 270, norm=False)
-                    + w_315 * hillshade(slope_input, aspect_arr, 60, 315, norm=False)
-                    + w_360 * hillshade(slope_input, aspect_arr, 60, 360, norm=False)
+                    w_225
+                    * hillshade(
+                        np.rad2deg(slope_input),
+                        np.rad2deg(aspect_arr),
+                        60,
+                        225,
+                        norm=False,
+                    )
+                    + w_270
+                    * hillshade(
+                        np.rad2deg(slope_input),
+                        np.rad2deg(aspect_arr),
+                        60,
+                        270,
+                        norm=False,
+                    )
+                    + w_315
+                    * hillshade(
+                        np.rad2deg(slope_input),
+                        np.rad2deg(aspect_arr),
+                        60,
+                        315,
+                        norm=False,
+                    )
+                    + w_360
+                    * hillshade(
+                        np.rad2deg(slope_input),
+                        np.rad2deg(aspect_arr),
+                        60,
+                        360,
+                        norm=False,
+                    )
                 ) / 2
 
                 del w_225, w_270, w_315, w_360
 
                 # get normalised hillshade with darkest points as 0
-                hillshade_arr = 1 - (hs - np.nanmin(hs)) / (
-                    np.nanmax(hs) - np.nanmin(hs)
-                )
+                # hillshade_arr = 1 - (hs - np.nanmin(hs)) / (
+                hillshade_arr = (hs - np.nanmin(hs)) / (np.nanmax(hs) - np.nanmin(hs))
                 del hs
 
         if "horizontal_curvature" in attribute:
