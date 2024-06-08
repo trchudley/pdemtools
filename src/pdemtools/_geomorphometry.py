@@ -279,7 +279,9 @@ def slope(p_arr, q_arr):
 
 def aspect(p_arr, q_arr):
     """outputs in radians"""
+
     return np.arctan2(p_arr, q_arr) + np.pi
+
     # return np.deg2rad(
     #     -90 * (1 - np.sign(q_arr)) * (1 - np.abs(np.sign(p_arr)))
     #     + 180 * (1 + np.sign(p_arr))
