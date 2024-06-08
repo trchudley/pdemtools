@@ -2,6 +2,7 @@
 
 | Version | Date | Notes |
 | ------- | ---- | ----- |
+| 0.8.1 | June 2024 | Minor modification to hillshade script to allow for MacGregor _et al._ (2024) flow-aware hillshade. Supplementary notebook available in GitHub `notebooks` directory. |
 | 0.8.0 | May 2024 | Iceberg detection now corrects for sea surface; final additions to documentation before public conda/pip release.
 | 0.7.0 | March 2024 | Minor bug fixes and more detailed docstrings to support readthedocs | 
 | 0.6.0 | February 2024 | Added `data.bedrock_mask_from_vector()` function. |
