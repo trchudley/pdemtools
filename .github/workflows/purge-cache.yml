@@ -3,13 +3,13 @@
 
 name: Purge image cache
 
-on:
-  workflow_dispatch:
-    inputs:
-      dummy:
-        description: 'Dummy input to allow for multiple triggers with variables'
-  schedule:
-    - cron: '52 2 * * *'  # once per day in the early hours
+on: workflow_dispatch
+  # workflow_dispatch:
+  #   inputs:
+  #     dummy:
+  #       description: 'Dummy input to allow for multiple triggers with variables'
+  # schedule:
+  #   - cron: '52 2 * * *'  # once per day in the early hours
 
 jobs:
   purge:
