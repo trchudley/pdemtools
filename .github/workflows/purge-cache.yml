@@ -1,0 +1,16 @@
+
+# https://github.com/marketplace/actions/action-camo-purge
+
+name: Purge image cache
+
+on:
+  workflow_dispatch
+  schedule:
+    - cron: '52 2 * * *'  # once per day in the early hours
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: kevincobain2000/action-camo-purge@v1

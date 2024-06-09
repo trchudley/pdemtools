@@ -2,7 +2,7 @@
 # https://pytest-with-eric.com/integrations/pytest-github-actions/
 # https://github.com/mamba-org/setup-micromamba
 
-name: Run Unit Tests
+name: Run unit tests
 
 on:
   - push
