@@ -225,15 +225,19 @@ def from_id(
         return preview_fpath
 
     # Construct DEM fpath
-    dem_fpath = os.path.join(
-        bucket, dataset, "strips", version, "2m", geocell, f"{dem_id}_dem.tif"
-    )
+    dem_fpath = f'{bucket}/{dataset}/"strips"/{version}/2m/{geocell}/{dem_id}_dem.tif'
+    # dem_fpath = os.path.join(
+    #     bucket, dataset, "strips", version, "2m", geocell, f"{dem_id}_dem.tif"
+    # )
 
     # Construct bitmask fpath, if required
     if bitmask == True:
-        bitmask_fpath = os.path.join(
-            bucket, dataset, "strips", version, "2m", geocell, f"{dem_id}_bitmask.tif"
+        bitmask_fpath = (
+            f'{bucket}/{dataset}/"strips"/{version}/2m/{geocell}/{dem_id}_bitmask.tif'
         )
+        # bitmask_fpath = os.path.join(
+        #     bucket, dataset, "strips", version, "2m", geocell, f"{dem_id}_bitmask.tif"
+        # )
     else:
         bitmask_fpath = None
 
