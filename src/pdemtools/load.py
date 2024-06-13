@@ -219,21 +219,25 @@ def from_id(
 
     if preview == True:
         browser_prefix = "https://polargeospatialcenter.github.io/stac-browser/#/external/pgc-opendata-dems.s3.us-west-2.amazonaws.com"
-        preview_fpath = os.path.join(
-            browser_prefix, dataset, "strips", version, "2m", geocell, f"{dem_id}.json"
+        preview_fpath = (
+            f"{browser_prefix}/{dataset}/strips/{version}/2m/{geocell}/{dem_id}.json"
         )
         return preview_fpath
 
     # Construct DEM fpath
-    dem_fpath = os.path.join(
-        bucket, dataset, "strips", version, "2m", geocell, f"{dem_id}_dem.tif"
-    )
+    dem_fpath = f'{bucket}/{dataset}/"strips"/{version}/2m/{geocell}/{dem_id}_dem.tif'
+    # dem_fpath = os.path.join(
+    #     bucket, dataset, "strips", version, "2m", geocell, f"{dem_id}_dem.tif"
+    # )
 
     # Construct bitmask fpath, if required
     if bitmask == True:
-        bitmask_fpath = os.path.join(
-            bucket, dataset, "strips", version, "2m", geocell, f"{dem_id}_bitmask.tif"
+        bitmask_fpath = (
+            f'{bucket}/{dataset}/"strips"/{version}/2m/{geocell}/{dem_id}_bitmask.tif'
         )
+        # bitmask_fpath = os.path.join(
+        #     bucket, dataset, "strips", version, "2m", geocell, f"{dem_id}_bitmask.tif"
+        # )
     else:
         bitmask_fpath = None
 
@@ -396,6 +400,4 @@ def _aws_link(
         raise ValueError(f"Input `resolution` must be one of ['2m', '10m', '32m']")
 
     # Return appropriate filepath.
-    return os.path.join(
-        prefix, dataset, "mosaics", version, resolution, row.supertile, fname
-    )
+    return f"{prefix}/{dataset}/mosaics/{version}/{resolution}/{row.supertile}/{fname}"
