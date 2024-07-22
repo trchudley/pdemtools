@@ -173,15 +173,25 @@ def search(
             gdf["year"] = gdf.time_mean.dt.year
             gdf["month"] = gdf.time_mean.dt.month
 
-    # Filter according to date (acqdate)
+   # Filter according to date (acqdate)
     if dates != None:
         if dates[0] != None:
             datetime1 = pd.to_datetime(dates[0])
-            gdf = gdf[gdf["time1"] > datetime1]
+            try:
+                gdf = gdf[gdf["time1"] > datetime1]
+            except:  # account for UTC-aware datetime storage in newer PGC index files.
+                datetime1 = pd.to_datetime(dates[0], utc=True)
+                gdf = gdf[gdf["time1"] > datetime1]
 
         if dates[1] != None:
             datetime2 = pd.to_datetime(dates[1])
-            gdf = gdf[gdf["time2"] < datetime2]
+            try:
+                gdf = gdf[gdf["time2"] < datetime2]
+            except:  # account for UTC-aware datetime storage in newer PGC index files.
+                datetime2 = pd.to_datetime(dates[1], utc=True)
+                gdf = gdf[gdf["time2"] < datetime2]
+            # can probably make this more efficient than just try-except - e.g. check if
+            # date column is utc-aware and if so, make datetime utc-aware too.
 
     # Filter to months
     if months != None:
