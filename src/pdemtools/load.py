@@ -313,20 +313,22 @@ def mosaic(
         )
 
     # Load tiles that intersect with AOI
-    tiles = gpd.read_file(
-        _get_index_fpath(dataset, version=version), layer=layer, bbox=bounds
-    )
+    index_fpath =  _get_index_fpath(dataset, version=version)
+    with open(index_fpath, "rb") as file:
+        tiles = gpd.read_file(index_fpath, layer=layer, bbox=bounds, engine='fiona') 
 
-    if len(tiles) < 1:
-        raise ValueError(
-            "No {dataset} mosaic tiles found to intersect with bounds {aoi}"
-        )
+        if len(tiles) < 1:
+            raise ValueError(
+                "No {dataset} mosaic tiles found to intersect with bounds {aoi}"
+            )
 
-    # get aws filepaths from the tiles dataframe
-    fpaths = []
-    for _, row in tiles.iterrows():
-        fpath = _aws_link(row, dataset=dataset, version=version, resolution=resolution)
-        fpaths.append(fpath)
+        # get aws filepaths from the tiles dataframe
+        fpaths = []
+        for _, row in tiles.iterrows():
+            fpath = _aws_link(row, dataset=dataset, version=version, resolution=resolution)
+            fpaths.append(fpath)
+
+        tiles = None  # release tiles object
 
     # remove duplicates in 10m and 32m (which load supertiles, not tiles)
     fpaths = list(set(fpaths))
@@ -349,6 +351,7 @@ def mosaic(
     # Filter -9999.0 values to np.nan
     dem = dem.where(dem > -9999.0)
 
+    dems = None  # release dem objects for memory management
     return dem
 
 

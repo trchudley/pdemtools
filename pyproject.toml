@@ -9,7 +9,7 @@ description = "Conveniently search, download, and preprocess ArcticDEM and REMA 
 keywords = [ "geospatial", "elevation", "arcticdem", "rema", "dem",]
 classifiers = [ "Intended Audience :: Science/Research", "Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Topic :: Scientific/Engineering", "Topic :: Scientific/Engineering :: GIS", "Topic :: Scientific/Engineering :: Image Processing",]
 requires-python = ">=3.9"
-dependencies = ["rioxarray", "rasterio", "geopandas", "pandas", "shapely", "numpy", "GDAL", "opencv-python", "scipy", "numba", "pyarrow",]  # GDAL
+dependencies = ["rioxarray", "rasterio", "geopandas", "pandas", "shapely", "numpy", "GDAL", "opencv-python", "scipy", "numba", "pyarrow", "fiona"]  # GDAL
 
 [[project.authors]]
 name = "Tom Chudley"
