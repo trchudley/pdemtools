@@ -81,9 +81,9 @@ def coregisterdems(
 
         # Apply offsets
         if pn[1] != 0 and pn[2] != 0:
-            dem2n = shift_dem(dem2, pn.T[0], x, y)
+            dem2n = shift_dem(dem2, pn.T[0], x, y).astype('float32')
         else:
-            dem2n = dem2 - pn[0].astype(np.float32)
+            dem2n = dem2 - pn[0].astype('float32')
 
         # # Calculate slopes - original method from PGC
         # sy, sx = np.gradient(dem2n, res)
@@ -159,6 +159,7 @@ def coregisterdems(
 
         # Build design matrix.
         X = np.column_stack((np.ones(n_count, dtype=np.float32), sx[n], sy[n]))
+        sx, sy = None, None  # release for data amangement
 
         # Solve for new adjustment.
         p1 = np.reshape(np.linalg.lstsq(X, dz[n], rcond=None)[0], (-1, 1))
@@ -170,6 +171,8 @@ def coregisterdems(
         yhat = np.matmul(X, p1)  # predicted responses at each data point
         r = dz[n] - yhat.T[0]  # residuals
         normr = np.linalg.norm(r)
+
+        dz = None  # release for memory managment
 
         rmse = normr / np.sqrt(nu)
         tval = stats.t.ppf((1 - 0.32 / 2), nu)
@@ -286,18 +289,20 @@ def interp2_gdal(X, Y, Z, Xi, Yi, interp_str, extrapolate=False, oob_val=np.nan)
         "",
         interp_gdal,
     )
-    gdal.ReprojectImage(
-        ds_in,
-        ds_out,
-        "",
-        "",
-        interp_gdal,
-    )
+    # gdal.ReprojectImage(
+    #     ds_in,
+    #     ds_out,
+    #     "",
+    #     "",
+    #     interp_gdal,
+    # )
 
     Zi = ds_out.GetRasterBand(1).ReadAsArray()
 
     if not extrapolate:
         interp2_fill_oob(X, Y, Zi, Xi, Yi, oob_val)
+    
+    ds_in, ds_out = None, None
 
     return Zi
 

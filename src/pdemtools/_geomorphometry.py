@@ -18,7 +18,7 @@ def _p_zt(z, w):
 
 @numba.njit
 def p_zt(z, w=2):
-    return _p_zt(z, w)
+    return _p_zt(z, w).astype('float32')
 
 
 @numba.stencil(func_or_mode="constant", cval=np.nan)
@@ -28,7 +28,7 @@ def _q_zt(z, w):
 
 @numba.njit
 def q_zt(z, w=2):
-    return _q_zt(z, w)
+    return _q_zt(z, w).astype('float32')
 
 
 @numba.stencil(func_or_mode="constant", cval=np.nan)
@@ -38,7 +38,7 @@ def _r_zt(z, w):
 
 @numba.njit
 def r_zt(z, w=2):
-    return _r_zt(z, w)
+    return _r_zt(z, w).astype('float32')
 
 
 @numba.stencil(func_or_mode="constant", cval=np.nan)
@@ -48,7 +48,7 @@ def _t_zt(z, w):
 
 @numba.njit
 def t_zt(z, w=2):
-    return _t_zt(z, w)
+    return _t_zt(z, w).astype('float32')
 
 
 @numba.stencil(func_or_mode="constant", cval=np.nan)
@@ -58,7 +58,7 @@ def _s_zt(z, w):
 
 @numba.njit
 def s_zt(z, w=2):
-    return _s_zt(z, w)
+    return _s_zt(z, w).astype('float32')
 
 
 """
@@ -85,7 +85,7 @@ def _p_f(z, w):
 
 @numba.njit
 def p_f(z, w=2):
-    return _p_f(z, w)
+    return _p_f(z, w).astype('float32')
 
 
 @numba.stencil(func_or_mode="constant", cval=np.nan)
@@ -107,7 +107,7 @@ def _q_f(z, w):
 
 @numba.njit
 def q_f(z, w=2):
-    return _q_f(z, w)
+    return _q_f(z, w).astype('float32')
 
 
 @numba.stencil(func_or_mode="constant", cval=np.nan)
@@ -142,7 +142,7 @@ def _r_f(z, w):
 
 @numba.njit
 def r_f(z, w=2):
-    return _r_f(z, w)
+    return _r_f(z, w).astype('float32')
 
 
 @numba.stencil(func_or_mode="constant", cval=np.nan)
@@ -177,7 +177,7 @@ def _t_f(z, w):
 
 @numba.njit
 def t_f(z, w=2):
-    return _t_f(z, w)
+    return _t_f(z, w).astype('float32')
 
 
 @numba.stencil(func_or_mode="constant", cval=np.nan)
@@ -204,7 +204,7 @@ def _s_f(z, w):
 
 @numba.njit
 def s_f(z, w=2):
-    return _s_f(z, w)
+    return _s_f(z, w).astype('float32')
 
 
 """

@@ -20,7 +20,7 @@ The second aim is to provide (pre)processing functions _specific_ to the sort of
  - Simple coregistration for quick elevation change analysis.
  - Identifying/masking sea level and icebergs.
 
-Rather than introducing custom classes, pDEMtools will always try and return DEM data as an [xarray](https://docs.xarray.dev/en/stable/) DataArray with geospatial metadata via the [rioxarray](https://corteva.github.io/rioxarray/stable/) extension. The aim is to allow the user to quickly move beyond pDEMtools into their own analysis in whatever format they desire, be that `xarray`, `numpy` or `dask` datasets, DEM-specific Python packages such as [`xdem`](https://github.com/GlacioHack/xdem) for advanced coregistration or [`richdem`](https://github.com/r-barnes/richdem) for flow analysis, or exporting to geospatial file formats for analysis beyond Python.
+Rather than introducing custom classes, pDEMtools will always try and return DEM data as an [`xarray`](https://docs.xarray.dev/en/stable/) DataArray with geospatial metadata via the [`rioxarray`](https://corteva.github.io/rioxarray/stable/) extension. The aim is to allow the user to quickly move beyond pDEMtools into their own analysis in whatever format they desire, be that `xarray`, `numpy` or `dask` datasets, DEM-specific Python packages such as [`xdem`](https://github.com/GlacioHack/xdem) for advanced coregistration or [`richdem`](https://github.com/r-barnes/richdem) for flow analysis, or exporting to geospatial file formats for analysis beyond Python.
 
 Contact: thomas.r.chudley@durham.ac.uk
 
