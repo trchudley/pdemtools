@@ -50,7 +50,7 @@ dataset = "arcticdem"
 xmin, ymin, xmax, ymax = -247000, -2500000, -212000, -2487000
 
 # Parameters with which to filter ArcticDEM dataset. Note that you may wish to add
-# more or less - feel free to modify the search function at line 73.
+# more or less - feel free to modify the search function at line 99.
 dates = "20010101/20231231"
 baseline_max_hours = 24
 min_aoi_frac = 0.1
