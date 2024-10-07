@@ -19,11 +19,11 @@ pDEMtools
   :align: center
   :alt: A hillshaded DEM of Helheim Glacier
 
-pDEMtool provides a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter *et al.*  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat *et al.* 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
+``pdemtools`` provides a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter *et al.*  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat *et al.* 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
 
-The first aim of pDEMtools is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the ``search()`` function and ``load`` module:
+The first aim of ``pdemtools`` is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the ``search()`` function and ``load`` module:
 
- - ``search()``: This function aims to replicate the kind of convenient catalogue searching available when querying a dynamic STAC catalogue (e.g. ``pystac_client``), allowing users to easily find relevant ArcticDEM and REMA strips for their areas of interest. 
+ - ``search()``: This function aims to provide a convenient way of searching the ArcticDEM/REMA strip index - analogous to querying a dynamic STAC catalogue (e.g. via ``pystac_client``) - allowing users to easily find relevant ArcticDEM and REMA strips for their areas of interest. 
  - ``load``: This module provides simple one-line functions to preview and download strips and mosaics from the relevant AWS bucket to an ``xarray`` Dataset.
 
 
@@ -70,6 +70,7 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
    :glob:
    :caption: Appendix:
 
+   appendix/faq.md
    appendix/community_guidelines.md
    appendix/version_updates.md
    appendix/references.md
