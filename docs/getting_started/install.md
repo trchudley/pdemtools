@@ -12,6 +12,8 @@ or with `mamba`:
 mamba install pdemtools -c conda-forge
 ```
 
+If you don't already have `conda` or `mamba` installed, the recommended method is via `micromamba`. Instructions can be found [here](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html).
+
 It is also possible to install `pdemtools` with `pip`:
 
 ```bash
