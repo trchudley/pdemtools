@@ -75,11 +75,3 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
    appendix/version_updates.md
    appendix/references.md
    appendix/acknowledgements.md
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
