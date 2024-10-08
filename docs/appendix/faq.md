@@ -2,7 +2,7 @@
 
 This page records useful questions and answers raised by users of `pdemtools`, on the [GitHub issues page](https://github.com/trchudley/pdemtools/issues) and elsewhere. If you have any further questions, do not hesitate to raise them via GitHub issue!
 
-> __1. How large an area is appropriate to work with? I was lacking was some guidance regarding how big of an area is ‘appropriate’ to work with using the software. I several times ran into memory issues (running it on a new laptop) because I had selected an area that was too large.__
+#### Q: How large an area is appropriate to work with? I was lacking was some guidance regarding how big of an area is ‘appropriate’ to work with using the software. I several times ran into memory issues (running it on a new laptop) because I had selected an area that was too large.
 
 To an extent, 'how big of an area can I work with' is basically a question of how much RAM you have available, your internet speed, and your patience - `pdemtools` won't try and stop you from downloading a 2 m mosaic of the whole of Antarctica! 
 
@@ -11,3 +11,9 @@ However, the tool - as it currently stands - is designed around the challenge of
 `pdemtools` will still be useful in some ways for these larger-scale tasks. For instance, the dataframe returned by the `search` tool can providing you a list of download urls for strip tarballs (accessed via the dataframe's `'fileurl'` column) that can then be retrieved via `wget` or similar. Or the `mosaic()` function can return mosaics on a custom tile grid suited to your own requirements if the standard PGC tiles aren't useful for your needs.
 
 We would encourage users who are interested in larger-scale analysis to get in touch with their needs if they find `pdemtools` doesn't quite suit. We have the goal of making `pdemtools` a one-stop-shop for ArcticDEM/REMA DEM analysis, and other perspectives and requirements are an essential part of this.
+
+#### Q: I have downloaded a strip scene, but the strip appears to have no data within the area. Why?
+
+Strips can appear empty (i.e. `NaN` values) when photogrammetry fails (due to cloud, water, etc) or it is masked by the PGC bitmask. Data previewed by the `pdt.load.preview()` function is masked according to this bitmask, and data loaded by the `pdt.load.from_search()` function is also masked by default (this can be disabled by using the `bitmask = False` option).
+
+As a result, it is entirely possible that the `search()` function can return a valid datastrip that covers a sufficient proportion of the AOI to meet the `min_aoi_frac` requirements, but it will appear empty (i.e. all-`NaN`) when viewed. The `preview()` function will help you identify these 'empty' scenes, but there may still be (poor-quality) data present if it is downloaded using the `load.from_search()` function with `bitmask = False`.
