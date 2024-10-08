@@ -42,4 +42,6 @@ conda activate pdemtools_env
 pip install -e .
 ```
 
+## Testing
+
 `pdemtools` has built-in unit tests, which can be run by installing `pytest` into the same environment and entering the commend `pytest` whilst in the top directory.
