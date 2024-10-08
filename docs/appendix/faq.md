@@ -2,7 +2,7 @@
 
 This page records useful questions and answers raised by users of `pdemtools`, on the [GitHub issues page](https://github.com/trchudley/pdemtools/issues) and elsewhere. If you have any further questions, do not hesitate to raise them via GitHub issue!
 
-#### Q: How large an area is appropriate to work with? I was lacking was some guidance regarding how big of an area is ‘appropriate’ to work with using the software. I several times ran into memory issues (running it on a new laptop) because I had selected an area that was too large.
+#### Q: How large an area is appropriate to work with? 
 
 To an extent, 'how big of an area can I work with' is basically a question of how much RAM you have available, your internet speed, and your patience - `pdemtools` won't try and stop you from downloading a 2 m mosaic of the whole of Antarctica! 
 
