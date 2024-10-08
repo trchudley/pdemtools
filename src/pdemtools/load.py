@@ -348,10 +348,22 @@ def mosaic(
     else:
         dem = dems[0]
 
+    dems = None  # release dem objects for memory management
+
     # Filter -9999.0 values to np.nan
     dem = dem.where(dem > -9999.0)
 
-    dems = None  # release dem objects for memory management
+    # Enforce CF-compliant names
+    dem['x'].attrs['axis'] = 'X'
+    dem['x'].attrs['long_name'] = 'x coordinate of projection'
+    dem['x'].attrs['standard_name'] = 'projection_x_coordinate'
+    dem['x'].attrs['units'] = 'metre'
+
+    dem['y'].attrs['axis'] = 'Y'
+    dem['y'].attrs['long_name'] = 'y coordinate of projection'
+    dem['y'].attrs['standard_name'] = 'projection_y_coordinate'
+    dem['y'].attrs['units'] = 'metre'
+
     return dem
 
 
