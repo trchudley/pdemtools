@@ -38,7 +38,7 @@ cd pdemtools
 conda env create -f environment.yml -n pdemtools_env
 conda activate pdemtools_env
 
-# Install pdemtools
+# Install pdemtools as an editable
 pip install -e .
 ```
 
