@@ -32,7 +32,7 @@ The latest release of pdemtools can installed using `conda`:
 $ conda install pdemtools -c conda-forge
 ```
 
-Please visit the [pDEMtools readthedocs](https://pdemtools.readthedocs.io/en/latest/index.html) for more information on installing, using, and contributing to pDEMtools.
+Please visit the [pDEMtools readthedocs](https://pdemtools.readthedocs.io/) for more information on installing, using, and contributing to pDEMtools.
 
 ## Cite
 

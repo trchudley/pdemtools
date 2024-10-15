@@ -37,4 +37,4 @@ python:
   #  setup_py_install: true
 
 conda:
-  environment: docs/environment.yml
+  environment: docs/readthedocs_conda_env.yml
