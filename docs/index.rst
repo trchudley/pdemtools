@@ -42,6 +42,7 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
    :maxdepth: 2
    :caption: Getting Started:
 
+   getting_started/why_pdemtools.md
    getting_started/install.md
    getting_started/supplementary_datasets.md
    getting_started/cite.md
