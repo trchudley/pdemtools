@@ -34,7 +34,5 @@ python:
   install:
     - method: pip
       path: .
-  #  setup_py_install: true
-
-conda:
-  environment: docs/environment.yml
+        extra_requirements:
+          - doc

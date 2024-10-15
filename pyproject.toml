@@ -24,7 +24,7 @@ text = "MIT"
 
 [project.urls]
 Homepage = "https://github.com/trchudley/pdemtools"
-Documentation = "https://pdemtools.readthedocs.io/en/latest/"
+Documentation = "https://pdemtools.readthedocs.io"
 Repository = "https://github.com/trchudley/pdemtools"
 Issues = "https://github.com/trchudley/pdemtools/issues"
 
