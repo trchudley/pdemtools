@@ -18,7 +18,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
-    "sphinx.ext.mathjax"
+    "sphinx.ext.mathjax",
     "myst_parser",  # mardown parser
     "nbsphinx",  # notebook viewer
     "nbsphinx_link",  # link to outside root directory
