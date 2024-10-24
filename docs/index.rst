@@ -44,9 +44,9 @@ The second aim is to provide (pre)processing functions *specific* to the sort of
 
 Rather than introducing custom classes, pDEMtools will always try and return DEM data as an `xarray <https://docs.xarray.dev/en/stable/>`_ DataArray with geospatial metadata via the `rioxarray <https://corteva.github.io/rioxarray/stable/>`_ extension. The aim is to allow the user to quickly move beyond pDEMtools into their own analysis in whatever format they desire, be that `xarray`, `numpy` or `dask` datasets, DEM-specific Python packages such as `xdem <https://github.com/GlacioHack/xdem>`_ for advanced coregistration or `richdem <https://github.com/r-barnes/richdem>`_ for flow analysis, or exporting to geospatial file formats for analysis beyond Python.
 
-**Contact me:** Tom Chudley, thomas.r.chudley@durham.ac.uk
+**Cite pDEMtools:** 
 
-**Cite pDEMtools:** Chudley, T. R., and Howat, I. M. (2024). pDEMtools: conveniently search, download, and process ArcticDEM and REMA products. *Journal of Open Source Software*, *9*(102), 7149, doi.org/10.21105/joss.07149
+   Chudley, T. R., and Howat, I. M. (2024). pDEMtools: conveniently search, download, and process ArcticDEM and REMA products. *Journal of Open Source Software*, 9(102), 7149, doi.org/10.21105/joss.07149
 
 .. toctree::
    :maxdepth: 2
