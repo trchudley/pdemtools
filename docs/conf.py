@@ -6,8 +6,12 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import datetime
+
+year = datetime.date.today().year
+
 project = "pdemtools"
-# copyright = "2024, Tom Chudley"
+copyright = "2023-{}, The pdemtools Development Team".format(year)
 author = "Tom Chudley"
 # release = "0.6"
 
@@ -55,8 +59,10 @@ html_static_path = ["_static"]
 # Book theme options
 html_theme_options = {
     "repository_url": "https://github.com/trchudley/pdemtools",
+    "home_page_in_toc": False,
     "use_repository_button": True,
-    "home_page_in_toc": True,
+    "use_source_button": True,
+    "use_issues_button": True
     #    "logo": {
     #       "image_light": "_static/logo-light.png",
     #       "image_dark": "_static/logo-dark.png",
@@ -66,3 +72,4 @@ html_title = "pDEMtools"
 
 # Site-wide logo!
 html_logo = "_static/pdemtools_logo_1600px.png"
+

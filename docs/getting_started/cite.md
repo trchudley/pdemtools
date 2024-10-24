@@ -1,14 +1,24 @@
 # Cite
 
-A software paper is being prepared for the [Journal of Open Source Software](https://joss.theoj.org/). In the meantime, the use of the pDEMtools package can be cited as follows:
+A software paper for `pdemtools` is published in the [Journal of Open Source Software](https://joss.theoj.org/), and can be cited as follows:
 
-> Chudley, T. R. and Howat, I. M. (2024) pDEMtools: conveniently search, download, and process ArcticDEM and REMA products (vX.X.X). GitHub. https://github.com/trchudley/pDEMtools
+> Chudley, T. R., and Howat, I. M. (2024). pDEMtools: conveniently search, download, and process ArcticDEM and REMA products. _Journal of Open Source Software_, _9_(102), 7149, doi.org/10.21105/joss.07149
 
 or by using `bibtex`:
 
 ```
-@software{pDEMtools
-   author = {Chudley, Thomas R. and Howat, Ian M.}, title = {pDEMtools: conveniently search, download, and process ArcticDEM and REMA products}, year = 2024, publisher = {GitHub}, version = {X.X.X}, url = {https://github.com/trchudley/pDEMtools} 
+@article{Chudley2024,
+  title = {pDEMtools: conveniently search,  download,  and process ArcticDEM and REMA products},
+  volume = {9},
+  ISSN = {2475-9066},
+  url = {http://dx.doi.org/10.21105/joss.07149},
+  DOI = {10.21105/joss.07149},
+  number = {102},
+  journal = {Journal of Open Source Software},
+  publisher = {The Open Journal},
+  author = {Chudley,  Thomas R. and Howat,  Ian M.},
+  year = {2024},
+  pages = {7149}
 }
 ```
 

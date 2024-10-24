@@ -3,8 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-pDEMtools
-=========
+.. |version badge| image:: https://badge.fury.io/py/pdemtools.svg
+    :alt: PyPi package link and version
+    :target: https://pypi.org/project/pdemtools/
+
+.. |JOSS| image:: https://joss.theoj.org/papers/10.21105/joss.07149/status.svg
+    :alt: JOSS publication link and DOI
+    :target: https://doi.org/10.21105/joss.07149
+
+pDEMtools     |version badge|  |JOSS|
+=====================================
 
 .. .. image:: _static/pdemtools_logo_1600px.png
 ..    :align: center
@@ -38,8 +46,11 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
 
 **Contact me:** Tom Chudley, thomas.r.chudley@durham.ac.uk
 
+**Cite pDEMtools:** Chudley, T. R., and Howat, I. M. (2024). pDEMtools: conveniently search, download, and process ArcticDEM and REMA products. *Journal of Open Source Software*, *9*(102), 7149, doi.org/10.21105/joss.07149
+
 .. toctree::
    :maxdepth: 2
+   :hidden: 
    :caption: Getting Started:
 
    getting_started/why_pdemtools.md
@@ -49,6 +60,7 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
    :caption: Examples:
 
    examples/mosaic_and_terrain
@@ -58,7 +70,7 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
 
 .. toctree::
    :maxdepth: 3
-   :glob:
+   :hidden:
    :caption: API reference:
 
    api/search.rst
@@ -68,7 +80,7 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
 
 .. toctree::
    :maxdepth: 2
-   :glob:
+   :hidden:
    :caption: Appendix:
 
    appendix/faq.md

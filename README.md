@@ -3,10 +3,9 @@
 __Conveniently search, download, and process ArcticDEM and REMA products__
 
 
-[![conda-forge version](https://anaconda.org/conda-forge/pdemtools/badges/version.svg)](https://anaconda.org/conda-forge/pdemtools) [![PyPI version](https://badge.fury.io/py/pdemtools.svg)](https://pypi.org/project/pdemtools/) [![Documentation Status](https://readthedocs.org/projects/pdemtools/badge/?version=latest)](https://pdemtools.readthedocs.io/en/latest/?badge=latest) [![Unit Tests](https://github.com/trchudley/pdemtools/actions/workflows/unit_test.yml/badge.svg)](https://github.com/trchudley/pdemtools/actions/workflows/unit_test.yml) [![JOSS paper](https://joss.theoj.org/papers/2a10e67d2709a6cfb672538b4a21726e/status.svg)](https://joss.theoj.org/papers/2a10e67d2709a6cfb672538b4a21726e)
+[![conda-forge version](https://anaconda.org/conda-forge/pdemtools/badges/version.svg)](https://anaconda.org/conda-forge/pdemtools) [![PyPI version](https://badge.fury.io/py/pdemtools.svg)](https://pypi.org/project/pdemtools/) [![Documentation Status](https://readthedocs.org/projects/pdemtools/badge/?version=latest)](https://pdemtools.readthedocs.io/en/latest/?badge=latest) [![Unit Tests](https://github.com/trchudley/pdemtools/actions/workflows/unit_test.yml/badge.svg)](https://github.com/trchudley/pdemtools/actions/workflows/unit_test.yml) [![JOSS paper](https://joss.theoj.org/papers/10.21105/joss.07149/status.svg)](https://doi.org/10.21105/joss.07149)
 
-
-pDEMtool provides a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter _et al._  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat _et al._ 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
+pDEMtools provides a convenient set of functions to explore, download, and preprocess high-resolution DEMs of the polar regions from the ArcticDEM (Porter _et al._  2022; 2023) and Reference Elevation Model of Antarctica (REMA; Howat _et al._ 2022a, b) products, courtesy of the Polar Geospatial Center (PGC).
 
 The first aim of pDEMtools is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the `search()` function and `load` module:
 
@@ -36,19 +35,25 @@ Please visit the [pDEMtools readthedocs](https://pdemtools.readthedocs.io/) for 
 
 ## Cite
 
-<!-- 
-Update when v.1.0 uploaded to Zendoo.
- -->
+A software paper for `pdemtools` is published in the [Journal of Open Source Software](https://joss.theoj.org/), and can be cited as follows:
 
-A software paper is being prepared for the [Journal of Open Source Software](https://joss.theoj.org/). In the meantime, the use of the pDEMtools package can be cited as follows:
-
-> Chudley, T. R. and Howat, I. M. (2024) pDEMtools: conveniently search, download, and process ArcticDEM and REMA products (vX.X.X). GitHub. https://github.com/trchudley/pDEMtools
+> Chudley, T. R., and Howat, I. M. (2024). pDEMtools: conveniently search, download, and process ArcticDEM and REMA products. _Journal of Open Source Software_, _9_(102), 7149, doi.org/10.21105/joss.07149
 
 or by using `bibtex`:
 
 ```
-@software{pDEMtools
-   author = {Chudley, Thomas R. and Howat, Ian M.}, title = {pDEMtools: conveniently search, download, and process ArcticDEM and REMA products}, year = 2024, publisher = {GitHub}, version = {X.X.X}, url = {https://github.com/trchudley/pDEMtools} 
+@article{Chudley2024,
+  title = {pDEMtools: conveniently search,  download,  and process ArcticDEM and REMA products},
+  volume = {9},
+  ISSN = {2475-9066},
+  url = {http://dx.doi.org/10.21105/joss.07149},
+  DOI = {10.21105/joss.07149},
+  number = {102},
+  journal = {Journal of Open Source Software},
+  publisher = {The Open Journal},
+  author = {Chudley,  Thomas R. and Howat,  Ian M.},
+  year = {2024},
+  pages = {7149}
 }
 ```
 

@@ -1,0 +1,38 @@
+cff-version: "1.2.0"
+authors:
+- family-names: Chudley
+  given-names: Thomas R.
+  orcid: "https://orcid.org/0000-0001-8547-1132"
+- family-names: Howat
+  given-names: Ian M.
+  orcid: "https://orcid.org/0000-0002-8072-6260"
+contact:
+- family-names: Chudley
+  given-names: Thomas R.
+  orcid: "https://orcid.org/0000-0001-8547-1132"
+doi: 10.5281/zenodo.13936813
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Chudley
+    given-names: Thomas R.
+    orcid: "https://orcid.org/0000-0001-8547-1132"
+  - family-names: Howat
+    given-names: Ian M.
+    orcid: "https://orcid.org/0000-0002-8072-6260"
+  date-published: 2024-10-23
+  doi: 10.21105/joss.07149
+  issn: 2475-9066
+  issue: 102
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 7149
+  title: "pDEMtools: conveniently search, download, and process
+    ArcticDEM and REMA products"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.07149"
+  volume: 9
+title: "pDEMtools: conveniently search, download, and process ArcticDEM
+  and REMA products"
