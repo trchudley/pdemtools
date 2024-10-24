@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. |version badge| image:: https://badge.fury.io/py/pdemtools.svg
-    :alt: PyPi package link and version
-    :target: https://pypi.org/project/pdemtools/
+.. |version badge| image:: https://anaconda.org/conda-forge/pdemtools/badges/version.svg
+    :alt: conda-forge package link and version
+    :target: https://anaconda.org/conda-forge/pdemtools
 
 .. |JOSS| image:: https://joss.theoj.org/papers/10.21105/joss.07149/status.svg
     :alt: JOSS publication link and DOI
