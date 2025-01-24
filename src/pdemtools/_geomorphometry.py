@@ -325,11 +325,11 @@ def hillshade(slope, aspect, altitude=45, azimuth=315, norm=True):
         return hs
 
 
-# def plan_curvature(p_arr, q_arr, t_arr, r_arr, s_arr):
-#     return -(
-#         ((q_arr**2 * r_arr) - (2 * p_arr * q_arr * s_arr) + (p_arr**2 * t_arr))
-#         / np.sqrt((p_arr**2 + q_arr**2) ** 3)
-#     )
+def plan_curvature(p_arr, q_arr, t_arr, r_arr, s_arr):
+    return -(
+        ((q_arr**2 * r_arr) - (2 * p_arr * q_arr * s_arr) + (p_arr**2 * t_arr))
+        / np.sqrt((p_arr**2 + q_arr**2) ** 3)
+    )
 
 
 def horizontal_curvature(p_arr, q_arr, t_arr, r_arr, s_arr):

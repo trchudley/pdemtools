@@ -8,6 +8,7 @@ from importlib import resources
 
 import rioxarray as rxr
 import geopandas as gpd
+import numpy as np
 
 from rioxarray.merge import merge_arrays
 from xarray import DataArray
@@ -38,6 +39,7 @@ def from_fpath(
     dem_fpath: str,
     bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask_fpath: Optional[str] = None,
+    pad=False,
 ) -> DataArray:
     """Given a filepath (local or an AWS link), loads the desired ArcticDEM/REMA DEM
     strip as an ``xarray`` ``DataArray``. Option to filter to bounds and bitmask, if
@@ -54,16 +56,23 @@ def from_fpath(
     :type bounds: tuple | Polygon, optional
     :param mask_fpath: Path to _bitmask.tif file used to mask the DEM, defaults to None
     :type mask_fpath: str, optional
+    :param pad: If the DEM strip is not the full extent of the given bounds,
+        pad with NaNs to match the full bounds. Defaults to False.
+    :type pad: bool
 
     :returns: xarray DataArray of DEM strip
     :rtype: DataArray
     """
 
+    # Sanitise input
+    if not isinstance(pad, bool):
+        raise ValueError("pad must be True or False")
+
     # Open dataarray using rioxarray
     dem = rxr.open_rasterio(dem_fpath)
 
     # Convert shapely geometry to bounds
-    if type(bounds) == Polygon:
+    if isinstance(bounds, Polygon):
         bounds = bounds.bounds
 
     # Clip if requested, or get whole bounds if not
@@ -71,6 +80,8 @@ def from_fpath(
         dem = clip(dem, bounds)
     else:
         bounds = dem.rio.bounds()
+        if pad is not False:
+            raise ValueError("If `bounds` is not provided, `pad` must be False")
 
     # Filter -9999.0 values
     dem = dem.where(dem > -9999.0)
@@ -86,12 +97,28 @@ def from_fpath(
     # Remove `band` dim
     dem = dem.squeeze(drop=True)
 
+    # Enforce CF-compliant names
+    dem["x"].attrs["axis"] = "X"
+    dem["x"].attrs["long_name"] = "x coordinate of projection"
+    dem["x"].attrs["standard_name"] = "projection_x_coordinate"
+    dem["x"].attrs["units"] = "metre"
+
+    dem["y"].attrs["axis"] = "Y"
+    dem["y"].attrs["long_name"] = "y coordinate of projection"
+    dem["y"].attrs["standard_name"] = "projection_y_coordinate"
+    dem["y"].attrs["units"] = "metre"
+
+    if pad is True:
+        dem = dem.rio.pad_box(*bounds, constant_values=np.nan)
+
     return dem
 
 
 def preview(
     row: GeoDataFrame,
     bounds: Optional[Union[tuple, Polygon]] = None,
+    bitmask: Optional[bool] = True,
+    pad: Optional[bool] = False,
 ):
     """Loads a 10 m hillshade preview of the desired ArcticDEM/REMA DEM strip as an
     ``xarray`` ``DataArray``, for preliminary plotting and assessment. Option to filter
@@ -105,27 +132,43 @@ def preview(
         EPSG:3031 (REMA). Will accept a shapely geometry to extract bounds from.
         Defaults to None
     :type bounds: tuple | Polygon, optional
+    :param bitmask: If True, loads the masked hillshade according to the PGC bitmask.
+        If False, loads the unmasked hillshade. Defaults to True
+    :type bitmask: bool
+    :param pad: If the DEM strip is not the full extent of the given bounds,
+        pad with NaNs to match the full bounds. Defaults to True.
+    :type pad: bool
 
     :returns: xarray DataArray of DEM strip 10 m hillshade
     :rtype: DataArray
     """
 
-    try:
-        s3url = row.s3url.values[0]
-    except:
-        s3url = row.s3url
-
-    json_url = "https://" + s3url.split("/external/")[1]
-    hillshade_10m_url = json_url.replace(".json", "_dem_10m_shade_masked.tif")
+    if bitmask is True:
+        try:
+            hillshade_10m_url = row.href_hillshade_masked.values[0]
+        except:
+            hillshade_10m_url = row.href_hillshade_masked
+    elif bitmask is False:
+        try:
+            hillshade_10m_url = row.href_hillshade.values[0]
+        except:
+            hillshade_10m_url = row.href_hillshade
+    else:
+        raise ValueError("masked must be True or False")
 
     preview = from_fpath(hillshade_10m_url, bounds)
+
+    if bounds is not None and pad is True:
+        preview = preview.rio.pad_box(*bounds, constant_values=np.nan)
+
     return preview.where(preview > 0)
 
 
 def from_search(
     row: GeoDataFrame,
     bounds: Optional[Union[tuple, Polygon]] = None,
-    bitmask: bool = True,
+    bitmask: Optional[bool] = True,
+    pad: Optional[bool] = False,
 ):
     """Given a row from the GeoDataFrame output of ``pdemtools.search()``, loads the 2
     m DEM strip of the desired ArcticDEM/REMA DEM strip as an xarray DataArray.
@@ -144,22 +187,33 @@ def from_search(
     :type bounds: tuple | Polygon, optional
     :param bitmask: Choose whether apply the associated bitmask. Defaults to True
     :type bitmask: bool, optional
+    :param pad: If the DEM strip is not the full extent of the given bounds,
+        pad with NaNs to match the full bounds. Defaults to False.
+    :type pad: bool
 
     :returns: xarray DataArray of DEM strip
     :rtype: DataArray
     """
 
     try:
-        s3url = row.s3url.values[0]
+        dem_url = row.href_dem.values[0]
     except:
-        s3url = row.s3url
+        dem_url = row.href_dem
 
-    json_url = "https://" + s3url.split("/external/")[1]
-    dem_url = json_url.replace(".json", "_dem.tif")
+    # try:
+    #     s3url = row.s3url.values[0]
+    # except:
+    #     s3url = row.s3url
+
+    # json_url = "https://" + s3url.split("/external/")[1]
+    # dem_url = json_url.replace(".json", "_dem.tif")
 
     # Construct bitmask fpath, if required
     if bitmask == True:
-        bitmask_url = json_url.replace(".json", "_bitmask.tif")
+        try:
+            bitmask_url = row.href_mask.values[0]
+        except:
+            bitmask_url = row.href_mask
     else:
         bitmask_url = None
 
@@ -168,6 +222,7 @@ def from_search(
         dem_url,
         bounds,
         bitmask_url,
+        pad,
     )
 
 
@@ -180,6 +235,7 @@ def from_id(
     bucket: Optional[str] = "https://pgc-opendata-dems.s3.us-west-2.amazonaws.com",
     version: Optional[str] = "s2s041",
     preview: Optional[bool] = False,
+    pad: Optional[bool] = False,
 ) -> DataArray:
     """An alternative method of loading the selected ArcticDEM/REMA strip, which
     requires only the geocell and the dem_id (e.g. ``geocell = 'n70w051'``, ``dem_id =
@@ -188,6 +244,9 @@ def from_id(
     Downloads from the relevant AWS bucket, as an xarray ``DataArray``. Option to
     filter to bounds and bitmask. 2 m DEM strips are large in size and loading
     remotely from AWS may take some time.
+
+    NOTE: This function is kept for vestigial purposes, and may be removed or
+    significantly altered in a future release.
 
     :param dataset: Either 'arcticdem' or 'rema'. Case-insensitive.
     :type dataset: str
@@ -208,6 +267,9 @@ def from_id(
     :type version: str
     :param preview: Return just a link to the STAC preview page, defaults to False
     :type preview: bool, optional
+    :param pad: If the DEM strip is not the full extent of the given bounds,
+        pad with NaNs to match the full bounds. Defaults to False.
+    :type pad: bool
 
     :return: xarray DataArray of DEM strip
     :rtype: DataArray
@@ -217,7 +279,7 @@ def from_id(
     dataset = dataset.lower()
     geocell = geocell.lower()
 
-    if preview == True:
+    if preview is True:
         browser_prefix = "https://polargeospatialcenter.github.io/stac-browser/#/external/pgc-opendata-dems.s3.us-west-2.amazonaws.com"
         preview_fpath = (
             f"{browser_prefix}/{dataset}/strips/{version}/2m/{geocell}/{dem_id}.json"
@@ -231,7 +293,7 @@ def from_id(
     # )
 
     # Construct bitmask fpath, if required
-    if bitmask == True:
+    if bitmask is True:
         bitmask_fpath = (
             f'{bucket}/{dataset}/"strips"/{version}/2m/{geocell}/{dem_id}_bitmask.tif'
         )
@@ -246,6 +308,7 @@ def from_id(
         dem_fpath,
         bounds,
         bitmask_fpath,
+        pad,
     )
 
 
@@ -278,7 +341,7 @@ def mosaic(
         raise ValueError(
             f"Dataset must be one of {VERSIONS.keys}. Currently `{dataset}`."
         )
-    if version == None:  # pick the most recent dataset
+    if version is None:  # pick the most recent dataset
         version = VERSIONS[dataset][-1]
     else:
         if version not in VERSIONS[dataset]:
@@ -287,7 +350,7 @@ def mosaic(
             )
 
     # get resolution as str
-    if type(resolution) == int:
+    if isinstance(resolution, int):
         resolution = f"{resolution}m"
 
     # check if valid resolution
@@ -297,7 +360,7 @@ def mosaic(
         )
 
     # Sanitise shapely geometry to bounds tuple
-    if type(bounds) == Polygon:
+    if isinstance(bounds, Polygon):
         bounds = bounds.bounds
 
     # get dataset version
@@ -313,9 +376,9 @@ def mosaic(
         )
 
     # Load tiles that intersect with AOI
-    index_fpath =  _get_index_fpath(dataset, version=version)
+    index_fpath = _get_index_fpath(dataset, version=version)
     with open(index_fpath, "rb") as file:
-        tiles = gpd.read_file(index_fpath, layer=layer, bbox=bounds, engine='fiona') 
+        tiles = gpd.read_file(index_fpath, layer=layer, bbox=bounds, engine="fiona")
 
         if len(tiles) < 1:
             raise ValueError(
@@ -325,7 +388,9 @@ def mosaic(
         # get aws filepaths from the tiles dataframe
         fpaths = []
         for _, row in tiles.iterrows():
-            fpath = _aws_link(row, dataset=dataset, version=version, resolution=resolution)
+            fpath = _aws_link(
+                row, dataset=dataset, version=version, resolution=resolution
+            )
             fpaths.append(fpath)
 
         tiles = None  # release tiles object
@@ -354,15 +419,15 @@ def mosaic(
     dem = dem.where(dem > -9999.0)
 
     # Enforce CF-compliant names
-    dem['x'].attrs['axis'] = 'X'
-    dem['x'].attrs['long_name'] = 'x coordinate of projection'
-    dem['x'].attrs['standard_name'] = 'projection_x_coordinate'
-    dem['x'].attrs['units'] = 'metre'
+    dem["x"].attrs["axis"] = "X"
+    dem["x"].attrs["long_name"] = "x coordinate of projection"
+    dem["x"].attrs["standard_name"] = "projection_x_coordinate"
+    dem["x"].attrs["units"] = "metre"
 
-    dem['y'].attrs['axis'] = 'Y'
-    dem['y'].attrs['long_name'] = 'y coordinate of projection'
-    dem['y'].attrs['standard_name'] = 'projection_y_coordinate'
-    dem['y'].attrs['units'] = 'metre'
+    dem["y"].attrs["axis"] = "Y"
+    dem["y"].attrs["long_name"] = "y coordinate of projection"
+    dem["y"].attrs["standard_name"] = "projection_y_coordinate"
+    dem["y"].attrs["units"] = "metre"
 
     return dem
 
