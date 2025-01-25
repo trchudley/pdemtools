@@ -221,6 +221,9 @@ def icesat2_atl06(
     :param sr_sigma_r_max: sliderule maximum robust dispersion in metres.
         Defaults to 5.
     :type sr_sigma_r_max: int
+
+    :returns: geopandas dataframe of ICESat-2 data
+    :rtype: geopandas.DataFrame
     """
 
     if isinstance(target_rxd, (list, tuple)) and len(target_rxd) == 4:
