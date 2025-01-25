@@ -1,6 +1,6 @@
 # Cite
 
-A software paper for `pdemtools` is published in the [Journal of Open Source Software](https://joss.theoj.org/), and can be cited as follows:
+A software paper for `pdemtools` is published in the [Journal of Open Source Software](https://joss.theoj.org/), and should be cited as follows when `pdemtools` is used:
 
 > Chudley, T. R., and Howat, I. M. (2024). pDEMtools: conveniently search, download, and process ArcticDEM and REMA products. _Journal of Open Source Software_, _9_(102), 7149, doi.org/10.21105/joss.07149
 
