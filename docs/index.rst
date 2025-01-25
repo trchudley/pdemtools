@@ -63,8 +63,10 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
    :hidden:
    :caption: Examples:
 
-   examples/mosaic_and_terrain
-   examples/strip_search_and_dem_difference
+   examples/mosaic
+   examples/strip_search
+   examples/terrain_parameters
+   examples/coregistration
    examples/get_icebergs
    examples/batch_processing.md
 
