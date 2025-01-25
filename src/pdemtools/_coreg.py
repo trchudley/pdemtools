@@ -8,7 +8,7 @@ https://github.com/PolarGeospatialCenter/setsm_postprocessing_python/blob/fd36fd
 """
 
 import operator
-from typing import Optional, Union
+from typing import Optional
 from warnings import warn
 
 import numpy as np
@@ -29,7 +29,7 @@ gdal.UseExceptions()
 
 def coregister(
     dem: np.ndarray,
-    reference: Union[np.ndarray | list[np.ndarray]],
+    reference: np.ndarray | list[np.ndarray],
     x: np.ndarray,
     y: np.ndarray,
     res: float,
@@ -40,19 +40,19 @@ def coregister(
     verbose: Optional[bool] = True,
 ):
     """Backend coregistration routine, coregistering DEMs against either grid
-    or point data according to Nuth and Kääb (2011). Accepts as a reference 
-    either another DEM (of the same size as the target DEM) or point data (for 
+    or point data according to Nuth and Kääb (2011). Accepts as a reference
+    either another DEM (of the same size as the target DEM) or point data (for
     e.g. ICESat-2 altimetry) as a three-item list of [x, y, z] data.
     """
     # verbose print lamdba function
     print_verbose = lambda msg: print(msg) if verbose else None
 
-    dem2 = dem #.copy()
+    dem2 = dem  # .copy()
 
     # Filter points to only valid and unmasked data
     if isinstance(reference, (list, tuple)):
 
-        coreg_type = 'points'
+        coreg_type = "points"
         # grid_x, grid_y = np.meshgrid(x, y, indexing='ij')
 
         points_x = reference[0]
@@ -61,7 +61,7 @@ def coregister(
         points_xy = list(zip(points_y, points_x))
 
         # Mask invalid (and masked) values here
-        points_dem = interpn(points=(y, x), values=dem2, xi=points_xy, method='nearest')
+        points_dem = interpn(points=(y, x), values=dem2, xi=points_xy, method="nearest")
         points_valid = ~np.isnan(points_dem)
 
         if mask is None:
@@ -70,7 +70,9 @@ def coregister(
             points_y = points_y[points_valid == 1]
 
         if mask is not None:
-            points_mask = interpn(points=(y, x), values=mask, xi=points_xy, method='nearest')
+            points_mask = interpn(
+                points=(y, x), values=mask, xi=points_xy, method="nearest"
+            )
             points_h = points_h[(points_valid == 1) & (points_mask == 1)]
             points_x = points_x[(points_valid == 1) & (points_mask == 1)]
             points_y = points_y[(points_valid == 1) & (points_mask == 1)]
@@ -79,7 +81,7 @@ def coregister(
         points_n = len(points_h)
 
     else:
-        coreg_type = 'dem'
+        coreg_type = "dem"
 
     # initial trans and RMSE settings
     p = np.zeros((3, 1))  # p  is prior iteration trans var
@@ -112,9 +114,9 @@ def coregister(
 
         # Apply offsets
         if pn[1] != 0 and pn[2] != 0:
-            dem2n = shift_dem(dem2, pn.T[0], x, y, verbose=verbose).astype('float32')
+            dem2n = shift_dem(dem2, pn.T[0], x, y, verbose=verbose).astype("float32")
         else:
-            dem2n = dem2 - pn[0].astype('float32')
+            dem2n = dem2 - pn[0].astype("float32")
 
         # # Calculate slopes - original method from PGC
         # sy, sx = np.gradient(dem2n, res)
@@ -127,31 +129,32 @@ def coregister(
         sy = -sy
         sx = -sx
 
-        if coreg_type == 'dem':
+        if coreg_type == "dem":
             # Difference grids.
             dz = dem2n - reference
             # Mask (in full script, both m1 and m2 are applied)
             dz[mask == 0] = np.nan
 
-        elif coreg_type == 'points':
+        elif coreg_type == "points":
             # Get relevant dz, sy, sx values at the icesat-2 coordinates
             # xda = zero_xda + dem2n
             # dem2n_coords = xda.interp(coords_ds, method='linear').values
-            dem2n_coords = interpn(points=(y, x), values=dem2n, xi=points_xy, method='linear')
+            dem2n_coords = interpn(
+                points=(y, x), values=dem2n, xi=points_xy, method="linear"
+            )
             dz = dem2n_coords - points_h
 
             # xda = zero_xda + sy
             # sy = xda.interp(coords_ds, method='linear').values
-            sy = interpn(points=(y, x), values=sy, xi=points_xy, method='linear')
+            sy = interpn(points=(y, x), values=sy, xi=points_xy, method="linear")
 
             # xda = zero_xda + sx
             # sx = xda.interp(coords_ds, method='linear').values
-            sx = interpn(points=(y, x), values=sx, xi=points_xy, method='linear')
+            sx = interpn(points=(y, x), values=sx, xi=points_xy, method="linear")
 
         else:
             raise ValueError(
-                "coreg_type must be 'dem' or 'points'. "
-                f"Received {coreg_type}."
+                "coreg_type must be 'dem' or 'points'. " f"Received {coreg_type}."
             )
 
         # If no overlap between scenes, break the loop
@@ -246,7 +249,9 @@ def coregister(
         status = "dz_only"
 
     elif critical_failure:
-        print("Regression critical failure, returning original DEM, NaN trans, and RMSE")
+        print(
+            "Regression critical failure, returning original DEM, NaN trans, and RMSE"
+        )
         dem2out = dem2
         p = np.full((3, 1), np.nan)
         perr = np.full((3, 1), np.nan)
@@ -271,7 +276,7 @@ def coregister(
         "rmse": d0,
     }
 
-    if coreg_type == 'points':
+    if coreg_type == "points":
         metadata_dict["points_n"] = points_n
 
     # Convert all numerical values to regular Python floats
@@ -281,6 +286,7 @@ def coregister(
     }
 
     return dem2out, metadata_dict
+
 
 # def coregisterdems(
 #     dem1,  # Reference DEM
@@ -613,7 +619,7 @@ def dtype_np2gdal(dtype_np):
             f"NumPy array data type ({dtype_np}) does not have equivalent GDAL "
             "data type and is not supported, but can be safely promoted to "
             f"{promote_dtype(1).dtype}"
-            )
+        )
         dtype_np = promote_dtype
 
     dtype_gdal = gdal_array.NumericTypeCodeToGDALTypeCode(dtype_np)

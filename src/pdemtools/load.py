@@ -209,7 +209,7 @@ def from_search(
     # dem_url = json_url.replace(".json", "_dem.tif")
 
     # Construct bitmask fpath, if required
-    if bitmask == True:
+    if bitmask is True:
         try:
             bitmask_url = row.href_mask.values[0]
         except:
@@ -417,6 +417,9 @@ def mosaic(
 
     # Filter -9999.0 values to np.nan
     dem = dem.where(dem > -9999.0)
+
+    # Remove `band` dim
+    dem = dem.squeeze(drop=True)
 
     # Enforce CF-compliant names
     dem["x"].attrs["axis"] = "X"

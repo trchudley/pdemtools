@@ -97,21 +97,56 @@ class DemAccessor:
         return self._obj - geoid
 
     def coregister_is2(
-            self,
-            points_df: GeoDataFrame,
-            stable_mask: Optional[DataArray] = None,
-            return_stats: Optional[bool] = False,
-            max_horiz_offset: float = 50,
-            rmse_step_thresh: float = -0.001,
-            max_iterations: int = 5,
-            verbose: Optional[bool] = True,
-            resample: Optional[bool] = True,
-            resample_res: Optional[float] = 10,
-    ):
+        self,
+        points_df: GeoDataFrame,
+        stable_mask: Optional[DataArray] = None,
+        return_stats: Optional[bool] = False,
+        max_horiz_offset: float = 50,
+        rmse_step_thresh: float = -0.001,
+        max_iterations: int = 5,
+        verbose: Optional[bool] = True,
+        resample: Optional[bool] = True,
+        resample_res: Optional[float] = 10,
+    ) -> DataArray:
+        """Coregisters the scene against reference ICESat-2 data based on the Nuth and Kääb (2011)
+        method, as implemented by the PGC.
+
+        Original code available here:
+        https://github.com/PolarGeospatialCenter/setsm_postprocessing_python/blob/master/lib/scenes2strips.py
+
+        :points_df: GeoDataFrame of ICESat-2 points to use for coregistration, as provided
+            by the `data.load.icesat2_atl06()` function.
+        :type points_df: GeoDataFrame
+        :param stable_mask: Mask dataarray where 1 = stable region to be used for
+            coregistration. If none, coregisters based on the entire scene.
+        :type stable_mask: xarray.DataArray
+        :param return_stats: If true, returns a metadata dictionary alongside
+            the coregistered DEM dataarray. The dictionary contains the coregistration
+            status (coregistered, dz_only, failed), the transformation parameter,
+            the translation error, and the RMS error. Defaults to False
+        :type return_stats: bool
+        :param max_horiz_offset: maximum horizontal offset, beyond which XY
+            coregistration is ignored and only Z values are corrected. Defaults
+            to 15.
+        :type max_horiz_offset: float
+        :param rmse_step_thresh: threshold for the change in RMSE between two consecutive
+            iterations. Defaults to -0.001.
+        :type rmse_step_thresh: float
+        :param max_iterations: maximum number of iterations. Defaults to 5.
+        :type max_iterations: int
+        :param verbose: If True, print status updates. Defaults to True.
+        :type verbose: bool
+        :param resample: If True, resample the DEM to a larger resolution. Defaults to True.
+        :type resample: bool
+        :param resample_res: Resolution to resample the DEM to. Defaults to 10.
+        :type resample_res: float
+        """
 
         # 0. SANITY CHECK
         if stable_mask is None:
-            print("No `stable_mask` provided: assuming entire scene is suitable reference surface.")
+            print(
+                "No `stable_mask` provided: assuming entire scene is suitable reference surface."
+            )
         else:
             check_match = geospatial_match(self._obj, stable_mask, return_info=True)
             if check_match is not True:
@@ -121,20 +156,21 @@ class DemAccessor:
                     "(`.rio.repoject_match`) stable_mask."
                 )
 
-
         # 1. PRE-PROCESSING: INPUT DEM
 
         resolution = get_resolution(self._obj)
 
         if (resample is True) and (resolution < resample_res):
 
-            print(f"Upsampling {resolution} m DEM to {resample_res} m resolution"
-                  " for coregistration process...")
+            print(
+                f"Upsampling {resolution} m DEM to {resample_res} m resolution"
+                " for coregistration process..."
+            )
 
             dem_in = self._obj.squeeze().rio.reproject(
                 self._obj.rio.crs,  # Maintain the original coordinate reference system
-                resolution = resample_res,  # Set the target resolution to 10 meters
-                resampling = Resampling.average, # Upscale with average resampling method
+                resolution=resample_res,  # Set the target resolution to 10 meters
+                resampling=Resampling.average,  # Upscale with average resampling method
             )
 
             dem_in_vals = dem_in.values
@@ -144,8 +180,8 @@ class DemAccessor:
                 mask_in = stable_mask.squeeze().rio.reproject(
                     self._obj.rio.crs,
                     resolution=resample_res,
-                    resampling=Resampling.nearest
-                    )
+                    resampling=Resampling.nearest,
+                )
 
                 mask_in_vals = mask_in.values
 
@@ -177,7 +213,7 @@ class DemAccessor:
         points_vals = [
             points_df.geometry.x.values,
             points_df.geometry.y.values,
-            points_df.h_mean.values
+            points_df.h_mean.values,
         ]
 
         # 3. COREGISTRATION
@@ -195,33 +231,35 @@ class DemAccessor:
         )
 
         # ADD ICESAT-2 SPECIFIC TO METADATA
-        if 'request_date_dt' in points_df.columns:
+        if "request_date_dt" in points_df.columns:
 
-            dt_days_max = int(points_df['request_date_dt'].dt.round('d').dt.days.abs().max())
-            metadata_dict['points_dt_days_max'] = dt_days_max
+            dt_days_max = int(
+                points_df["request_date_dt"].dt.round("d").dt.days.abs().max()
+            )
+            metadata_dict["points_dt_days_max"] = dt_days_max
 
-            dt_days = points_df['request_date_dt'].dt.round('d').dt.days
+            dt_days = points_df["request_date_dt"].dt.round("d").dt.days
             dt_days_counts_dict = dt_days.value_counts().to_dict()
-            metadata_dict['points_dt_days_count'] = dt_days_counts_dict
+            metadata_dict["points_dt_days_count"] = dt_days_counts_dict
 
-        metadata_dict['coregistration_type'] = 'reference_icesat2'
+        metadata_dict["coregistration_type"] = "reference_icesat2"
 
         # APPLY COREGISTRATION TO NON-RESAMPLED DATASET
         if resampled:
 
-            # If the coregistration estimation has been run on a DEM that has been 
-            # upsampled to 10 m, we have to apply the calculated offsets to original 
+            # If the coregistration estimation has been run on a DEM that has been
+            # upsampled to 10 m, we have to apply the calculated offsets to original
             # high-resolution image
 
-            if metadata_dict['coreg_status'] == 'failed':
-                new_dem_array = self._obj.squeeze().values.astype('float32')  
+            if metadata_dict["coreg_status"] == "failed":
+                new_dem_array = self._obj.squeeze().values.astype("float32")
 
             else:
                 pn = [
-                    metadata_dict['z_offset'],
-                    metadata_dict['x_offset'],
-                    metadata_dict['y_offset'],
-                    ]
+                    metadata_dict["z_offset"],
+                    metadata_dict["x_offset"],
+                    metadata_dict["y_offset"],
+                ]
 
                 # Apply offsets
                 if pn[1] != 0 and pn[2] != 0:
@@ -230,23 +268,19 @@ class DemAccessor:
                         self._obj.squeeze().values,
                         pn,
                         self._obj.squeeze().x.values,
-                        self._obj.squeeze().y.values
-                        ).astype('float32')
+                        self._obj.squeeze().y.values,
+                    ).astype("float32")
 
                 else:
                     print("Applying dz to original image...")
-                    new_dem_array = (self._obj.squeeze() - pn[0]).astype('float32')  
+                    new_dem_array = (self._obj.squeeze() - pn[0]).astype("float32")
 
         # Return coregistered DEM
         if return_stats is True:
-            return (
-                self._obj.fillna(0) * 0 + new_dem_array,
-                metadata_dict
-            )
+            return (self._obj.fillna(0) * 0 + new_dem_array, metadata_dict)
 
         else:
             return self._obj.fillna(0) * 0 + new_dem_array
-
 
     def coregister(
         self,
@@ -257,9 +291,9 @@ class DemAccessor:
         rmse_step_thresh: float = -0.001,
         max_iterations: int = 5,
         verbose: Optional[bool] = True,
-    ):
+    ) -> DataArray:
         """This function is deprecated, and redirects to the `coregister_dems`
-        function instead. Please consult the `coregister_dems` function for 
+        function instead. Please consult the `coregister_dems` function for
         documentation.
         """
 
@@ -278,7 +312,7 @@ class DemAccessor:
             rmse_step_thresh,
             max_iterations,
             verbose,
-            )
+        )
 
     def coregister_dems(
         self,
@@ -294,7 +328,7 @@ class DemAccessor:
         Coregisters the scene against a reference DEM based on the Nuth and Kääb (2011)
         method, as implemented by the PGC.
 
-        Original code available here: 
+        Original code available here:
         https://github.com/PolarGeospatialCenter/setsm_postprocessing_python/blob/master/lib/scenes2strips.py
 
         :param reference: reference DEM DataArray of same extent and resolution.
@@ -304,7 +338,7 @@ class DemAccessor:
         :type stable_mask: xarray.DataArray
         :param return_stats: If true, returns a metadata dictionary alongside
             the coregistered DEM dataarray. The dictionary contains the coregistration
-            status (coregistered, dz_only, failed), the transformation parameter, 
+            status (coregistered, dz_only, failed), the transformation parameter,
             the translation error, and the RMS error. Defaults to False
         :type return_stats: bool
         :param max_horiz_offset: maximum horizontal offset, beyond which XY
@@ -337,7 +371,7 @@ class DemAccessor:
             print(
                 "No `stable_mask` provided: assuming entire scene is suitable "
                 "reference surface."
-                )
+            )
             stable_mask = self._obj * 0 + 1
         else:
             check_match = geospatial_match(self._obj, stable_mask, return_info=True)
@@ -376,16 +410,13 @@ class DemAccessor:
             verbose=verbose,
         )
 
-        metadata_dict['coregistration_type'] = 'reference_dem'
+        metadata_dict["coregistration_type"] = "reference_dem"
 
         # print(f"Translating: {trans[0]:.2f} X, {trans[1]:.2f} Y, {trans[2]:.2f} Z")
         # new_dem_array = shift_dem(self._obj.values, trans)
 
         if return_stats is True:
-            return (
-                self._obj.fillna(0) * 0 + new_dem_array,
-                metadata_dict
-            )
+            return (self._obj.fillna(0) * 0 + new_dem_array, metadata_dict)
 
         else:
             return self._obj.fillna(0) * 0 + new_dem_array
@@ -427,7 +458,7 @@ class DemAccessor:
         order partial derivative from a 5 x 5 window, which may be more appropriate
         for high-resolution DEMs with some amount of noise. The `method` parameter
         allows for the selection of a more traditional method using a second-order
-        derivative from a 3 x 3 window (`ZevenbergThorne`), as outlined by Zevenbergen 
+        derivative from a 3 x 3 window (`ZevenbergThorne`), as outlined by Zevenbergen
         and Throrne (1987).
 
         :param attribute: The attribute(s) to calculate, as a string or list.
@@ -454,7 +485,6 @@ class DemAccessor:
         :returns: selected terrain attributes as a (rio)xarray DataSet
         :rtype: DataSet
         """
-
 
         # Validate attribute(s), resolution, and method
         if isinstance(attribute, str):
@@ -608,9 +638,7 @@ class DemAccessor:
                 del hs
 
         if "plan_curvature" in attribute:
-            plan_curvature_arr = plan_curvature(
-                p_arr, q_arr, t_arr, r_arr, s_arr
-            )
+            plan_curvature_arr = plan_curvature(p_arr, q_arr, t_arr, r_arr, s_arr)
 
         if ("horizontal_curvature" in attribute) or ("horizontal_excess" in attribute):
             horizontal_curvature_arr = horizontal_curvature(
@@ -653,7 +681,7 @@ class DemAccessor:
             ("minimal_curvature" in attribute)
             or ("horizontal_excess" in attribute)
             or ("vertical_excess" in attribute)
-            ):
+        ):
             minimal_curvature_arr = minimal_curvature(
                 mean_curvature_arr, unsphericity_curvature_arr
             )
@@ -687,9 +715,13 @@ class DemAccessor:
         if "vertical_curvature" in attribute:
             xds["vertical_curvature"] = self._obj * 0 + vertical_curvature_arr
         if "horizontal_excess" in attribute:
-            xds["horizontal_excess"] = self._obj * 0 + (horizontal_curvature_arr - minimal_curvature_arr)
+            xds["horizontal_excess"] = self._obj * 0 + (
+                horizontal_curvature_arr - minimal_curvature_arr
+            )
         if "vertical_excess" in attribute:
-            xds["vertical_excess"] = self._obj * 0 + (vertical_curvature_arr - minimal_curvature_arr)
+            xds["vertical_excess"] = self._obj * 0 + (
+                vertical_curvature_arr - minimal_curvature_arr
+            )
         if "mean_curvature" in attribute:
             xds["mean_curvature"] = self._obj * 0 + mean_curvature_arr
         if "gaussian_curvature" in attribute:
