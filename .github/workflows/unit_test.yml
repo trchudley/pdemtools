@@ -30,13 +30,13 @@ jobs:
           cache-environment: true
           post-cleanup: all
         
-      - name: Install EGL mesa for opencv functionality
-        shell: micromamba-shell {0}
-        run: |
-          sudo apt-get update -y -qq
-          sudo apt-get install -y -qq libegl1-mesa libegl1-mesa-dev        
-      - name: Check if EGL library exists
-        run: ldconfig -p | grep EGL
+      # - name: Install EGL mesa for opencv functionality
+      #   shell: micromamba-shell {0}
+      #   run: |
+      #     sudo apt-get update -y -qq
+      #     sudo apt-get install -y -qq libegl1-mesa libegl1-mesa-dev        
+      # - name: Check if EGL library exists
+      #   run: ldconfig -p | grep EGL
  
       - name: Install pdemtools
         shell: micromamba-shell {0}
