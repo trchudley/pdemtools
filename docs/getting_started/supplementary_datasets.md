@@ -11,7 +11,7 @@ The appropriate versions of BedMachine, in netcdf format, can be downloaded from
 
 ## ArcticDEM/REMA strip index
 
-As of `pdemtools v1.0.0`, the `pdt.search()` functions search the ArcticDEM and REMA strips by seamlessly quering to the online PGC dynamic STAC API. Prior to this, a local ArcticDEM or REMA strip index was required to be downloaded. The functionality to search a local copy of the index is still available within the `pdt.search()` function, and may be useful for those that do not wish to rely on an online connection to search the PGC catalogue.
+As of `pdemtools` `v1.0.0`, the `pdt.search()` functions search the ArcticDEM and REMA strips by seamlessly quering to the online PGC dynamic STAC API. Prior to this, a local ArcticDEM or REMA strip index was required to be downloaded. The functionality to search a local copy of the index is still available within the `pdt.search()` function, and may be useful for those that do not wish to rely on an online connection to search the PGC catalogue.
 
 ArcticDEM or REMA strip index GeoParquet files can be downloaded from the PGC ([Greenland](https://data.pgc.umn.edu/elev/dem/setsm/ArcticDEM/indexes/), [Antarctica](https://data.pgc.umn.edu/elev/dem/setsm/REMA/indexes/)). The appriate files to download are the `ArcticDEM_Strip_Index_s2s041_gpqt.zip` and `REMA_Strip_Index_s2s041_gpkg.zip` - note the __GeoParquet file format__ (ending `_gpqt.zip`), *not* the similarly named GeoPackage (ending `_gpkg.zip`). No mosaic files are necessary - these are included with `pdemtools`. 
 
