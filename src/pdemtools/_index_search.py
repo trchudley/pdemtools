@@ -238,7 +238,9 @@ def search(
 
     if gdf is None:
         warnings.warn(
-            "No strips found matching search parameters. Returning `None`.", UserWarning
+            "No strips found matching search parameters. Returning `None`.",
+            UserWarning,
+            stacklevel=2,
         )
         return None
 
@@ -307,7 +309,9 @@ def search(
 
     if len(gdf) == 0:
         warnings.warn(
-            "No strips found matching search parameters. Returning `None`.", UserWarning
+            "No strips found matching search parameters. Returning `None`.",
+            UserWarning,
+            stacklevel=2,
         )
         return None
 
@@ -335,7 +339,9 @@ def search(
 
     if len(gdf) == 0:
         warnings.warn(
-            "No strips found matching search parameters. Returning `None`.", UserWarning
+            "No strips found matching search parameters. Returning `None`.",
+            UserWarning,
+            stacklevel=2,
         )
         return None
 

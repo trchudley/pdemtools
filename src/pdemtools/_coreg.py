@@ -61,7 +61,13 @@ def coregister(
         points_xy = list(zip(points_y, points_x))
 
         # Mask invalid (and masked) values here
-        points_dem = interpn(points=(y, x), values=dem2, xi=points_xy, method="nearest")
+        points_dem = interpn(
+            points=(y, x),
+            values=dem2,
+            xi=points_xy,
+            method="nearest",
+            bounds_error=False,
+        )
         points_valid = ~np.isnan(points_dem)
 
         if mask is None:
@@ -71,7 +77,11 @@ def coregister(
 
         if mask is not None:
             points_mask = interpn(
-                points=(y, x), values=mask, xi=points_xy, method="nearest"
+                points=(y, x),
+                values=mask,
+                xi=points_xy,
+                method="nearest",
+                bounds_error=False,
             )
             points_h = points_h[(points_valid == 1) & (points_mask == 1)]
             points_x = points_x[(points_valid == 1) & (points_mask == 1)]
@@ -249,9 +259,7 @@ def coregister(
         status = "dz_only"
 
     elif critical_failure:
-        print(
-            "Regression critical failure, returning original DEM, NaN trans, and RMSE"
-        )
+        print("Regression critical failure, returning original DEM with no translation")
         dem2out = dem2
         p = np.full((3, 1), np.nan)
         perr = np.full((3, 1), np.nan)
@@ -618,7 +626,9 @@ def dtype_np2gdal(dtype_np):
         warn(
             f"NumPy array data type ({dtype_np}) does not have equivalent GDAL "
             "data type and is not supported, but can be safely promoted to "
-            f"{promote_dtype(1).dtype}"
+            f"{promote_dtype(1).dtype}",
+            UserWarning,
+            stacklevel=2,
         )
         dtype_np = promote_dtype
 
@@ -626,7 +636,8 @@ def dtype_np2gdal(dtype_np):
     if dtype_gdal is None:
         raise InvalidArgumentError(
             f"NumPy array data type ({dtype_np}) does not have equivalent "
-            "GDAL data type and is not supported"
+            "GDAL data type and is not supported",
+            stacklevel=2,
         )
 
     return dtype_gdal, promote_dtype
