@@ -2,8 +2,9 @@
 processing (geoids, masks, etc), resampled to match the DEM xarray object.
 """
 
-import datetime, warnings
+import datetime
 from typing import Optional, Literal
+from warnings import warn
 
 import rioxarray as rxr
 import geopandas as gpd
@@ -226,6 +227,16 @@ def icesat2_atl06(
     :rtype: geopandas.DataFrame
     """
 
+    # Sanity check date
+    dem_date = to_datetime(date)
+    cutoff_date = to_datetime("2018-10-04")
+    if dem_date < cutoff_date:
+        warn(
+            f"You have searched for data beginning {dem_date}. No ICESat-2 data "
+            "exists prior to 2018-10-04. This function will return no usable data."
+        )
+
+    # Get bounds in right format
     if isinstance(target_rxd, (list, tuple)) and len(target_rxd) == 4:
         if epsg is None:
             raise ValueError(
@@ -345,9 +356,7 @@ def icesat2_atl06(
             gdf["request_date_dt"] = gdf.index - to_datetime(date)
 
     if n_points < min_is2_points:
-        warnings.warn(
-            "Returning GeoDataFrame with number of points below minimum threshold."
-        )
+        warn("Returning GeoDataFrame with number of points below minimum threshold.")
         return gdf
     else:
         return gdf
