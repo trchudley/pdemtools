@@ -39,7 +39,7 @@ def from_fpath(
     dem_fpath: str,
     bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask_fpath: Optional[str] = None,
-    pad=False,
+    pad: Optional[bool] = False,
 ) -> DataArray:
     """Given a filepath (local or an AWS link), loads the desired ArcticDEM/REMA DEM
     strip as an ``xarray`` ``DataArray``. Option to filter to bounds and bitmask, if
