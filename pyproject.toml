@@ -40,3 +40,10 @@ where = ["src"]
 [tool.setuptools.package-data]
 "pdemtools.mosaic_index" = [ "*.gpkg",]
 "pdemtools.test_data" = [ "*.parquet",]
+
+[tool.coverage.run]
+omit = [
+    "config.py",
+    "config-3.py",
+    "config-3.12.py",
+    ]
