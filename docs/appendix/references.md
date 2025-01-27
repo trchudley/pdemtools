@@ -26,7 +26,9 @@ Porter, C., _et al._ (2022). ArcticDEM - Strips, Version 4.1. _Harvard Dataverse
 
 Porter, C., _et al._ (2023), ArcticDEM, Version 4.1, _Harvard Dataverse_. https://doi.org/10.7910/DVN/3VDC4W
 
-Scheick et al., (2023). icepyx: querying, obtaining, analyzing, and manipulating ICESat-2 datasets. _Journal of Open Source Software_, 8(84), 4912, https://doi.org/10.21105/joss.04912
+Scheick _et al._, (2023). icepyx: querying, obtaining, analyzing, and manipulating ICESat-2 datasets. _Journal of Open Source Software_, 8(84), 4912, https://doi.org/10.21105/joss.04912
+
+Shean _et al._, (2023). SlideRule: Enabling rapid, scalable, open science for the NASA ICESat-2 mission and beyond. _Journal of Open Source Software_, 8(81), 4982, https://doi.org/10.21105/joss.04982
 
 Shiggins, C. J., _et al._ (2023). Automated ArcticDEM iceberg detection tool: insights into area and volume distributions, and their potential application to satellite imagery and modelling of glacier–iceberg–ocean systems, _The Cryosphere_, 17, 15–32, https://doi.org/10.5194/tc-17-15-2023
 

@@ -31,9 +31,8 @@ pDEMtools     |version badge|  |JOSS|
 
 The first aim of ``pdemtools`` is to enable access to ArcticDEM and REMA mosaics and multitemporal strips using the ``search()`` function and ``load`` module:
 
- - ``search()``: This function aims to provide a convenient way of searching the ArcticDEM/REMA strip index - analogous to querying a dynamic STAC catalogue (e.g. via ``pystac_client``) - allowing users to easily find relevant ArcticDEM and REMA strips for their areas of interest. 
+ - ``search()``: This function aims to allow users to easily query the PGC STAC API to find relevant ArcticDEM and REMA strips for their areas of interest. 
  - ``load``: This module provides simple one-line functions to preview and download strips and mosaics from the relevant AWS bucket to an ``xarray`` Dataset.
-
 
 The second aim is to provide (pre)processing functions *specific* to the sort of uses that ArcticDEM and REMA users might want (e.g. a focus on ice sheet and cryosphere work), as well as the particular *strengths* of ArcticDEM and REMA datasets (high-resolution and multitemporal). Tools include:
 
@@ -63,8 +62,10 @@ Rather than introducing custom classes, pDEMtools will always try and return DEM
    :hidden:
    :caption: Examples:
 
-   examples/mosaic_and_terrain
-   examples/strip_search_and_dem_difference
+   examples/mosaic
+   examples/strip_search
+   examples/terrain_parameters
+   examples/coregistration
    examples/get_icebergs
    examples/batch_processing.md
 

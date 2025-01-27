@@ -8,46 +8,90 @@ https://github.com/PolarGeospatialCenter/setsm_postprocessing_python/blob/fd36fd
 """
 
 import operator
+from typing import Optional
+from warnings import warn
 
 import numpy as np
+import geopandas as gpd
 
 from scipy import stats
+from scipy.interpolate import interpn
 from osgeo import gdal, gdal_array
+from xarray import Dataset
 
 from ._geomorphometry import p_f, q_f
+from ._utils import get_resolution
 
-# ignore divide-by-zero error
+# suppress printing out warnings
 np.seterr(divide="ignore", invalid="ignore")
+gdal.UseExceptions()
 
 
-def coregisterdems(
-    dem1,  # Reference DEM
-    dem2,  # DEM to be coregistered
-    x,
-    y,
-    mask,
-    res,
-    max_horiz_offset=50,
-    rmse_step_thresh=-0.001,
-    max_iterations=5,
+def coregister(
+    dem: np.ndarray,
+    reference: np.ndarray | list[np.ndarray],
+    x: np.ndarray,
+    y: np.ndarray,
+    res: float,
+    mask: Optional[np.ndarray] = None,
+    max_horiz_offset: Optional[float] = 50,
+    rmse_step_thresh: Optional[float] = -0.001,
+    max_iterations: Optional[int] = 5,
+    verbose: Optional[bool] = True,
 ):
+    """Backend coregistration routine, coregistering DEMs against either grid
+    or point data according to Nuth and Kääb (2011). Accepts as a reference
+    either another DEM (of the same size as the target DEM) or point data (for
+    e.g. ICESat-2 altimetry) as a three-item list of [x, y, z] data.
     """
-    Simplified version of Erik Husby's coregisterdems() Python function.
+    # verbose print lamdba function
+    print_verbose = lambda msg: print(msg) if verbose else None
 
-    INPUTS:
-    dem_1, dem_2: 2D arrays (of same shape) of dems. dem2 is the dem to be coregistered
-    mask: mask of regions to be used in coregistration process (1=VALID FOR COREGISTRATION)
+    dem2 = dem  # .copy()
 
-    OUTPUTS:
-    trans: the [dz,dx,dy] transformation parameter
-    trans_err: 1-sigma errors of trans
-    rms: root mean square of the transformation in the vertical from the residuals
+    # Filter points to only valid and unmasked data
+    if isinstance(reference, (list, tuple)):
 
-    If the registration fails due to lack of overlap, NaNs are returned in p and perr.
-    If the registration fails to converge or exceeds the maximum shift, the median
-    vertical offset is applied.
+        coreg_type = "points"
+        # grid_x, grid_y = np.meshgrid(x, y, indexing='ij')
 
-    """
+        points_x = reference[0]
+        points_y = reference[1]
+        points_h = reference[2]
+        points_xy = list(zip(points_y, points_x))
+
+        # Mask invalid (and masked) values here
+        points_dem = interpn(
+            points=(y, x),
+            values=dem2,
+            xi=points_xy,
+            method="nearest",
+            bounds_error=False,
+        )
+        points_valid = ~np.isnan(points_dem)
+
+        if mask is None:
+            points_h = points_h[points_valid == 1]
+            points_x = points_x[points_valid == 1]
+            points_y = points_y[points_valid == 1]
+
+        if mask is not None:
+            points_mask = interpn(
+                points=(y, x),
+                values=mask,
+                xi=points_xy,
+                method="nearest",
+                bounds_error=False,
+            )
+            points_h = points_h[(points_valid == 1) & (points_mask == 1)]
+            points_x = points_x[(points_valid == 1) & (points_mask == 1)]
+            points_y = points_y[(points_valid == 1) & (points_mask == 1)]
+
+        points_xy = list(zip(points_y, points_x))
+        points_n = len(points_h)
+
+    else:
+        coreg_type = "dem"
 
     # initial trans and RMSE settings
     p = np.zeros((3, 1))  # p  is prior iteration trans var
@@ -64,16 +108,15 @@ def coregisterdems(
     it = 0
     while True:
         it += 1
+        print_verbose(f"Planimetric Correction Iteration {it}")
 
-        print(f"Planimetric Correction Iteration {it}")
-
-        print(f"Offset (z,x,y): {pn[0, 0]:.3f}, {pn[1, 0]:.3f}, {pn[2, 0]:.3f}")
+        print_verbose(f"Offset (z,x,y): {pn[0, 0]:.3f}, {pn[1, 0]:.3f}, {pn[2, 0]:.3f}")
         # print(f"pn: {pn}")
 
         # Break loop if conditions reached
         if np.any(np.abs(pn[1:]) > max_horiz_offset):
             print(
-                f"Maximum horizontal offset ({max_horiz_offset}) exceeded."
+                f"Maximum horizontal offset ({max_horiz_offset}) exceeded. "
                 "Consider raising the threshold if offsets are large."
             )
             return_meddz = True
@@ -81,9 +124,9 @@ def coregisterdems(
 
         # Apply offsets
         if pn[1] != 0 and pn[2] != 0:
-            dem2n = shift_dem(dem2, pn.T[0], x, y).astype('float32')
+            dem2n = shift_dem(dem2, pn.T[0], x, y, verbose=verbose).astype("float32")
         else:
-            dem2n = dem2 - pn[0].astype('float32')
+            dem2n = dem2 - pn[0].astype("float32")
 
         # # Calculate slopes - original method from PGC
         # sy, sx = np.gradient(dem2n, res)
@@ -91,19 +134,42 @@ def coregisterdems(
 
         # Calculate slope - using Florinsky slope method (p = sx, q = sy)
         sy = q_f(dem2n, res)
+
         sx = p_f(dem2n, res)
         sy = -sy
         sx = -sx
 
-        # Difference grids.
-        dz = dem2n - dem1
+        if coreg_type == "dem":
+            # Difference grids.
+            dz = dem2n - reference
+            # Mask (in full script, both m1 and m2 are applied)
+            dz[mask == 0] = np.nan
 
-        # Mask (in full script, both m1 and m2 are applied)
-        dz[mask == 0] = np.nan
+        elif coreg_type == "points":
+            # Get relevant dz, sy, sx values at the icesat-2 coordinates
+            # xda = zero_xda + dem2n
+            # dem2n_coords = xda.interp(coords_ds, method='linear').values
+            dem2n_coords = interpn(
+                points=(y, x), values=dem2n, xi=points_xy, method="linear"
+            )
+            dz = dem2n_coords - points_h
+
+            # xda = zero_xda + sy
+            # sy = xda.interp(coords_ds, method='linear').values
+            sy = interpn(points=(y, x), values=sy, xi=points_xy, method="linear")
+
+            # xda = zero_xda + sx
+            # sx = xda.interp(coords_ds, method='linear').values
+            sx = interpn(points=(y, x), values=sx, xi=points_xy, method="linear")
+
+        else:
+            raise ValueError(
+                "coreg_type must be 'dem' or 'points'. " f"Received {coreg_type}."
+            )
 
         # If no overlap between scenes, break the loop
         if np.all(np.isnan(dz)):
-            print("No overlap")
+            print("No overlapping data between reference and target datasets.")
             critical_failure = True
             break
 
@@ -116,13 +182,13 @@ def coregisterdems(
         n_count = np.count_nonzero(n)
 
         if n_count < 10:
-            print("Too few ({}) registration points: 10 required".format(n_count))
+            print(f"Too few ({n_count}) registration points: 10 required")
             critical_failure = True
             break
 
         # Get RMSE
         d1 = np.sqrt(np.mean(np.power(dz[n], 2)))
-        print("RMSE = {}".format(d1))
+        print_verbose(f"RMSE = {d1}")
 
         # Keep median dz if first iteration.
         if it == 1:
@@ -135,11 +201,9 @@ def coregisterdems(
 
         # break if rmse above threshold
         if rmse_step > rmse_step_thresh or np.isnan(d0):
-            print(
-                "RMSE step in this iteration ({:.5f}) is above threshold ({}), "
-                "stopping and returning values of prior iteration. ".format(
-                    rmse_step, rmse_step_thresh
-                )
+            print_verbose(
+                f"RMSE step in this iteration ({rmse_step:.5f}) is above threshold "
+                f"({rmse_step_thresh}), stopping and returning values of prior iteration."
             )
             # If fails after first registration attempt,
             # set dx and dy to zero and subtract the median offset.
@@ -148,7 +212,7 @@ def coregisterdems(
                 return_meddz = True
             break
         elif it == max_iterations:
-            print("Maximum number of iterations ({}) reached".format(max_iterations))
+            print_verbose(f"Maximum number of iterations ({max_iterations}) reached")
             break
 
         # Keep this adjustment.
@@ -187,28 +251,53 @@ def coregisterdems(
         # END OF LOOP
 
     if return_meddz:
-        print("Returning median vertical offset: {:.3f}".format(meddz))
+        print(f"Returning median vertical offset: {meddz:.3f}")
         dem2out = dem2 - meddz
         p = np.array([[meddz, 0, 0]]).T
         perr = np.array([[meddz_err, 0, 0]]).T
         d0 = d00
+        status = "dz_only"
 
-    if critical_failure:
-        print("Regression critical failure, returning NaN trans and RMSE")
+    elif critical_failure:
+        print("Regression critical failure, returning original DEM with no translation")
         dem2out = dem2
         p = np.full((3, 1), np.nan)
         perr = np.full((3, 1), np.nan)
         d0 = np.nan
+        status = "failed"
+        points_n = None
 
-    print(
-        "Final offset (z,x,y): {:.3f}, {:.3f}, {:.3f}".format(p[0, 0], p[1, 0], p[2, 0])
-    )
-    print("Final RMSE = {}".format(d0))
+    else:
+        status = "coregistered"
 
-    return dem2out, p.T[0], perr.T[0], d0
+    print(f"Final offset (z,x,y): {p[0, 0]:.3f}, {p[1, 0]:.3f}, {p[2, 0]:.3f}")
+    print(f"Final RMSE = {d0}")
+
+    # Construct metadata:
+    metadata_dict = {
+        "coreg_status": status,
+        "x_offset": p[1, 0],
+        "y_offset": p[2, 0],
+        "z_offset": p[0, 0],
+        "x_offset_err": perr[1, 0],
+        "y_offset_err": perr[2, 0],
+        "z_offset_err": perr[0, 0],
+        "rmse": d0,
+    }
+
+    if coreg_type == "points":
+        metadata_dict["points_n"] = points_n
+
+    # Convert all numerical values to regular Python floats
+    metadata_dict = {
+        key: float(value) if isinstance(value, (np.float64, np.float32)) else value
+        for key, value in metadata_dict.items()
+    }
+
+    return dem2out, metadata_dict
 
 
-def shift_dem(dem, trans, x, y):
+def shift_dem(dem, trans, x, y, verbose=True):
     """
     Shifts DEM according to translation factors ascertained in coregisterdems function
 
@@ -226,7 +315,8 @@ def shift_dem(dem, trans, x, y):
         # print("XY translation variables == 0. Skipping horizontal translation.")
     else:
         # print("Translating in XY direction.")
-        print(f"Translating: {trans[0]:.2f} Z, {trans[1]:.2f} X, {trans[2]:.2f} Y")
+        if verbose:
+            print(f"Translating: {trans[0]:.2f} Z, {trans[1]:.2f} X, {trans[2]:.2f} Y")
 
         # Interpolation grid
         #     x, y = np.meshgrid(np.arange(dem.shape[1]), np.arange(dem.shape[0]))
@@ -289,26 +379,21 @@ def interp2_gdal(X, Y, Z, Xi, Yi, interp_str, extrapolate=False, oob_val=np.nan)
         "",
         interp_gdal,
     )
-    # gdal.ReprojectImage(
-    #     ds_in,
-    #     ds_out,
-    #     "",
-    #     "",
-    #     interp_gdal,
-    # )
 
     Zi = ds_out.GetRasterBand(1).ReadAsArray()
 
     if not extrapolate:
         interp2_fill_oob(X, Y, Zi, Xi, Yi, oob_val)
-    
+
     ds_in, ds_out = None, None
 
     return Zi
 
 
 def dtype_np2gdal(dtype_np):
-    # TODO: Write docstring.
+    """
+    Convert NumPy data type to GDAL data type.
+    """
 
     if dtype_np == bool:  # np.bool:
         promote_dtype = np.uint8
@@ -321,18 +406,20 @@ def dtype_np2gdal(dtype_np):
 
     if promote_dtype is not None:
         warn(
-            "NumPy array data type ({}) does not have equivalent GDAL data type and is not "
-            "supported, but can be safely promoted to {}".format(
-                dtype_np, promote_dtype(1).dtype
-            )
+            f"NumPy array data type ({dtype_np}) does not have equivalent GDAL "
+            "data type and is not supported, but can be safely promoted to "
+            f"{promote_dtype(1).dtype}",
+            UserWarning,
+            stacklevel=2,
         )
         dtype_np = promote_dtype
 
     dtype_gdal = gdal_array.NumericTypeCodeToGDALTypeCode(dtype_np)
     if dtype_gdal is None:
         raise InvalidArgumentError(
-            "NumPy array data type ({}) does not have equivalent "
-            "GDAL data type and is not supported".format(dtype_np)
+            f"NumPy array data type ({dtype_np}) does not have equivalent "
+            "GDAL data type and is not supported",
+            stacklevel=2,
         )
 
     return dtype_gdal, promote_dtype
@@ -368,9 +455,7 @@ def interp_str2gdal(interp_str):
 
     if interp_str not in interp_dict:
         raise ValueError(
-            "`interp` must be one of {}, but was '{}'".format(
-                interp_choices, interp_str
-            )
+            f"`interp` must be one of {interp_choices}, but was '{interp_str}'"
         )
 
     return interp_dict[interp_str]

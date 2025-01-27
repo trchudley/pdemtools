@@ -6,7 +6,6 @@ import rioxarray as rxr
 
 from xarray import DataArray
 
-
 def get_resolution(xds: DataArray) -> float:
     """Retrive resolution from rioxarray Dataset. Must be the same in `x` and `y`
     direction.

@@ -1,13 +1,15 @@
 """Function to search ArcticDEM and REMA index files.
 """
 
-import os
+import os, warnings
 
-from typing import Optional
+from datetime import datetime
+from typing import Optional, Literal, List
 
 import pandas as pd
 import geopandas as gpd
 
+from pystac_client import Client
 from shapely.geometry import box, polygon
 
 SENSORS = ["WV03", "WV02", "WV01", "GE01"]
@@ -15,25 +17,44 @@ MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 
 def search(
-    index_fpath: str,
-    bounds: Optional[tuple | polygon.Polygon] = None,
-    min_aoi_frac: Optional[float] = None,
+    dataset: Optional[Literal["arcticdem", "rema"]] = None,
     dates: Optional[str | tuple] = None,
     months: Optional[int | tuple] = None,
     years: Optional[int | tuple] = None,
     baseline_max_hours: Optional[int] = None,
+    bounds: Optional[tuple | polygon.Polygon] = None,
+    min_aoi_frac: Optional[float] = None,
+    min_aoi_km2: Optional[float] = None,
     sensors: Optional[str | tuple] = None,
     is_xtrack: Optional[bool] = None,
+    is_lsf: Optional[bool] = None,
+    rmse: Optional[float | tuple] = None,
     accuracy: Optional[float | tuple] = None,
+    index_fpath: Optional[str] = None,
     include_custom_columns: Optional[bool] = True,
 ):
     """Efficiently search the ArcticDEM and REMA strip index files provided by the
     Polar Geospatial Center.
 
-    :param index_fpath: Filepath to a local copy of the ArcticDEM or REMA strip index
-        file, available from the Polar Geospatial Center. For speed, it is tecommended
-        that the index is `.parquet` format.
-    :type index_fpath: str
+    :param dataset: Either 'arcticdem' or 'rema'. Case-insensitive. Must be provided
+        if the dynamic STAC is being queried (default operation). If a local
+        ``index_fpath`` is provided, then an attempt will be made to infer the
+        dataset from the file name.
+    :type dataset: str
+    :param dates: Filter strips to a date range. Dates can be provided as a tuple of two
+        strings, or a single string with a `/` seperator. Date strings must be
+        interpetable by the pandas.to_datetime() tool. For an open search, one
+        of the dates can be set to None.
+    :type dates: str | tuple, optional
+    :param months: Filter strips to only certain months. Provide as a tuple of integers
+        (e.g. for June, July, August strips only, set ``months = [6,7,8]``).
+    :type months: tuple, optional
+    :param years: Filter strips to only certain years. Provide as a tuple of integers
+        (e.g. for 2011 and 2021  only, set `years = [2011,2021]`).
+    :type years: tuple, optional
+    :param baseline_max_hours: Filter strips to only those constructed from stereopairs
+        acquired less than the provided number of hours apart.
+    :type baseline_max_hours: int, optional
     :param bounds: Filter to strips that intersect with bounds [xmin, ymin, xmax, ymax],
         in EPSG:3413 (ArcticDEM) or EPSG:3031 (REMA). Accepts a tuple or a
         ``shapely.Polygon`` geometry to extract bounds from.
@@ -42,68 +63,91 @@ def search(
         area of interest (defined by the `bounds` variable). Must be between 0 and 1,
         and ``bounds`` must be defined.
     :type min_aoi_frac: float, optional
-    :param dates: Filter strips to a date range. Dates can be provided as a tuple of two
-        strings, or a single string with a `/` seperator. Date strings must be
-        interpetable by the pandas.to_datetime() tool.
-    :type dates: str | tuple, optional
-    :param months: Filter strips to only certain months. Provide as a tuple of integers
-        (e.g. for June, July, August strips only, set ``months = [6,7,8]``).
-    :type months: tuple, optional
-    :param years: Filter strips to only certain yeara. Provide as a tuple of integers
-        (e.g. for 2011 and 2021  only, set `years = [2011,2021]`).
-    :type years: tuple, optional
-    :param baseline_max_hours: Filter strips to only those constructed from stereopairs
-        acquired less than the provided number of hours apart.
-    :type baseline_max_hours: int, optional
+    :param min_aoi_km2: Filter to strips than cover more the defined area of interest
+        (defined by the `bounds` variable) in square kilometres.
+    :type min_aoi_km2: float, optional
     :param sensors: Filter scenes to only those consrtructed from the provided
         satellite sensors. Full list is ["WV03", "WV02", "WV01", "GE01"]
     :type sensors: tuple, optional
     :param is_xtrack: Filter based on whether stereopairs are cross-track imagery.
         True = return only cross-track. False = return only non-cross-track.
     :type is_xtrack: bool, optional
-    :param accuracy: Filter to strip accuracies based on the provided average height
-        accuracy in metres (`rmse` in the strip index). NB that this column
-        included NaN values (-1.0) so the option is provided to include only a single
+    :param rmse: Filter based on the provided RMSE in metres from the PGC strip
+        metadata. NB that this column can include NaN values (-1.0 or -9999.0) so
+        the option is provided to include only a single value as an upper range
+        (e.g. 2), or a tuple of two values in order to include a lower bound and
+        filter NaN values (e.g [0, 2]).
+    :type rmse: float | tuple, optional
+    :param accuracy: Filter to strip accuracies based on the metadata-provided
+        avg_expected_height_accuracy in metres. NB that this column can include
+        NaN values (-1.0 or -9999.0) so the option is provided to include only a single
         value as an upper range (e.g. 2), or a tuple of two values in order to include
         a lower bound and filter NaN values (e.g [0, 2]).
     :type accuracy: float | tuple, optional
+    :param index_fpath: Filepath to a local copy of the ArcticDEM or REMA strip index
+        file, available from the Polar Geospatial Center. For speed, it is tecommended
+        that the index is `.parquet` format. If none is provided, the function will
+        instead interact with the PGC dynamic STAC API.
+    :type index_fpath: str
     :param include_custom_columns: Whether to include custom columns generated by
         `pdemtools` in geopandas dataframe output. This includes "pdt_time1",
         "pdt_time2", "pdt_dem_baseline_hours", "pdt_time_mean", "pdt_year", "pdt_month",
         and "pdt_aoi_frac". Defaults to True
     :type include_custom_columns: bool, optional
 
-    :returns: Strip index filtered to desired variables.
-    :rtype: GeoDataFrame
+    :returns: Strip index filtered to desired variables. If no strips are found,
+        returns `None` with a warning.
+    :rtype: geopandas.GeoDataFrame
     """
 
-    # Determine whether index is for ArcticDEM or REMA (strangely, quite hard to do -
-    # current approach is simply to check whether 'arcticdem' or 'rema' strings occur
-    # in the filename of the index file)
-    if "arcticdem" in os.path.basename(index_fpath).lower():
+    # ----------------------------------------------------------------------- #
+    # SANITISE AND PREPARE INPUTS
+    # ----------------------------------------------------------------------- #
+
+    # Sanitise inputs: dataset
+
+    # If `dataset` not provided, perform a simple check for whether index is for
+    # ArcticDEM or REMA by checking whether 'arcticdem' or 'rema' strings occur
+    # in the  filename of the index file.
+    if dataset is None:
+        if index_fpath is not None:
+            if "arcticdem" in os.path.basename(index_fpath).lower():
+                dataset = "arcticdem"
+            elif "rema" in os.path.basename(index_fpath).lower():
+                dataset = "rema"
+            else:
+                raise ValueError(
+                    "Cannot determine whether index file is ArcticDEM or REMA (please ensure 'arcticdem' or 'rema' is in filename, or provide `dataset` variable manually)"
+                )
+        else:
+            raise ValueError("`dataset` must be either 'arcticdem' or 'rema'")
+
+    # From dataset, set the collection and epsg
+    if dataset.lower() == "arcticdem":
+        collection = "arcticdem-strips-s2s041-2m"
         epsg = 3413
-    elif "rema" in os.path.basename(index_fpath).lower():
+
+    elif dataset.lower() == "rema":
+        collection = "rema-strips-s2s041-2m"
         epsg = 3031
     else:
-        raise ValueError(
-            "Cannot determine whether index file is ArcticDEM or REMA (please ensure 'arcticdem' or 'rema' is in filename)"
-        )
-
-    # Sanitise inputs first (prior to loading, to catch mistakes before time is wasted
-    # loading index files)
+        raise ValueError("`dataset` must be either 'arcticdem' or 'rema'")
 
     # Sanitise input: bounds
-    if bounds != None:
-        if type(bounds) != polygon.Polygon:
+    if bounds is not None:
+        # if type(bounds) is not polygon.Polygon:
+        if not isinstance(bounds, polygon.Polygon):
             geom = box(*bounds)
         else:
             geom = bounds
         # convert geom to EPSG:4326
         geom_4326 = gpd.GeoDataFrame(geometry=[geom], crs=epsg).to_crs(4326).geometry[0]
+    else:
+        geom, geom_4326 = None, None
 
     # Sanitise input: min_aoi_frac
-    if min_aoi_frac != None:
-        if bounds == None:
+    if min_aoi_frac is not None:
+        if bounds is None:
             raise ValueError("`bounds` variable must be provided to use `min_aoi_frac`")
         if (min_aoi_frac < 0) or (min_aoi_frac > 1):
             raise ValueError(
@@ -111,154 +155,229 @@ def search(
             )
 
     # Sanitise input: dates
-    if dates != None:
-        if type(dates) == str:
+    if dates is not None:
+        if isinstance(dates, str):
             dates = dates.split("/")
+            dates = [_correct_date_format(dates[0]), _correct_date_format(dates[1])]
 
         if len(dates) != 2:
             raise ValueError(
-                "Date range must be tuple of two strings/None values, or a string of two dates seperated by `/` seperators"
+                "Date range must be tuple of two strings/None values, or a string of two dates/None values seperated by `/`"
             )
 
+    # Sanitise input: years
+    if years is not None:
+        if not isinstance(years, list):
+            if isinstance(years, int):
+                years = [years]
+            else:
+                raise ValueError(
+                    "Variables `years` must be integer year or list of integer years"
+                )
+
     # Sanitise input: months
-    if months != None:
-        if type(months) is int:
+    if months is not None:
+        if isinstance(months, int):
             months = [months]
 
         if any(m not in MONTHS for m in months):
             raise ValueError(f"`months` variables must be in range {MONTHS}")
 
     # Sanitise input: sensors
-    if sensors != None:
-        if type(sensors) is str:
+    if sensors is not None:
+        if isinstance(sensors, str):
             sensors = [sensors]
 
         if any(s not in SENSORS for s in sensors):
             raise ValueError(f"`sensors` variables must be in list {SENSORS}")
 
+    # Sanitise input: rmse
+    if rmse is not None:
+        if isinstance(rmse, int) or isinstance(rmse, float):
+            rmse = [rmse]
+        if len(rmse) > 2:
+            raise ValueError("`accuracy` must be single value or tuple of length 2")
+
     # Sanitise input: accuracy
-    if accuracy != None:
-        if (type(accuracy) == int) or (type(accuracy) == float):
+    if accuracy is not None:
+        if isinstance(accuracy, int) or isinstance(accuracy, float):
             accuracy = [accuracy]
         if len(accuracy) > 2:
             raise ValueError("`accuracy` must be single value or tuple of length 2")
 
-    # Open the index geometry file, according to file type
-    _, extension = os.path.splitext(index_fpath)
+    # ----------------------------------------------------------------------- #
+    # DOWNLOAD FROM STAC OR EXTRACT FROM INDEX FILE
+    # ----------------------------------------------------------------------- #
 
-    if extension == ".parquet":
-        # print("reading")
-        gdf = gpd.read_parquet(index_fpath)
-        if bounds != None:
-            gdf = gdf[gdf.intersects(geom_4326)]
+    if index_fpath is None:
+
+        if dataset is None:
+            raise ValueError(
+                "Must provide `dataset` to query PGC dynamic STAC - either 'arcticdem' or 'rema'"
+            )
+
+        gdf = _search_index_stac(
+            collection,
+            geom_4326,
+            dates,
+            years,
+            is_xtrack,
+            is_lsf,
+            sensors,
+        )
 
     else:
-        print(
-            "For quicker searching, it is highly recommended to store strip index files as a `.parquet` or `.feather` format."
+
+        gdf = _search_index_parquet(
+            index_fpath,
+            geom_4326,
+            sensors,
+            is_xtrack,
+            is_lsf,
         )
-        if bounds == None:
-            gdf = gpd.read_file(index_fpath)
-        else:
-            gdf = gpd.read_file(index_fpath, intersects=geom_4326)
 
-    # Construct necessary datetime columns if necessary
-    if any([dates, months, baseline_max_hours]):
-        gdf["time1"] = pd.to_datetime(gdf.acqdate1)
-        gdf["time2"] = pd.to_datetime(gdf.acqdate2)
-        if baseline_max_hours != None:
-            gdf["dem_baseline_hours"] = (
-                (gdf.time2 - gdf.time1)
-                .values.astype("timedelta64[h]")
-                .astype("float32")
-            )
-            gdf["dem_baseline_hours"] = abs(
-                gdf["dem_baseline_hours"].values
-            )  # Absolute d_t, in hours
-        if (months != None) or (years != None):
-            gdf["time_mean"] = gdf.time1 + (gdf.time2 - gdf.time1) / 2
-            gdf["year"] = gdf.time_mean.dt.year
-            gdf["month"] = gdf.time_mean.dt.month
+    if gdf is None:
+        warnings.warn(
+            "No strips found matching search parameters. Returning `None`.",
+            UserWarning,
+            stacklevel=2,
+        )
+        return None
 
-   # Filter according to date (acqdate)
-    if dates != None:
-        if dates[0] != None:
+    # ----------------------------------------------------------------------- #
+    # FILTER BASED ON DATETIMES
+    # ----------------------------------------------------------------------- #
+
+    # Construct additional pdt-specific columns
+    gdf["dem_baseline_hours"] = (
+        (gdf.datetime2 - gdf.datetime1)
+        .values.astype("timedelta64[h]")
+        .astype("float32")
+    )
+    gdf["dem_baseline_hours"] = abs(
+        gdf["dem_baseline_hours"].values
+    )  # Absolute d_t, in hours
+    gdf["datetime_mean"] = gdf.datetime1 + (gdf.datetime2 - gdf.datetime1) / 2
+    gdf["year"] = gdf.datetime_mean.dt.year
+    gdf["month"] = gdf.datetime_mean.dt.month
+
+    # Filter according to date (acqdate)
+    if dates is not None:
+        if dates[0] is not None:
             datetime1 = pd.to_datetime(dates[0])
             try:
-                gdf = gdf[gdf["time1"] > datetime1]
+                gdf = gdf[gdf["datetime1"] > datetime1]
             except:  # account for UTC-aware datetime storage in newer PGC index files.
                 datetime1 = pd.to_datetime(dates[0], utc=True)
-                gdf = gdf[gdf["time1"] > datetime1]
+                gdf = gdf[gdf["datetime1"] > datetime1]
 
-        if dates[1] != None:
+        if dates[1] is not None:
             datetime2 = pd.to_datetime(dates[1])
             try:
-                gdf = gdf[gdf["time2"] < datetime2]
+                gdf = gdf[gdf["datetime2"] < datetime2]
             except:  # account for UTC-aware datetime storage in newer PGC index files.
                 datetime2 = pd.to_datetime(dates[1], utc=True)
-                gdf = gdf[gdf["time2"] < datetime2]
+                gdf = gdf[gdf["datetime2"] < datetime2]
             # can probably make this more efficient than just try-except - e.g. check if
             # date column is utc-aware and if so, make datetime utc-aware too.
 
     # Filter to months
-    if months != None:
+    if months is not None:
         gdf = gdf[(gdf["month"].isin(months))]
 
     # Filter to years
-    if years != None:
+    if years is not None:
         gdf = gdf[(gdf["year"].isin(years))]
 
     # Filter to time seperations
-    if baseline_max_hours != None:
+    if baseline_max_hours is not None:
         gdf = gdf[(gdf["dem_baseline_hours"] <= baseline_max_hours)]
 
-    # Filter to only selected sensors
-    if sensors != None:
-        gdf = gdf[(gdf["sensor1"].isin(sensors)) & (gdf["sensor2"].isin(sensors))]
-
-    # Filter to crosstrack
-    if is_xtrack != None:
-        gdf = gdf[(gdf["is_xtrack"] == int(is_xtrack))]
+    # Filter to RMSE range
+    if rmse is not None:
+        if len(rmse) == 1:
+            gdf = gdf[(gdf["rmse"] <= rmse[0])]
+        else:
+            gdf = gdf[(gdf["rmse"] >= rmse[0]) & (gdf["rmse"] <= rmse[1])]
 
     # Filter to accuracy range
-    if accuracy != None:
-        # print(accuracy, len(accuracy))
+    if accuracy is not None:
         if len(accuracy) == 1:
-            # print(f"accuracy == 1: {len(accuracy)==1}")
             gdf = gdf[(gdf["rmse"] <= accuracy[0])]
         else:
             gdf = gdf[(gdf["rmse"] >= accuracy[0]) & (gdf["rmse"] <= accuracy[1])]
+
+    if len(gdf) == 0:
+        warnings.warn(
+            "No strips found matching search parameters. Returning `None`.",
+            UserWarning,
+            stacklevel=2,
+        )
+        return None
+
+    # ----------------------------------------------------------------------- #
+    # AOI FRACTIONS
+    # ----------------------------------------------------------------------- #
 
     # Convert from EPSG:4326 to appropriate ArcticDEM/REMA crs:
     gdf = gdf.to_crs(epsg)
 
     # Clip geometries to bounds of AOI
-    if bounds != None:
+    if bounds is not None:
         gdf = gpd.clip(gdf, geom)
 
-    # Filter to geometry
-    if min_aoi_frac != None:
+    # Filter based on intersection area
+    if min_aoi_km2 is not None:
+        gdf["aoi_km2"] = gdf.area / 1e6
+        gdf = gdf[gdf["aoi_km2"] > min_aoi_km2]
+
+    # Filter based on intersection fraction
+    if min_aoi_frac is not None:
         aoi_area = geom.area
         gdf["aoi_frac"] = gdf.area / aoi_area
         gdf = gdf[gdf["aoi_frac"] > min_aoi_frac]
 
+    if len(gdf) == 0:
+        warnings.warn(
+            "No strips found matching search parameters. Returning `None`.",
+            UserWarning,
+            stacklevel=2,
+        )
+        return None
+
+    # ----------------------------------------------------------------------- #
+    # WRAP UP AND EXPORT
+    # ----------------------------------------------------------------------- #
+
+    # Sort values by date as default
+    gdf.sort_values("datetime1", inplace=True)
+    gdf.reset_index(drop=True, inplace=True)
+
     # If include_custom_columns is True, rename columns to begin with "pdt_"
     if include_custom_columns:
-        gdf = gdf.rename(columns={
-            "time1": "pdt_time1", 
-            "time2": "pdt_time2",
-            "dem_baseline_hours": "pdt_dem_baseline_hours",
-            "time_mean": "pdt_time_mean",
-            "year": "pdt_year",
-            "month": "pdt_month",
-            "aoi_frac": "pdt_aoi_frac",
-        })
+        gdf = gdf.rename(
+            columns={
+                "id": "pdt_id",
+                "datetime1": "pdt_datetime1",
+                "datetime2": "pdt_datetime2",
+                "sat1": "pdt_sat1",
+                "sat2": "pdt_sat2",
+                "dem_baseline_hours": "pdt_dem_baseline_hours",
+                "datetime_mean": "pdt_datetime_mean",
+                "year": "pdt_year",
+                "month": "pdt_month",
+                "aoi_frac": "pdt_aoi_frac",
+            }
+        )
 
     # Else, drop the created columns
     else:
         gdf = gdf.drop(
             [
-                "time1",
-                "time2",
+                "datetime1",
+                "datetime2",
+                "sat1",
+                "sat2",
                 "dem_baseline_hrs",
                 "time_mean",
                 "month",
@@ -270,3 +389,167 @@ def search(
         )
 
     return gdf
+
+
+def _search_index_stac(
+    collection: Literal["arcticdem-strips-s2s041-2m", "rema-strips-s2s041-2m"],
+    geom_4326: polygon.Polygon,
+    dates: Optional[List[str]] = None,
+    years: Optional[List[int]] = None,
+    is_xtrack: Optional[bool] = None,
+    is_lsf: Optional[bool] = None,
+    sensors: Optional[List[str]] = None,
+):
+
+    # Construct datetime query:
+    if dates is not None:
+        date_search = dates
+    elif years is not None:
+        date_search = [f"{min(years)}", f"{max(years)}"]
+    else:
+        date_search = None
+
+    # Construct the query
+    query = {}
+
+    if is_xtrack is not None:
+        query["pgc:is_xtrack"] = {"eq": is_xtrack}
+
+    if is_lsf is not None:
+        query["pgc:is_lsf"] = {"eq": is_lsf}
+
+    # Search the stac
+    client = Client.open("https://stac.pgc.umn.edu/api/v1/")
+
+    search_results = client.search(
+        collections=collection,
+        intersects=geom_4326,
+        datetime=date_search,
+        query=query,
+    )
+
+    # Transform into geopandas
+    items = search_results.item_collection()
+
+    # Close the client
+    del client
+
+    if len(items) == 0:
+        return None
+
+    # Construct geodataframe
+    gdf = gpd.GeoDataFrame.from_features(
+        items.to_dict(),
+        crs="epsg:4326",
+    )
+
+    # Remove 'pgc:' column prefix and remove analytically useless columns
+    gdf.columns = gdf.columns.str.replace("^pgc:", "", regex=True)
+    gdf = gdf.drop(["description"], axis=1, errors="ignore")
+
+    # Construct appropriate hrefs, and drop reference column
+    gdf["href_json"] = [i.self_href + ".json" for i in items]
+    gdf["href_dem"] = [i.assets["dem"].href for i in items]
+    gdf["href_mask"] = [i.assets["mask"].href for i in items]
+    gdf["href_readme"] = [i.assets["readme"].href for i in items]
+    gdf["href_matchtag"] = [i.assets["matchtag"].href for i in items]
+    gdf["href_metadata"] = [i.assets["metadata"].href for i in items]
+    gdf["href_hillshade"] = [i.assets["hillshade"].href for i in items]
+    gdf["href_hillshade_masked"] = [i.assets["hillshade_masked"].href for i in items]
+
+    # Filter based on provided instruments
+    if sensors is not None:
+        gdf = gdf[
+            gdf["instruments"].apply(
+                lambda instruments: all(inst in sensors for inst in instruments)
+            )
+        ]
+
+    # Extract dates to standardised column name for main function
+    gdf["id"] = gdf.title
+    gdf["datetime1"] = pd.to_datetime(gdf.start_datetime)
+    gdf["datetime2"] = pd.to_datetime(gdf.end_datetime)
+    gdf[["sat1", "sat2"]] = gdf["instruments"].apply(pd.Series)
+
+    return gdf
+
+
+def _search_index_parquet(
+    index_fpath: str,
+    geom_4326: Optional[polygon.Polygon] = None,
+    sensors: Optional[List[str]] = None,
+    is_xtrack: Optional[bool] = None,
+    is_lsf: Optional[bool] = None,
+):
+
+    # Open the index geometry file, according to file type
+    _, extension = os.path.splitext(index_fpath)
+
+    if extension == ".parquet":
+        # print("reading")
+        gdf = gpd.read_parquet(index_fpath)
+        if geom_4326 is not None:
+            gdf = gdf[gdf.intersects(geom_4326)]
+
+    else:
+        print(
+            "For quicker searching, it is highly recommended to store strip index files as a `.parquet` or `.feather` format."
+        )
+        if geom_4326 is None:
+            gdf = gpd.read_file(index_fpath)
+        else:
+            gdf = gpd.read_file(index_fpath, intersects=geom_4326)
+
+    # Filter to only selected sensors
+    if sensors is not None:
+        gdf = gdf[(gdf["sensor1"].isin(sensors)) & (gdf["sensor2"].isin(sensors))]
+
+    # Filter to crosstrack
+    if is_xtrack is not None:
+        gdf = gdf[(gdf["is_xtrack"] == is_xtrack)]
+
+    if is_lsf is not None:
+        gdf = gdf[(gdf["is_lsf"] == is_lsf)]
+
+    if len(gdf) == 0:
+        return None
+
+    # Extract hrefs from search
+    gdf["href_json"] = "https://" + gdf["s3url"].str.split("/external/").str[1]
+    gdf["href_dem"] = gdf["href_json"].str.replace(".json", "_dem.tif", regex=False)
+    gdf["href_mask"] = gdf["href_json"].str.replace(
+        ".json", "_bitmask.tif", regex=False
+    )
+    gdf["href_readme"] = gdf["href_json"].str.replace(
+        ".json", "_readme.txt", regex=False
+    )
+    gdf["href_matchtag"] = gdf["href_json"].str.replace(
+        ".json", "_matchtag.tif", regex=False
+    )
+    gdf["href_metadata"] = gdf["href_json"].str.replace(
+        ".json", "_mdf.txt", regex=False
+    )
+    gdf["href_hillshade"] = gdf["href_json"].str.replace(
+        ".json", "_dem_10m_shade.tif", regex=False
+    )
+    gdf["href_hillshade_masked"] = gdf["href_json"].str.replace(
+        ".json", "_dem_10m_shade_masked.tif", regex=False
+    )
+
+    # Extract dates to standardised column name for main function
+    gdf["id"] = gdf.dem_id
+    gdf["datetime1"] = pd.to_datetime(gdf.acqdate1)
+    gdf["datetime2"] = pd.to_datetime(gdf.acqdate2)
+    gdf["sat1"] = gdf.sensor1
+    gdf["sat2"] = gdf.sensor2
+
+    return gdf
+
+
+def _correct_date_format(date_str):
+    # catch str date format of YYYYMMDD and convert to YYYY-MM-DD if so.
+    try:
+        date = datetime.strptime(date_str, "%Y%m%d")
+        return date.strftime("%Y-%m-%d")
+    except ValueError:
+        return date_str

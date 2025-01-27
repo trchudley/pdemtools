@@ -2,7 +2,7 @@
 
 From the public conda release of version 0.8.0 onwards, [version updates and notes are automatically recorded on the GitHub repo 'releases' page`](https://github.com/trchudley/pdemtools/releases). 
 
-Versions prior to this are recorded in the table below for posterity:
+Versions prior to this are recorded in the table below:
 
 | Version | Date | Notes |
 | ------- | ---- | ----- |
