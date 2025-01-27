@@ -379,13 +379,6 @@ def interp2_gdal(X, Y, Z, Xi, Yi, interp_str, extrapolate=False, oob_val=np.nan)
         "",
         interp_gdal,
     )
-    # gdal.ReprojectImage(
-    #     ds_in,
-    #     ds_out,
-    #     "",
-    #     "",
-    #     interp_gdal,
-    # )
 
     Zi = ds_out.GetRasterBand(1).ReadAsArray()
 
@@ -398,7 +391,9 @@ def interp2_gdal(X, Y, Z, Xi, Yi, interp_str, extrapolate=False, oob_val=np.nan)
 
 
 def dtype_np2gdal(dtype_np):
-    # TODO: Write docstring.
+    """
+    Convert NumPy data type to GDAL data type.
+    """
 
     if dtype_np == bool:  # np.bool:
         promote_dtype = np.uint8

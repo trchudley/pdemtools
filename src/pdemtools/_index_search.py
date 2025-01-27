@@ -360,6 +360,8 @@ def search(
                 "id": "pdt_id",
                 "datetime1": "pdt_datetime1",
                 "datetime2": "pdt_datetime2",
+                "sat1": "pdt_sat1",
+                "sat2": "pdt_sat2",
                 "dem_baseline_hours": "pdt_dem_baseline_hours",
                 "datetime_mean": "pdt_datetime_mean",
                 "year": "pdt_year",
@@ -374,6 +376,8 @@ def search(
             [
                 "datetime1",
                 "datetime2",
+                "sat1",
+                "sat2",
                 "dem_baseline_hrs",
                 "time_mean",
                 "month",
@@ -465,6 +469,7 @@ def _search_index_stac(
     gdf["id"] = gdf.title
     gdf["datetime1"] = pd.to_datetime(gdf.start_datetime)
     gdf["datetime2"] = pd.to_datetime(gdf.end_datetime)
+    gdf[["sat1", "sat2"]] = gdf["instruments"].apply(pd.Series)
 
     return gdf
 
@@ -535,6 +540,8 @@ def _search_index_parquet(
     gdf["id"] = gdf.dem_id
     gdf["datetime1"] = pd.to_datetime(gdf.acqdate1)
     gdf["datetime2"] = pd.to_datetime(gdf.acqdate2)
+    gdf["sat1"] = gdf.sensor1
+    gdf["sat2"] = gdf.sensor2
 
     return gdf
 
