@@ -78,7 +78,7 @@ def test_geomorphometry():
 
     variable_min_max = {
         "slope": (0.0, 24.721811294555664),
-        "aspect": (0.0, 360.0), # (1.3660377589985728e-05, 359.9999694824219),
+        "aspect": (0.0, 360.0),  # (1.3660377589985728e-05, 359.9999694824219),
         "hillshade": (0.0, 1.0),
         "horizontal_curvature": (-0.0007999989320524037, 0.0007856095326133072),
         "vertical_curvature": (-0.027519449591636658, 0.022581202909350395),
@@ -95,7 +95,7 @@ def test_geomorphometry():
     for variables in variable_min_max.keys():
         min_val = dem[variables].min().item()
         max_val = dem[variables].max().item()
-        print(f'{variables} | min: {min_val} | max: {max_val}')
+        print(f"{variables} | min: {min_val} | max: {max_val}")
         assert_allclose(min_val, variable_min_max[variables][0])
         assert_allclose(max_val, variable_min_max[variables][1])
 
@@ -108,12 +108,12 @@ def test_coregistration():
     mask_gdf = gpd.GeoDataFrame(geometry=[box(-200, -100, 0, 100)], crs=3413)
     mask = pdt.data.bedrock_mask_from_vector(mask_gdf, dem_1)
 
-    dem_2_coreg = dem_2.pdt.coregister(dem_1, mask)
+    dem_2_coreg = dem_2.pdt.coregister_dems(dem_1, mask)
 
-    diff = (dem_2 - dem_1).mean().item()
+    # diff = (dem_2 - dem_1).mean().item()
     diff_coreg = (dem_2_coreg - dem_1).mean().item()
 
-    expected_diff = 15.476494902013904
+    # expected_diff = 15.476494902013904
     expected_diff_coreg = 0.19603341170854155
 
     # print(diff, corrected_diff)
