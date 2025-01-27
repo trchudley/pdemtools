@@ -233,14 +233,19 @@ class DemAccessor:
         # ADD ICESAT-2 SPECIFIC TO METADATA
         if "request_date_dt" in points_df.columns:
 
-            dt_days_max = int(
-                points_df["request_date_dt"].dt.round("d").dt.days.abs().max()
-            )
-            metadata_dict["points_dt_days_max"] = dt_days_max
+            if metadata_dict["coreg_status"] == "failed":
+                metadata_dict["points_dt_days_max"] = None
+                metadata_dict["points_dt_days_count"] = None
 
-            dt_days = points_df["request_date_dt"].dt.round("d").dt.days
-            dt_days_counts_dict = dt_days.value_counts().to_dict()
-            metadata_dict["points_dt_days_count"] = dt_days_counts_dict
+            else:
+                dt_days_max = int(
+                    points_df["request_date_dt"].dt.round("d").dt.days.abs().max()
+                )
+                metadata_dict["points_dt_days_max"] = dt_days_max
+
+                dt_days = points_df["request_date_dt"].dt.round("d").dt.days
+                dt_days_counts_dict = dt_days.value_counts().to_dict()
+                metadata_dict["points_dt_days_count"] = dt_days_counts_dict
 
         metadata_dict["coregistration_type"] = "reference_icesat2"
 
@@ -383,19 +388,6 @@ class DemAccessor:
                 )
 
         resolution = get_resolution(self._obj)
-
-        # new_dem_array, metadata_dict = coregisterdems(
-        #     reference.values,
-        #     self._obj.values,
-        #     reference.x.values,
-        #     reference.y.values,
-        #     stable_mask.values,
-        #     resolution,
-        #     max_horiz_offset=max_horiz_offset,
-        #     rmse_step_thresh=rmse_step_thresh,
-        #     max_iterations=max_iterations,
-        #     verbose=verbose,
-        # )
 
         new_dem_array, metadata_dict = coregister(
             self._obj.values,

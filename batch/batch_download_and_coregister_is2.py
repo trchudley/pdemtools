@@ -204,7 +204,7 @@ for _, row in gdf.iterrows():
         # check whether coreg worked, and construct filename appropriately
         if metadata["coreg_status"] == "failed":
             out_fpath = out_fname + ".tif"
-        if metadata["coreg_status"] == "coregistered":
+        elif metadata["coreg_status"] == "coregistered":
             out_fpath = out_fname + "_coreg.tif"
         elif metadata["coreg_status"] == "dz_only":
             out_fpath = out_fname + "_coreg_dz.tif"
