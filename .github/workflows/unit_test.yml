@@ -6,6 +6,7 @@ name: Run unit tests
 
 on:
   - push
+  - workflow_dispatch
 
 jobs:
   build:
