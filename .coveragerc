@@ -1,0 +1,9 @@
+# Fix errors introduced by opencv into the GitHib CI pytest coverage
+# https://stackoverflow.com/questions/72660954/coverage-no-source-for-code-with-pytest
+# https://github.com/nedbat/coveragepy/issues/1653
+
+[run]
+omit = 
+    config.py
+    config-3.py
+    config-3.13.py
