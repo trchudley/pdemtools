@@ -1,5 +1,5 @@
-"""This module contains functions necessary to open an ArcticDEM/REMA strip as an 
-xarray DataArray, from either local or AWS sources. 
+"""This module contains functions necessary to open an ArcticDEM/REMA strip as an
+xarray DataArray, from either local or AWS sources.
 """
 
 import os
@@ -382,7 +382,7 @@ def mosaic(
 
         if len(tiles) < 1:
             raise ValueError(
-                "No {dataset} mosaic tiles found to intersect with bounds {aoi}"
+                f"No {dataset} mosaic tiles found to intersect with bounds {aoi}"
             )
 
         # get aws filepaths from the tiles dataframe
