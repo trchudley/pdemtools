@@ -40,6 +40,7 @@ def from_fpath(
     bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask_fpath: Optional[str] = None,
     pad: Optional[bool] = False,
+    lazy_load: Optional[bool] = False,
 ) -> DataArray:
     """Given a filepath (local or an AWS link), loads the desired ArcticDEM/REMA DEM
     strip as an ``xarray`` ``DataArray``. Option to filter to bounds and bitmask, if
@@ -69,7 +70,7 @@ def from_fpath(
         raise ValueError("pad must be True or False")
 
     # Open dataarray using rioxarray
-    dem = rxr.open_rasterio(dem_fpath)
+    dem = rxr.open_rasterio(dem_fpath, chunks = {})
 
     # Convert shapely geometry to bounds
     if isinstance(bounds, Polygon):
@@ -110,6 +111,9 @@ def from_fpath(
 
     if pad is True:
         dem = dem.rio.pad_box(*bounds, constant_values=np.nan)
+
+    if not lazy_load:
+        dem = dem.load()
 
     return dem
 
