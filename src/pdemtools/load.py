@@ -40,6 +40,7 @@ def from_fpath(
     bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask_fpath: Optional[str] = None,
     pad: Optional[bool] = False,
+    lazy_load: Optional[bool] = False,
 ) -> DataArray:
     """Given a filepath (local or an AWS link), loads the desired ArcticDEM/REMA DEM
     strip as an ``xarray`` ``DataArray``. Option to filter to bounds and bitmask, if
@@ -59,6 +60,7 @@ def from_fpath(
     :param pad: If the DEM strip is not the full extent of the given bounds,
         pad with NaNs to match the full bounds. Defaults to False.
     :type pad: bool
+    :param lazy_load: If True, loads the DEM strip lazily. Defaults to False.
 
     :returns: xarray DataArray of DEM strip
     :rtype: DataArray
@@ -69,7 +71,7 @@ def from_fpath(
         raise ValueError("pad must be True or False")
 
     # Open dataarray using rioxarray
-    dem = rxr.open_rasterio(dem_fpath)
+    dem = rxr.open_rasterio(dem_fpath, chunks = {})
 
     # Convert shapely geometry to bounds
     if isinstance(bounds, Polygon):
@@ -110,6 +112,9 @@ def from_fpath(
 
     if pad is True:
         dem = dem.rio.pad_box(*bounds, constant_values=np.nan)
+
+    if not lazy_load:
+        dem = dem.load()
 
     return dem
 
@@ -169,6 +174,7 @@ def from_search(
     bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask: Optional[bool] = True,
     pad: Optional[bool] = False,
+    lazy_load: Optional[bool] = False,
 ):
     """Given a row from the GeoDataFrame output of ``pdemtools.search()``, loads the 2
     m DEM strip of the desired ArcticDEM/REMA DEM strip as an xarray DataArray.
@@ -190,6 +196,7 @@ def from_search(
     :param pad: If the DEM strip is not the full extent of the given bounds,
         pad with NaNs to match the full bounds. Defaults to False.
     :type pad: bool
+    :param lazy_load: If True, loads the DEM strip lazily. Defaults to False.
 
     :returns: xarray DataArray of DEM strip
     :rtype: DataArray
@@ -223,6 +230,7 @@ def from_search(
         bounds,
         bitmask_url,
         pad,
+        lazy_load=lazy_load,
     )
 
 
@@ -236,6 +244,7 @@ def from_id(
     version: Optional[str] = "s2s041",
     preview: Optional[bool] = False,
     pad: Optional[bool] = False,
+    lazy_load: Optional[bool] = False,
 ) -> DataArray:
     """An alternative method of loading the selected ArcticDEM/REMA strip, which
     requires only the geocell and the dem_id (e.g. ``geocell = 'n70w051'``, ``dem_id =
@@ -270,6 +279,7 @@ def from_id(
     :param pad: If the DEM strip is not the full extent of the given bounds,
         pad with NaNs to match the full bounds. Defaults to False.
     :type pad: bool
+    :param lazy_load: If True, loads the DEM strip lazily. Defaults to False.
 
     :return: xarray DataArray of DEM strip
     :rtype: DataArray
@@ -309,6 +319,7 @@ def from_id(
         bounds,
         bitmask_fpath,
         pad,
+        lazy_load=lazy_load,
     )
 
 
