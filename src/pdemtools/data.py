@@ -135,7 +135,9 @@ def bedrock_mask_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataAr
     # Reample using bilinear resampling rather than nearest neighbour, as mask
     # resolution is much larger than DEM resolution
     mask = mask.squeeze().astype("float32").rio.write_crs(mask_crs)
-    mask = mask.rio.reproject_match(target_rxd, Resampling.bilinear)
+    mask = mask.rio.reproject_match(
+        match_data_array=target_rxd, resampling=Resampling.bilinear
+    )
 
     # Set interpolated values to boolean (1/0) values again
     mask = mask.round()

@@ -647,6 +647,8 @@ class DemAccessor:
             or ("unsphericity_curvature" in attribute)
             or ("maximal_curvature" in attribute)
             or ("minimal_curvature" in attribute)
+            or ("horizontal_excess" in attribute)
+            or ("vertical_excess" in attribute)
         ):
             mean_curvature_arr = mean_curvature(p_arr, q_arr, t_arr, r_arr, s_arr)
 
@@ -655,6 +657,8 @@ class DemAccessor:
             or ("unsphericity_curvature" in attribute)
             or ("maximal_curvature" in attribute)
             or ("minimal_curvature" in attribute)
+            or ("horizontal_excess" in attribute)
+            or ("vertical_excess" in attribute)
         ):
             gaussian_curvature_arr = gaussian_curvature(
                 p_arr, q_arr, t_arr, r_arr, s_arr
@@ -664,6 +668,8 @@ class DemAccessor:
             ("unsphericity_curvature" in attribute)
             or ("maximal_curvature" in attribute)
             or ("minimal_curvature" in attribute)
+            or ("horizontal_excess" in attribute)
+            or ("vertical_excess" in attribute)
         ):
             unsphericity_curvature_arr = unsphericity_curvature(
                 mean_curvature_arr, gaussian_curvature_arr
