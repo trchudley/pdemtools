@@ -17,3 +17,7 @@ We would encourage users who are interested in larger-scale analysis to get in t
 Strips can appear empty (i.e. `NaN` values) when photogrammetry fails (due to cloud, water, etc) or it is masked by the PGC bitmask. Data previewed by the `pdt.load.preview()` function is masked according to this bitmask, and data loaded by the `pdt.load.from_search()` function is also masked by default (this can be disabled by using the `bitmask = False` option).
 
 As a result, it is entirely possible that the `search()` function can return a valid datastrip that covers a sufficient proportion of the AOI to meet the `min_aoi_frac` requirements, but it will appear empty (i.e. all-`NaN`) when viewed. The `preview()` function will help you identify these 'empty' scenes, but there may still be (poor-quality) data present if it is downloaded using the `load.from_search()` function with `bitmask = False`.
+
+#### Q: Can I load DEMs as `dask` arrays, and/or enable lazy evaluation for downloads?
+
+Yes! Like the [`rioxarray.load_rasterio()`](https://corteva.github.io/rioxarray/html/rioxarray.html#rioxarray-open-rasterio) function they wrap, `load.from_search()`, `load.mosaic()`, and `load.from_fpath()` accept a `chunks` variable (e.g.`(50, 50)`, `True`, `"auto"`), which triggers loading as a `dask` array (and, as a bonus, will result in 'lazy evaluation', where the data is not downloaded or computed until it is needed by a further command).

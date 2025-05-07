@@ -40,6 +40,7 @@ def from_fpath(
     bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask_fpath: Optional[str] = None,
     pad: Optional[bool] = False,
+    chunks: Optional[Union[int, tuple, dict]] = None,
 ) -> DataArray:
     """Given a filepath (local or an AWS link), loads the desired ArcticDEM/REMA DEM
     strip as an ``xarray`` ``DataArray``. Option to filter to bounds and bitmask, if
@@ -59,6 +60,9 @@ def from_fpath(
     :param pad: If the DEM strip is not the full extent of the given bounds,
         pad with NaNs to match the full bounds. Defaults to False.
     :type pad: bool
+    :param chunks: Chunk size for `rioxarray.open_rasterio`, triggering `dask`
+        parallelisation and lazy evaluation/loading. Defaults to `None`.
+    :type chunks: int | tuple | dict
 
     :returns: xarray DataArray of DEM strip
     :rtype: DataArray
@@ -69,7 +73,7 @@ def from_fpath(
         raise ValueError("pad must be True or False")
 
     # Open dataarray using rioxarray
-    dem = rxr.open_rasterio(dem_fpath)
+    dem = rxr.open_rasterio(dem_fpath, chunks=chunks)
 
     # Convert shapely geometry to bounds
     if isinstance(bounds, Polygon):
@@ -169,6 +173,7 @@ def from_search(
     bounds: Optional[Union[tuple, Polygon]] = None,
     bitmask: Optional[bool] = True,
     pad: Optional[bool] = False,
+    chunks: Optional[Union[int, tuple, dict]] = None,
 ):
     """Given a row from the GeoDataFrame output of ``pdemtools.search()``, loads the 2
     m DEM strip of the desired ArcticDEM/REMA DEM strip as an xarray DataArray.
@@ -190,6 +195,9 @@ def from_search(
     :param pad: If the DEM strip is not the full extent of the given bounds,
         pad with NaNs to match the full bounds. Defaults to False.
     :type pad: bool
+    :param chunks: Chunk size for `rioxarray.open_rasterio`, triggering `dask`
+        parallelisation and lazy evaluation/loading. Defaults to `None`.
+    :type chunks: int | tuple | dict
 
     :returns: xarray DataArray of DEM strip
     :rtype: DataArray
@@ -223,6 +231,7 @@ def from_search(
         bounds,
         bitmask_url,
         pad,
+        chunks,
     )
 
 
@@ -236,6 +245,7 @@ def from_id(
     version: Optional[str] = "s2s041",
     preview: Optional[bool] = False,
     pad: Optional[bool] = False,
+    chunks: Optional[Union[int, tuple, dict]] = None,
 ) -> DataArray:
     """An alternative method of loading the selected ArcticDEM/REMA strip, which
     requires only the geocell and the dem_id (e.g. ``geocell = 'n70w051'``, ``dem_id =
@@ -270,6 +280,9 @@ def from_id(
     :param pad: If the DEM strip is not the full extent of the given bounds,
         pad with NaNs to match the full bounds. Defaults to False.
     :type pad: bool
+    :param chunks: Chunk size for `rioxarray.open_rasterio`, triggering `dask`
+        parallelisation and lazy evaluation/loading. Defaults to `None`.
+    :type chunks: int | tuple | dict
 
     :return: xarray DataArray of DEM strip
     :rtype: DataArray
@@ -309,6 +322,7 @@ def from_id(
         bounds,
         bitmask_fpath,
         pad,
+        chunks,
     )
 
 
@@ -317,6 +331,7 @@ def mosaic(
     resolution: Literal["2m", "10m", "32m"],
     bounds: Union[tuple, Polygon] = None,
     version: Optional[Literal["v2.0", "v3.0", "v4.1"]] = None,
+    chunks: Optional[Union[int, tuple, dict]] = None,
 ):
     """Given a dataset, resolution, and bounding box, downloads the ArcticDEM or REMA
     mosiac from AWS.
@@ -333,6 +348,12 @@ def mosaic(
     :param bounds: Clip to bounds [xmin, ymin, xmax, ymax], in EPSG:3413 (ArcticDEM) or
         EPSG:3031 (REMA). Will accept a shapely geometry to extract bounds from.
     :type bounds: tuple | Polygon, optional
+    :param chunks: Chunk size for `rioxarray.open_rasterio`, triggering `dask`
+        parallelisation and lazy evaluation/loading. Defaults to `None`.
+    :type chunks: int | tuple | dict
+
+    :return: xarray DataArray of DEM mosaic
+    :rtype: DataArray
     """
 
     # sanity check that datset and versioning is correct versioning is valid for selected dataset
@@ -401,13 +422,14 @@ def mosaic(
     # load dem(s)
     dems = []
     for fpath in fpaths:
-        dem = rxr.open_rasterio(fpath).rio.clip_box(*bounds)
+        dem = rxr.open_rasterio(fpath, chunks=chunks).rio.clip_box(*bounds)
         dems.append(dem)
 
     if len(fpaths) == 1:
-        dem = rxr.open_rasterio(fpaths[0]).rio.clip_box(*bounds)
+        dem = rxr.open_rasterio(fpaths[0], chunks=chunks).rio.clip_box(*bounds)
 
-    # If multiple dems, merge them
+    # If multiple dems, merge them - NB I don't know whether this breaks lazy
+    # evaluation for chunked data
     if len(dems) > 1:
         dem = merge_arrays(dems)
     else:
