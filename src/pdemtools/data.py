@@ -39,7 +39,9 @@ def geoid_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataArray:
     geoid = rxr.open_rasterio(f"{bm_fpath}")["geoid"]
     geoid_crs = geoid.rio.crs
     geoid = geoid.squeeze().astype("float32").rio.write_crs(geoid_crs)
-    geoid = geoid.rio.reproject_match(target_rxd, Resampling.bilinear)
+    geoid = geoid.rio.reproject_match(
+        match_data_array=target_rxd, resampling=Resampling.bilinear
+    )
 
     return geoid.squeeze()
 
@@ -63,7 +65,9 @@ def geoid_from_raster(fpath: str, target_rxd: DataArray = None) -> DataArray:
     geoid = geoid.squeeze().astype("float32").rio.write_crs(geoid_crs)
 
     if target_rxd != None:
-        geoid = geoid.rio.reproject_match(target_rxd, Resampling.bilinear)
+        geoid = geoid.rio.reproject_match(
+            match_data_array=target_rxd, resampling=Resampling.bilinear
+        )
 
     return geoid.squeeze()
 
