@@ -403,7 +403,7 @@ def mosaic(
 
         if len(tiles) < 1:
             raise ValueError(
-                f"No {dataset} mosaic tiles found to intersect with bounds {aoi}"
+                f"No {dataset} mosaic tiles found to intersect with bounds {bounds}"
             )
 
         # get aws filepaths from the tiles dataframe
