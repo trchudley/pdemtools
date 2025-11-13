@@ -3,7 +3,7 @@ processing (geoids, masks, etc), resampled to match the DEM xarray object.
 """
 
 import datetime
-from typing import Optional, Literal
+from typing import Optional, Union
 from warnings import warn
 
 import rioxarray as rxr
@@ -24,7 +24,9 @@ from ._utils import clip, get_resolution
 # from shapely.geometry.polygon import Polygon
 
 
-def geoid_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataArray:
+def geoid_from_bedmachine(
+    bm_fpath: str, target_rxd: DataArray, geoid_crs: Optional[Union[str, int]] = None
+) -> DataArray:
     """Extracts the BedMachine geoid (EIGEN-6C4), bilinearly resampled to match the
     target dataset.
 
@@ -32,12 +34,25 @@ def geoid_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataArray:
     :type bm_fpath: str
     :param target_rxd: (rio)xarray dataset that BedMachine will be resampled to match
     :type target_rxd: DataArray
+    :param geoid_crs: CRS of the geoid raster, if not stored in the geoid file metadata.
+        Optional, defaults to None
+    :type geoid_crs: Optional[Union[str, int]]
 
     :returns: geoid for the target_rxd region as an xarray DataArray
     :rtype: DataArray"""
 
     geoid = rxr.open_rasterio(f"{bm_fpath}")["geoid"]
+
     geoid_crs = geoid.rio.crs
+
+    if geoid_crs is None:
+        geoid_crs = geoid.rio.crs
+        if geoid_crs is None:
+            raise ValueError(
+                "Geoid CRS could not be determined from file metadata. "
+                "Please provide `geoid_crs` parameter (e.g. 3413 or 'EPSG:3413')."
+            )
+
     geoid = geoid.squeeze().astype("float32").rio.write_crs(geoid_crs)
     geoid = geoid.rio.reproject_match(
         match_data_array=target_rxd, resampling=Resampling.bilinear
@@ -46,7 +61,11 @@ def geoid_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataArray:
     return geoid.squeeze()
 
 
-def geoid_from_raster(fpath: str, target_rxd: DataArray = None) -> DataArray:
+def geoid_from_raster(
+    fpath: str,
+    target_rxd: DataArray = None,
+    geoid_crs: Optional[Union[str, int]] = None,
+) -> DataArray:
     """Extracts an arbritary geoid stored as a raster dataset, bilinearly resampled to
     match the target dataset.
 
@@ -55,13 +74,24 @@ def geoid_from_raster(fpath: str, target_rxd: DataArray = None) -> DataArray:
     :param target_rxd: (rio)xarray dataset/array that the raster will be resampled to
         match. Optional, defaults to None
     :type target_rxd: DataArray
+    :param geoid_crs: CRS of the geoid raster, if not stored in the geoid file metadata.
+        Optional, defaults to None
+    :type geoid_crs: Optional[Union[str, int]]
 
     :returns: geoid for the target_rxd region as an xarray DataArray
     :rtype: DataArray
     """
 
     geoid = rxr.open_rasterio(f"{fpath}")
-    geoid_crs = geoid.rio.crs
+
+    if geoid_crs is None:
+        geoid_crs = geoid.rio.crs
+        if geoid_crs is None:
+            raise ValueError(
+                "Geoid CRS could not be determined from file metadata. "
+                "Please provide `geoid_crs` parameter (e.g. 3413 or 'EPSG:3413')."
+            )
+
     geoid = geoid.squeeze().astype("float32").rio.write_crs(geoid_crs)
 
     if target_rxd != None:
@@ -73,7 +103,9 @@ def geoid_from_raster(fpath: str, target_rxd: DataArray = None) -> DataArray:
 
 
 def bedrock_mask_from_vector(
-    vector: str | GeoDataFrame, target_rxd: DataArray
+    vector: str | GeoDataFrame,
+    target_rxd: DataArray,
+    mask_crs: Optional[Union[str, int]] = None,
 ) -> DataArray:
     """Construct boolean bedrock mask from a Geopandas vector file of bedrock areas and
     a given target rioxarray dataset. Returns mask where bedrock values are 1 and
@@ -84,6 +116,9 @@ def bedrock_mask_from_vector(
     :type vector_fpath: str | GeoDataFrame
     :param target_rxd: (rio)xarray dataset that BedMachine will be resampled to match
     :type target_rxd: DataArray
+    :param mask_crs: CRS of the vector file, if not stored in the file metadata.
+        Optional, defaults to None
+    :type mask_crs: Optional[Union[str, int]]
 
     :returns: bedrock mask for the target_rxd region as a (rio)xarray DataArray
     :rtype: DataArray
@@ -97,12 +132,26 @@ def bedrock_mask_from_vector(
         raise ValueError(
             "Input `vector` must be either a filepath string or GeoPandas GeoDataFrame"
         )
+
+    if mask_crs is None:
+        mask_crs = gdf_clip.crs
+        if mask_crs is None:
+            raise ValueError(
+                "Vector CRS could not be determined from file metadata. "
+                "Please provide `mask_crs` parameter (e.g. 3413 or 'EPSG:3413')."
+            )
+
+    if gdf_clip.crs != target_rxd.rio.crs:
+        gdf_clip = gdf_clip.to_crs(target_rxd.rio.crs)
+
     target_rxd = target_rxd.rio.write_nodata(-9999)  # Enforce -9999 as nodata value
     target_clip = target_rxd.rio.clip(gdf_clip.geometry.values, drop=False)
     return (target_clip.where(target_clip != -9999) * 0 + 1).fillna(0).squeeze()
 
 
-def bedrock_mask_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataArray:
+def bedrock_mask_from_bedmachine(
+    bm_fpath: str, target_rxd: DataArray, mask_crs: Optional[Union[str, int]] = None
+) -> DataArray:
     """Construct boolean bedrock mask from bedmachine and a given target rioxarray
     dataset. Returns mask where bedrock values are 1 and outside are 0.
 
@@ -110,6 +159,9 @@ def bedrock_mask_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataAr
     :type bm_fpath: str
     :param target_rxd: (rio)xarray dataset that BedMachine will be resampled to match
     :type target_rxd: DataArray
+    :param mask_crs: CRS of the BedMachine dataset, if not stored in the file metadata.
+        Optional, defaults to None
+    :type mask_crs: Optional[Union[str, int]]
 
     :returns: bedrock mask for the target_rxd region as a (rio)xarray DataArray
     :rtype: DataArray
@@ -117,7 +169,13 @@ def bedrock_mask_from_bedmachine(bm_fpath: str, target_rxd: DataArray) -> DataAr
 
     # Open geoid
     mask = rxr.open_rasterio(f"{bm_fpath}")["mask"]
-    mask_crs = mask.rio.crs
+    if mask_crs is None:
+        mask_crs = mask.rio.crs
+        if mask_crs is None:
+            raise ValueError(
+                "BedMachine CRS could not be determined from file metadata. "
+                "Please provide `mask_crs` parameter (e.g. 3413 or 'EPSG:3413')."
+            )
 
     # Get geoid-projected geometry of the extent of the target dataset,
     # with a bit of a buffer for safety

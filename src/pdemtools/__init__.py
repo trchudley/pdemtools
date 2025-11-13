@@ -13,6 +13,6 @@ from . import _coreg
 from . import _geomorphometry
 from . import _utils
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 __all__ = ["search", "DemAccessor"]
