@@ -43,8 +43,6 @@ def geoid_from_bedmachine(
 
     geoid = rxr.open_rasterio(f"{bm_fpath}")["geoid"]
 
-    geoid_crs = geoid.rio.crs
-
     if geoid_crs is None:
         geoid_crs = geoid.rio.crs
         if geoid_crs is None:
