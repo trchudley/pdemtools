@@ -12,7 +12,7 @@ import geopandas as gpd
 from pystac_client import Client
 from shapely.geometry import box, polygon
 
-SENSORS = ["WV03", "WV02", "WV01", "GE01"]
+SENSORS = ["WV03", "WV02", "WV01", "GE01", "W1W1", "W1W2", "W1W3", "W2W2", "W2W3", "W3W3"]
 MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 
