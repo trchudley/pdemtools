@@ -52,7 +52,7 @@ xmin, ymin, xmax, ymax = -247000, -2500000, -212000, -2487000
 # Parameters with which to filter ArcticDEM/REMA dataset. Note that you may wish to
 # further refine parameters - feel free to modify the `pdt.search()`` function at line
 # 153, in consultation with the pdemtools documentation.
-dates = "20010101/20231231"
+dates = "20010101/20241231"
 baseline_max_hours = 24
 min_aoi_frac = 0.1
 
@@ -80,7 +80,7 @@ mask_coreg = False
 custom_mask_fpath = None
 
 # this script will check
-override_datecheck = False
+override_datecheck = True
 
 # ----------------------------------------------------------------------------------- #
 # END OF EDITABLE PARAMETER SECTION
@@ -184,9 +184,33 @@ for _, row in gdf.iterrows():
 
             first_loop = False
 
+        # If data is prior to 2018-10-04, skip coregistration and geoid correction, as no ICESat-2 data will be available.
+        if to_datetime(date) < cutoff_date:
+            warn(
+                f"Data for {date_str} is prior to 2018-10-04, and so no ICESat-2 data will be available for coregistration. "
+                "As such, this strip will be saved without coregistration or geoid correction.",
+                UserWarning,
+                stacklevel=2,
+            )
+            dem.rio.to_raster(out_fname + ".tif", compress="ZSTD", predictor=3, zlevel=1)
+
+            i+=1
+            continue
+
         # get the IS2 coregistration data
         print("Getting IS2 coregistration data...")
         is2_gdf = pdt.data.icesat2_atl06(dem, date, stable_mask=bedrock_mask)
+
+        if len(is2_gdf) == 0:
+            warn(
+                f"No ICESat-2 data found for {date_str} within the strip area. This strip will be saved without coregistration.",
+                UserWarning,
+                stacklevel=2,
+            )
+            dem.rio.to_raster(out_fname + ".tif", compress="ZSTD", predictor=3, zlevel=1)
+
+            i+=1
+            continue
 
         # coregister DEM, with return_stats=True.
         dem, metadata = dem.pdt.coregister_is2(
@@ -210,7 +234,7 @@ for _, row in gdf.iterrows():
             out_fpath = out_fname + "_coreg_dz.tif"
         else:
             warn(
-                f"Unknown coregistration status {metadata['coreg_status']}. Saving wihtout extension.",
+                f"Unknown coregistration status {metadata['coreg_status']}. Saving without extension.",
                 UserWarning,
                 stacklevel=2,
             )
