@@ -52,7 +52,7 @@ xmin, ymin, xmax, ymax = -247000, -2500000, -212000, -2487000
 # Parameters with which to filter ArcticDEM/REMA dataset. Note that you may wish to
 # further refine parameters - feel free to modify the `pdt.search()`` function at line
 # 155, # in consultation with the pdemtools documentation.
-dates = "20010101/20231231"
+dates = "20010101/20241231"
 baseline_max_hours = 24
 min_aoi_frac = 0.1
 
