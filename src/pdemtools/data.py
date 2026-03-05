@@ -7,6 +7,7 @@ from typing import Optional, Union
 from warnings import warn
 
 import rioxarray as rxr
+import xarray as xr
 import geopandas as gpd
 import sliderule
 
@@ -41,15 +42,24 @@ def geoid_from_bedmachine(
     :returns: geoid for the target_rxd region as an xarray DataArray
     :rtype: DataArray"""
 
-    geoid = rxr.open_rasterio(f"{bm_fpath}")["geoid"]
+    geoid = xr.open_dataset(f"{bm_fpath}")
 
     if geoid_crs is None:
-        geoid_crs = geoid.rio.crs
+
+        # Attempt to read geoid CRS from file metadata, checking multiple possible keys
+        # ('proj4' is used in BedMachine GrIS v6 / AIS v3, while 'geospatial_bounds_crs' is used in GrIS v5 / AIS v4)
+        geoid_crs = geoid.attrs.get('proj4') or geoid.attrs.get('geospatial_bounds_crs')
+
         if geoid_crs is None:
             raise ValueError(
                 "Geoid CRS could not be determined from file metadata. "
-                "Please provide `geoid_crs` parameter (e.g. 3413 or 'EPSG:3413')."
+                "Please provide `geoid_crs` parameter (i.e. 3413 or 'EPSG:3413' "
+                "for Greenland, 3031 or 'EPSG:3031' for Antarctica)."
             )
+
+        geoid_crs = geoid_crs[-4:]
+    
+    geoid = geoid["geoid"]
 
     geoid = geoid.squeeze().astype("float32").rio.write_crs(geoid_crs)
     geoid = geoid.rio.reproject_match(
@@ -165,17 +175,29 @@ def bedrock_mask_from_bedmachine(
     :rtype: DataArray
     """
 
-    # Open geoid
-    mask = rxr.open_rasterio(f"{bm_fpath}")["mask"]
+    # Open mask
+    mask = xr.open_dataset(f"{bm_fpath}")
+
     if mask_crs is None:
-        mask_crs = mask.rio.crs
+
+        # Attempt to read mask CRS from file metadata, checking multiple possible keys
+        # ('proj4' is used in BedMachine GrIS v6 / AIS v3, while 'geospatial_bounds_crs' is used in GrIS v5 / AIS v4)
+        mask_crs = mask.attrs.get('proj4') or mask.attrs.get('geospatial_bounds_crs')
+
         if mask_crs is None:
             raise ValueError(
-                "BedMachine CRS could not be determined from file metadata. "
-                "Please provide `mask_crs` parameter (e.g. 3413 or 'EPSG:3413')."
+                "Mask CRS could not be determined from file metadata. "
+                "Please provide `mask_crs` parameter (i.e. 3413 or 'EPSG:3413' "
+                "for Greenland, 3031 or 'EPSG:3031' for Antarctica)."
             )
 
-    # Get geoid-projected geometry of the extent of the target dataset,
+        mask_crs = mask_crs[-4:]
+    
+    mask = mask["mask"]
+    mask = mask.squeeze().rio.write_crs(mask_crs)
+
+
+    # Get mask-projected geometry of the extent of the target dataset,
     # with a bit of a buffer for safety
     clip_bounds = (
         gpd.GeoDataFrame(
@@ -186,7 +208,7 @@ def bedrock_mask_from_bedmachine(
         .total_bounds
     )
 
-    # Clip geoid to smaller extent
+    # Clip mask to smaller extent
     mask = clip(mask, clip_bounds)
 
     # bedmachine mask sets ice-free land to 1. Set everything else to zero.

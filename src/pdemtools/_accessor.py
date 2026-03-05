@@ -210,11 +210,24 @@ class DemAccessor:
         # 2. PRE-PROCESSING: REFERENCE POINTS
         # Construct points array [x, y, z]. Can include all the points -
         # coregister function will filter out NaN and masked values.
-        points_vals = [
-            points_df.geometry.x.values,
-            points_df.geometry.y.values,
-            points_df.h_mean.values,
-        ]
+
+        if len(points_df) == 0:
+            raise ValueError(
+                "`points_df` dataframe is empty."
+            )
+        
+        try:
+            points_vals = [
+                points_df.geometry.x.values,
+                points_df.geometry.y.values,
+                points_df.h_mean.values,
+            ]
+        except:
+            points_vals = [
+                points_df.geometry.x.values,
+                points_df.geometry.y.values,
+                points_df['mean'].values,
+            ]
 
         # 3. COREGISTRATION
         new_dem_array, metadata_dict = coregister(
