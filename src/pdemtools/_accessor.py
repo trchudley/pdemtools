@@ -211,9 +211,11 @@ class DemAccessor:
         # Construct points array [x, y, z]. Can include all the points -
         # coregister function will filter out NaN and masked values.
 
-        # print points_df columns
-        print(f"Reference points dataframe columns: {points_df.columns}")
-        print(f"Number of reference points: {len(points_df)}")
+        if len(points_df) == 0:
+            raise ValueError(
+                "`points_df` dataframe is empty."
+            )
+        
         try:
             points_vals = [
                 points_df.geometry.x.values,
