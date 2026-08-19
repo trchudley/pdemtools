@@ -62,8 +62,9 @@ html_theme_options = {
     "home_page_in_toc": False,
     "use_repository_button": True,
     "use_source_button": True,
-    "use_issues_button": True
-    #    "logo": {
+    "use_issues_button": True,
+    "navbar_persistent": [] # disable top navbar due to bug https://github.com/executablebooks/sphinx-book-theme/issues/986
+#    "logo": {
     #       "image_light": "_static/logo-light.png",
     #       "image_dark": "_static/logo-dark.png",
     #    }
