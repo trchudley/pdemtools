@@ -10,7 +10,7 @@ import rioxarray as rxr
 import geopandas as gpd
 import numpy as np
 
-from rioxarray.merge import merge_arrays
+from xrspatial.reproject import merge
 from xarray import DataArray
 from shapely.geometry.polygon import Polygon
 from geopandas.geodataframe import GeoDataFrame
@@ -428,20 +428,20 @@ def mosaic(
     if len(fpaths) == 1:
         dem = rxr.open_rasterio(fpaths[0], chunks=chunks).rio.clip_box(*bounds)
 
-    # If multiple dems, merge them - NB I don't know whether this breaks lazy
-    # evaluation for chunked data
+    # If multiple dems, merge them. Uses xrspatial.reproject.merge rather than
+    # rioxarray.merge.merge_arrays, as the latter forces computation of chunked
+    # (dask-backed) data even when only lazy evaluation is required.
     if len(dems) > 1:
-        dem = merge_arrays(dems)
+        dems = [d.squeeze(drop=True) for d in dems]
+        dem = merge(dems)
     else:
         dem = dems[0]
+        dem = dem.squeeze(drop=True)
 
     dems = None  # release dem objects for memory management
 
     # Filter -9999.0 values to np.nan
     dem = dem.where(dem > -9999.0)
-
-    # Remove `band` dim
-    dem = dem.squeeze(drop=True)
 
     # Enforce CF-compliant names
     dem["x"].attrs["axis"] = "X"
