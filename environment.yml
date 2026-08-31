@@ -17,4 +17,4 @@ dependencies:
   - fiona
   - pystac-client
   - sliderule
-  - xrspatial
+  - xarray-spatial
