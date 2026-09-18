@@ -16,8 +16,8 @@ strip), the filename will not have `_coreg` appended.
 If any further assistance or custom additions are required, please drop me an email. I 
 would be happy to help.
 
-Tom Chudley | thomas.r.chudley@durham.ac.uk
-Durham University
+Tom Chudley | tom.chudley@bristol.ac.uk
+University of Bristol
 
 v1 | 2023-11 | Initial script
 v2 | 2024-07 | Updated to make *_coreg.tif fname dependent on sucessful coregistration.
