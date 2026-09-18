@@ -16,8 +16,8 @@ not have `_coreg` appended.
 If any further assistance or custom additions are required, please drop me an email. I 
 would be happy to help.
 
-Tom Chudley | thomas.r.chudley@durham.ac.uk
-Durham University
+Tom Chudley | tom.chudley@bristol.ac.uk
+University of Bristol
 
 v1 | 2025-01 | Initial script, based upon the `batch_download_and_coregister_dem.py`
                version 3 script.
