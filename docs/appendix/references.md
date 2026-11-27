@@ -1,5 +1,7 @@
 # Refererences
 
+Chudley, T. R., and Howat, I. M. (2024). pDEMtools: conveniently search, download, and process ArcticDEM and REMA products. _Journal of Open Source Software_, _9_(102), 7149, https://doi.org/10.21105/joss.07149
+
 Florinsky, I. V. (2009). Computation of the third‐order partial derivatives from a digital elevation model. _International journal of geographical information science_, 23(2), 213-231. https://doi.org/10.1080/13658810802527499
 
 Foerste, C., _et al._ (2014). EIGEN-6C4 the latest combined global gravity field model including GOCE data up to degree and order 2190 of GFZ potsdam and GRGS toulouse. GFZ Data Services. https://doi.org/10.5880/icgem.2015.1
