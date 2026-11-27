@@ -4,9 +4,9 @@ Two supplementary datasets can be relied upon locally to enhance the capability 
 
 ## BedMachine
 
-Greenland BedMachine (v5; Morlighem _et al._ 2022a) or Antarctica BedMachine (v3; Morlighem _et al._ 2022b) provide the default EIGEN-6C4 geoid and ice/bedrock mask used by the geoid correction and coregistration functions (NB: for applications outside of the ice sheets, it is possible to use your own geoid/bedrock mask). 
+Greenland BedMachine (tested up to v6; Morlighem _et al._ 2025) or Antarctica BedMachine (tested up to v3; Morlighem _et al._ 2022) provide the default EIGEN-6C4 geoid and ice/bedrock mask used by the geoid correction and coregistration functions (NB: for applications outside of the ice sheets, it is possible to use your own geoid/bedrock mask). 
 
-The appropriate versions of BedMachine, in netcdf format, can be downloaded from the NSIDC ([Greenland](https://nsidc.org/data/idbmg4/versions/5), [Antarctica](https://nsidc.org/data/nsidc-0756/versions/3)). Follow these links to the NSIDC website. Once you're there, the most convenient way of downloading is via the 'Data Access Tool'. __Ensure you download the netcdf version__ (ending `*.nc`), not the tif version.
+The appropriate versions of BedMachine, in netcdf format, can be downloaded from the NSIDC ([Greenland](https://nsidc.org/data/idbmg4/versions/6), [Antarctica](https://nsidc.org/data/nsidc-0756/versions/3)). Follow these links to the NSIDC website. Once you're there, the most convenient way of downloading is via the 'Data Access Tool'. __Ensure you download the netcdf version__ (ending `*.nc`), not the tif version.
 
 
 ## ArcticDEM/REMA strip index

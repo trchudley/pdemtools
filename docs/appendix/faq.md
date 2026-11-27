@@ -1,6 +1,6 @@
 # FAQ
 
-This page records useful questions and answers raised by users of `pdemtools`, on the [GitHub issues page](https://github.com/trchudley/pdemtools/issues) and elsewhere. If you have any further questions, do not hesitate to raise them via GitHub issue!
+This page records useful questions and answers raised by users of `pdemtools`, on the [GitHub issues page](https://github.com/trchudley/pdemtools/issues) and elsewhere. If you have any further questions, do not hesitate to raise them via GitHub!
 
 #### Q: How large an area is appropriate to work with? 
 

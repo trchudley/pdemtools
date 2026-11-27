@@ -1,5 +1,7 @@
 # Refererences
 
+Chudley, T. R., and Howat, I. M. (2024). pDEMtools: conveniently search, download, and process ArcticDEM and REMA products. _Journal of Open Source Software_, _9_(102), 7149, https://doi.org/10.21105/joss.07149
+
 Florinsky, I. V. (2009). Computation of the third‐order partial derivatives from a digital elevation model. _International journal of geographical information science_, 23(2), 213-231. https://doi.org/10.1080/13658810802527499
 
 Foerste, C., _et al._ (2014). EIGEN-6C4 the latest combined global gravity field model including GOCE data up to degree and order 2190 of GFZ potsdam and GRGS toulouse. GFZ Data Services. https://doi.org/10.5880/icgem.2015.1
@@ -14,9 +16,9 @@ MacGregror, J. A. _et al._ (2024). Geologic Provinces Beneath the Greenland Ice 
 
 Mark, R. K. (1992). Multidirectional, oblique-weighted, shaded-relief image of the Island of Hawaii. _United States Geological Survey_. Open-File Report 92-422. https://doi.org/10.3133/ofr92422
 
-Morlighem, M. _et al._ (2022a). IceBridge BedMachine Greenland, Version 5 [Data Set]. _NASA National Snow and Ice Data Center Distributed Active Archive Center_. https://doi.org/10.5067/GMEVBWFLWA7X
+Morlighem, M. _et al._ (2025). IceBridge BedMachine Greenland, Version 6 [Data Set]. _NASA National Snow and Ice Data Center Distributed Active Archive Center_. https://doi.org/10.5067/6B6B225B8V2D
 
-Morlighem, M. _et al._ (2022b). MEaSUREs BedMachine Antarctica, Version 3 [Data Set]. _NASA National Snow and Ice Data Center Distributed Active Archive Center_. https://doi.org/10.5067/FPSU0V1MWUB6
+Morlighem, M. _et al._ (2022). MEaSUREs BedMachine Antarctica, Version 3 [Data Set]. _NASA National Snow and Ice Data Center Distributed Active Archive Center_. https://doi.org/10.5067/FPSU0V1MWUB6
 
 Noh, M. J., & Howat, I. M. (2017). The surface extraction from TIN based search-space minimization (SETSM) algorithm. _ISPRS Journal of Photogrammetry and Remote Sensing_, 129, 55-76. https://doi.org/10.1016/j.isprsjprs.2017.04.019
 
