@@ -1,5 +1,4 @@
-"""Function to search ArcticDEM and REMA index files.
-"""
+"""Function to search ArcticDEM and REMA index files."""
 
 import os, warnings
 
@@ -12,7 +11,18 @@ import geopandas as gpd
 from pystac_client import Client
 from shapely.geometry import box, polygon
 
-SENSORS = ["WV03", "WV02", "WV01", "GE01", "W1W1", "W1W2", "W1W3", "W2W2", "W2W3", "W3W3"]
+SENSORS = [
+    "WV03",
+    "WV02",
+    "WV01",
+    "GE01",
+    "W1W1",
+    "W1W2",
+    "W1W3",
+    "W2W2",
+    "W2W3",
+    "W3W3",
+]
 MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 
@@ -421,12 +431,25 @@ def _search_index_stac(
     # Search the stac
     client = Client.open("https://stac.pgc.umn.edu/api/v1/")
 
-    search_results = client.search(
-        collections=collection,
-        intersects=geom_4326,
-        datetime=date_search,
-        query=query,
-    )
+    # Construct search kwargs
+    search_kwargs = {
+        "collections": collection,
+        "intersects": geom_4326,
+        "datetime": date_search,
+    }
+
+    # Add query if it is not empty
+    if query:
+        search_kwargs["query"] = query
+
+    search_results = client.search(**search_kwargs)
+
+    # search_results = client.search(
+    #     collections=collection,
+    #     intersects=geom_4326,
+    #     datetime=date_search,
+    #     query=query,
+    # )
 
     # Transform into geopandas
     items = search_results.item_collection()
